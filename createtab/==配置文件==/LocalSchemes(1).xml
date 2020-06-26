@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--LocalSchemes说明:-->
+<LocalSchemes>
+	<!--product_no:产品号：产品唯一标识，每个产品下有多个特性-->
+	
+	
+	<!--warn_thr：测量误差预警区间：以精度单位度量，比如值1表示当实测值在规格值的上下限的1个公差精度范围内为预警区间-->
+	<!--chk_warn_thr：复核误差预警区间:以精度单位度量,比如值为2表示复核值与自测值相差2个精度单位需预警-->
+	<!--trend_warn_win：趋势窗口预警值:比如：默认值7，操作员记录值连续7次符合同一趋势，则报警-->
+	
+	<!--detect_mode：抽检方式：0代代表计时抽检（固定时间内抽检一次），1代表计件抽检（单位件数中抽检一次）-->
+	<!--time_interval：抽检周期，当detect_mode为0时有效，代表具体抽检的固定时长（单位：分钟）->
+	<!--cycle_time：单个零件加工时间（单位：秒），当detect_mode为1时有效，计件抽检时间间隔=cycle_time*sample_cnt -->
+	<!--sample_cnt：计件的个数，当detect_mode为1时有效，计件抽检时间间隔=cycle_time*sample_cnt-->
+	<!--disp_element_cnt：屏幕当前工作页面展示抽检零件的抽检数目（决定一级表格的横坐标范围）-->
+	<!--lock_time：操作时间窗口：操作锁定时间，不能再修改(单位:分钟)-->
+
+   
+   <Scheme product_no="207802"  warn_thr="1" chk_warn_thr="2"  trend_warn_win="7" detect_mode="0" time_interval="30" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" lock_time="5">
+		<!--char_no：     产品特性序号：1表示第1个、2表示第2个特性，依次类推-->
+		<!--char_desc：   特性描述：长 、宽  等-->
+		<!--spec_val：    特性值-->
+		<!--tolerance：   正公差-->
+		<!--n_tolerance： 负公差-->
+		<!--pre_unit：    一级精度单位(决定一级表格纵坐标)：参考计算公式（正公差-负公差）*10%-->
+		<!--snd_pre_unit：二级精度单位（决定二级展开表格）：为0则不展开-->
+        <Item char_no="1" char_desc="长"   spec_val="20" tolerance="0.2"  n_tolerance="-0.2" pre_unit="0.04"  snd_pre_unit="0.01" />
+		<Item char_no="2" char_desc="内径" spec_val="50" tolerance="0.5"  n_tolerance="-0.5" pre_unit="0.1"  snd_pre_unit="0.01"/>
+		<Item char_no="3" char_desc="宽"   spec_val="100" tolerance="0.5"  n_tolerance="-0.3" pre_unit="0.08"  snd_pre_unit="0.01"/>
+    </Scheme>
+	
+	<Scheme product_no="207803" warn_thr="1" chk_warn_thr="2"  trend_warn_win="7" detect_mode="0" time_interval="60" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" lock_time="5">
+		<Item char_no="1" char_desc="长"   spec_val="20" tolerance="0.2"  n_tolerance="-0.1" pre_unit="0.03"  snd_pre_unit="0.01" />
+		<Item char_no="2" char_desc="内径"   spec_val="10" tolerance="0.5"  n_tolerance="-0.5" pre_unit="0.1"  snd_pre_unit="0.01"/>
+    </Scheme>
+</LocalSchemes>

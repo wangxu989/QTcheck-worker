@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/员工.png</file>
+        <file>img/扫码.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>img/员工.png</file>
+        <file>img/bj.jpg</file>
+        <file>img/spc.png</file>
+        <file>img/返回.png</file>
+        <file>img/退出.png</file>
+    </qresource>
+</RCC>
