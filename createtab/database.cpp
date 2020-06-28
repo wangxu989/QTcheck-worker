@@ -92,7 +92,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         }
 
         //检索数据库寻找对应的工作信息
-        QString find_work = workInfo.instruction_id.split(",")[workInfo.instruction_id.split(",").size() - 1];//暂定
+        QString find_work = workInfo.instruction_id.split(",")[1].mid(0,6);//暂定
         query.prepare("select * from spc_schemes where product_no = ?");
         query.bindValue(0,find_work);
         query.exec();
@@ -126,6 +126,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
             temp.jddw = query.value(7).toDouble();
             temp.ejjddw = query.value(8).toDouble();
             tab.createinfo.push_back(temp);
+             qDebug()<<"网络版配置已读完";
             tab.tabadd(temp,tab.info);
         }
     }
@@ -133,10 +134,6 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         QMessageBox box(QMessageBox::NoIcon,"title","系统维护",NULL,NULL);
         box.exec();
         //维护逻辑
-
-
-
-
     }
     else if (mode.toInt() == 3) {
     //禁用模式
@@ -145,6 +142,8 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         exit(-1);
     }
     //query.exec();
+
+
 }
 void database::createtable() {
     //work_record
