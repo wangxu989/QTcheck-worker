@@ -105,7 +105,7 @@ void mytab::flash_table(int start) {
 void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中增加了一个可以动态增加tab的方法,传参为tab名
     qDebug()<<createinfo.fgc<<" "<<createinfo.zgc<<" "<<createinfo.jddw;
     QString temp;
-    QString name = QString::number(createinfo.normvalue) + "[" +"特征值:" + createinfo.char_desc + "]";
+    QString name = createinfo.char_desc + +"[ "  + "Φ" +  QString::number(createinfo.normvalue)  + " ]";
     double numrow = (createinfo.zgc - createinfo.fgc)/createinfo.jddw + 1.0 + 1.0;//行数
     numrow = (int)numrow;
     double gap;//按秒

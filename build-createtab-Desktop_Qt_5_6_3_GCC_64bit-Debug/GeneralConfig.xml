@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="gb2312" ?>
 <GeneralConfig>
     <!--工作模式：0,单机模式(配置文件获取配置)， 1,网络模式（数据库配置表中获取配置）-->
-	<WorkMode mode="0"/>
+	<WorkMode mode="1"/>
 	
 	
 	<DatabaseConnect>
 		<!--远程服务数据库(MySQL)配置Begin-->
-		<RemoteDatabase active="0" hostName="192.168.100.8" port="1521" databaseName="orcl" userName="aaa" password="123456"/>
+		<RemoteDatabase active="1" hostName="112.124.23.36" port="1521" databaseName="ring" userName="root" password="212124"/>
 		<!--远程数据库oracle配置End-->
 	</DatabaseConnect>
 

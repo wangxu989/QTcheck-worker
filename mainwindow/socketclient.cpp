@@ -300,7 +300,7 @@ void socketclient::initpcustomplot(int num){//初始化plot
     //设置刻度
 
 
-    timer->setTickCount(8);
+    //timer->setTickCount(8);
 
 
     pCustomPlot->xAxis2->setTicks(false);

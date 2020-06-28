@@ -103,12 +103,14 @@ void MainWindow::start_work(){
     qDebug()<<my_socket->workInfo.instruction_id<<"instruction_id";
     switch(tab1.nekwork_or_local()) {
     case 0://单机版
+        qDebug()<<"单机版";
         if (tab1.readxml(my_socket->workInfo) < 0) {//人员信息不匹配
             return;
         }
         mode = 0;
         break;
     case 1://网络版
+        qDebug()<<"网络版";
         data_server = new database(tab1.net_plugin,tab1,my_socket->workInfo);
         if (data_server->flag > 0) {
             //0员工信息不合法,1您无权访问此机器,2无对应工作信息
@@ -429,25 +431,28 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
 //            }
         }
     }
-    if (tab1.table[tabnum]->temp_val != 0 && insy > tab1.table[tabnum]->temp_val) {//大于上一个时间的测量值（初始值为0）
+    if (tab1.table[tabnum]->temp_val != -1 && insy > tab1.table[tabnum]->temp_val) {//大于上一个时间的测量值（初始值为0）
         if(tab1.table[tabnum]->trend_plus_minus != 1) {//若不是正趋势则预警值置0并改为正趋势
             tab1.table[tabnum]->trend_val = 2;
             tab1.table[tabnum]->trend_plus_minus = 1;
+            tab1.table[tabnum]->temp_trend_val = 2;
         }
         else {//是正趋势则++
             tab1.table[tabnum]->temp_trend_val =  tab1.table[tabnum]->trend_val + 1;
         }
     }
-    else if (tab1.table[tabnum]->temp_val != 0 && insy < tab1.table[tabnum]->temp_val) {
+    else if (tab1.table[tabnum]->temp_val != -1 && insy < tab1.table[tabnum]->temp_val) {
         if(tab1.table[tabnum]->trend_plus_minus != -1) {//若不是负趋势则预警值置0并改为负趋势
             tab1.table[tabnum]->trend_val = -2;
             tab1.table[tabnum]->trend_plus_minus = -1;
+             tab1.table[tabnum]->temp_trend_val = -2;
         }
         else {//是负趋势则--
             tab1.table[tabnum]->temp_trend_val = tab1.table[tabnum]->trend_val - 1;
         }
     }
-    if (tab1.table[tabnum]->trend_val >= tab1.info.trend_warn_win.toInt() || tab1.table[tabnum]->trend_val <= tab1.info.trend_warn_win.toInt()*(-1) ) {
+    if (tab1.table[tabnum]->temp_trend_val >= tab1.info.trend_warn_win.toInt() || tab1.table[tabnum]->temp_trend_val <= tab1.info.trend_warn_win.toInt()*(-1) ) {
+         qDebug()<<tab1.table[tabnum]->temp_trend_val<<"趋势预警"<<tab1.table[tabnum]->trend_plus_minus;
         //预警
         QMessageBox box(QMessageBox::NoIcon,"trend_warn_win","趋势预警",NULL,NULL);
         box.exec();
@@ -456,10 +461,11 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
         }
     }
     tab1.table[tabnum]->temp_val = insy;
-    qDebug()<<tab1.table[tabnum]->trend_val<<" "<<tab1.table[tabnum]->trend_plus_minus;
+    qDebug()<<tab1.table[tabnum]->trend_val<<"趋势"<<tab1.table[tabnum]->trend_plus_minus;
     temp_color = worker;
     modify = 0;//人员信息恢复
     people_flag = 1;//等级标志恢复
+    tab1.table[tabnum]->setCurrentItem(NULL);//取消选中
     return 0;
 }
 int MainWindow::time_check(int column) {//检查当前点击时间段是否有效,0无效1有效
@@ -477,6 +483,7 @@ int MainWindow::time_check(int column) {//检查当前点击时间段是否有�
         return 0;
     }
     if (tab1.table[tabnum]->flag[mycolumn].t_time && now - tab1.table[tabnum]->flag[mycolumn].t_time > tab1.info.lock_time.toDouble()*60) {
+        //tab1.table[i]->trend_val = tab1.table[i]->temp_trend_val;//将真实趋势值写入
         qDebug()<<tab1.table[tabnum]->flag[mycolumn].t_time<<" "<<now<<"column: "<<mycolumn;
         return 0;
     }
@@ -502,10 +509,10 @@ void MainWindow::flash(QTime current_time1) {//刷新进度条+工作表
         //            tab1.table[i]->item(k,tab1.info.disp_element_cnt.toInt() - 1)->setBackground(QBrush(tab1.color_scheme[5]));//灰色
         //        }
     }
-    qDebug()<<j<<"now j";
+    //qDebug()<<j<<"now j";
     int temp_j = j == 0? tab1.info.disp_element_cnt.toInt() - 1:j-1;
     if (tab1.table[i]->flag[temp_j].flash_flag == 0) {//刷新上个时间段
-        //tab1.table[i]->trend_val = tab1.table[i]->temp_trend_val;
+        tab1.table[i]->trend_val = tab1.table[i]->temp_trend_val;//将上个时间段的真实趋势值写入
         for (int f = 0; f < tab1.table.size();f++) {
             for (int k = 0;k < tab1.table[f]->rowCount();k++) {
                 if (tab1.table[f]->item(k,temp_j)->background() == QBrush(tab1.color_scheme[6])) {//白色
