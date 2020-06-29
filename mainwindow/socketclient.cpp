@@ -73,7 +73,7 @@ socketclient::socketclient()
         qDebug()<<"connect failed";
     }
     //send_message(0);
-    connect(socket, &QTcpSocket::readyRead, this, &socketclient::readmessage);//信号阻塞调用
+    connect(socket, &QTcpSocket::readyRead, this, &socketclient::readmessage,Qt::QueuedConnection);//信号排队调用
     pCustomPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // period as decimal separator and comma as thousand separator<font></font>
     pCustomPlot->legend->setVisible(true);
     //QFont legendFont(QFont::Black);  // start out with MainWindow's font..<font></font>
@@ -87,8 +87,6 @@ socketclient::socketclient()
 
 }
 void socketclient::readmessage(){
-    //QByteArray  data;
-    //socket->waitForReadyRead(1000);
     if (blockSize == 0) {
         // Relies on the fact that QDataStream serializes a quint32 into
         // sizeof(quint32) bytes
@@ -168,7 +166,6 @@ void socketclient::readmessage(){
             y[tabnum*2][column] = y1.toDouble();
             //temp.push_back({x1.toDouble(),y1.toDouble(),tabnum*2});
             pCustomPlot->graph(tabnum*2)->addData(QDateTime::currentDateTime().toTime_t(),y1.toDouble());
-            qDebug()<<"datacount"<<pCustomPlot->graph(tabnum*2)->dataCount();
             qDebug()<<x1<<" "<<y1<<" "<<user_ide;
             qDebug()<<QDateTime::currentDateTime().toTime_t();
         }
@@ -179,10 +176,8 @@ void socketclient::readmessage(){
             //temp.push_back({x1.toDouble(),y1.toDouble(),tabnum*2 + 1});
             pCustomPlot->graph(tabnum*2 + 1)->addData(QDateTime::currentDateTime().toTime_t(),y1.toDouble());
             //pCustomPlot->graph(tabnum*2 + 1)->addData(x1.toDouble(),y1.toDouble());
-            qDebug()<<"datacount"<<pCustomPlot->graph(tabnum*2 + 1)->dataCount();
             qDebug()<<x1<<" "<<y1<<" "<<user_ide;
         }
-        //sem.release();
         pCustomPlot->replot(QCustomPlot::rpQueuedReplot);//QCustomPlot::rpQueuedReplot
         break;
     case 3://remove
@@ -231,6 +226,9 @@ void socketclient::readmessage(){
         check_flag[2] = 0;
         break;
     }
+    if (socket->bytesAvailable() > 0) {
+        emit socket->readyRead();
+    }
 }
 void socketclient::send_message(int flag,void *info) {
     QByteArray data;
@@ -257,7 +255,7 @@ void socketclient::send_message(int flag,void *info) {
         break;
     }
     socket->write(data);
-    socket->waitForBytesWritten(10000);
+    socket->waitForBytesWritten();
 }
 void socketclient::run(){
     //pCustomPlot->graph(0)->data()->clear();

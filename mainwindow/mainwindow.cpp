@@ -101,6 +101,8 @@ void MainWindow::my_init() {
     H_plot_layout = new QHBoxLayout();//存放图表和按钮
     narrow = new QPushButton("缩小");
     enlarge = new QPushButton("放大");
+    narrow->setFixedSize(50,50);
+    enlarge->setFixedSize(50,50);
     V_button = new QVBoxLayout();//存放按钮
     table_work = new my_tablewidget(6,2,"工作信息");
     table_worker = new my_tablewidget(3,4,"员工信息");
@@ -141,9 +143,15 @@ void MainWindow::draw() {
     Vlayout->setStretchFactor(table_worker,2);
     Vlayout->setStretchFactor(table_work,2);
     Vlayout->setStretchFactor(table_product,2);
-    QPushButton *send_work = new QPushButton("send_work");
-    QPushButton *send_worker = new QPushButton("send worker");
-    QPushButton *send_inst = new QPushButton("send instruction");
+    QPushButton *send_work = new QPushButton("员工");
+    QPushButton *send_worker = new QPushButton("设备");
+    QPushButton *send_inst = new QPushButton("指令");
+    QPushButton *send_checker = new QPushButton("核验");
+    send_work->setFixedSize(50,50);
+    send_worker->setFixedSize(50,50);
+    send_inst->setFixedSize(50,50);
+    send_checker->setFixedSize(50,50);
+    connect(send_checker,SIGNAL(clicked()),this,SLOT(my_send4()));
     connect(send_work,SIGNAL(clicked()),this,SLOT(my_send2()));
     connect(send_worker,SIGNAL(clicked()),this,SLOT(my_send1()));
     connect(send_inst,SIGNAL(clicked()),this,SLOT(my_send3()));
@@ -152,6 +160,7 @@ void MainWindow::draw() {
     V_button->addWidget(send_work);
     V_button->addWidget(send_worker);
     V_button->addWidget(send_inst);
+    V_button->addWidget(send_checker);
     connect(enlarge,SIGNAL(clicked()),this,SLOT(enlarge_plot()));
     connect(narrow,SIGNAL(clicked()),this,SLOT(narrow_plot()));
     H_plot_layout->addWidget(pCustomPlot);
@@ -200,4 +209,8 @@ void MainWindow::my_send3() {
     QString temp = "ZL,20016101180122000101,17121618739,1,1800";
     my_client->send_message(3,(void *)&temp);
     my_client->check_flag[1] = 1;
+}
+void MainWindow::my_send4() {
+     QString temp = "YG,02294";
+     my_client->send_message(1,(void*)&temp);
 }

@@ -106,8 +106,13 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     qDebug()<<createinfo.fgc<<" "<<createinfo.zgc<<" "<<createinfo.jddw;
     QString temp;
     QString name = createinfo.char_desc + +"[ "  + "Φ" +  QString::number(createinfo.normvalue)  + " ]";
-    double numrow = (createinfo.zgc - createinfo.fgc)/createinfo.jddw + 1.0 + 1.0;//行数
-    numrow = (int)numrow;
+    if (createinfo.zgc - createinfo.fgc < createinfo.jddw) {
+        QMessageBox box(QMessageBox::NoIcon,"输入错误","正负公差差值小于一级精度",NULL,NULL);
+        box.exec();
+        exit(-1);
+    }
+    int numrow = (int)((createinfo.zgc - createinfo.fgc)/createinfo.jddw) + 1 + 1;//行数
+    qDebug()<<"正公差:"<<createinfo.zgc<<"负公差 "<<createinfo.fgc<<"精度单位 "<<createinfo.jddw;
     double gap;//按秒
     if (info.detect_mode == "0") {//按时间
         gap = info.time_interval.toDouble()*60;//时间间隔
@@ -155,7 +160,6 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
         start+=gap;
     }
     t->setHorizontalHeaderLabels(verticalhead);//水平表头
-
     //纵表头
     QStringList verti;
     verti.append(auto_zero(createinfo.jddw,createinfo.normvalue + createinfo.zgc) + "<X");
@@ -172,10 +176,7 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
         sum = temp;
     }
     verti.append("X<"+ auto_zero(createinfo.jddw,createinfo.normvalue + createinfo.fgc));
-
     t->setVerticalHeaderLabels(verti);
-
-
     t->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
     t->verticalHeader()->setDefaultAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
     for (int i = 0;i < numcolumn;i++) {
@@ -187,12 +188,12 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
             }
         }
     }
-    t->setSelectionMode(QAbstractItemView::SingleSelection);
-    t->setSelectionBehavior(QAbstractItemView::SelectRows);
+    qDebug()<<t->rowCount()<<" "<<t->columnCount();
     t->verticalHeaderItem(0)->setBackground(QBrush(color_scheme[2]));
+        qDebug()<<"color head end";
     t->verticalHeaderItem(t->rowCount()-1)->setBackground(QBrush(color_scheme[2]));
-    for (int i = 1;i < t->rowCount();i++) {
-        if (i <= info.warn_thr.toInt() || t->rowCount() -1 - i <= info.chk_warn_thr.toInt()) {
+    for (int i = 1;i < t->rowCount() - 2;i++) {//设置垂直表头颜色
+        if (i <= info.warn_thr.toInt() || t->rowCount() -1 - i <= info.warn_thr.toInt()) {
             t->verticalHeaderItem(i)->setBackground(QBrush(color_scheme[1]));
         }
         else {
@@ -200,10 +201,7 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
         }
 
     }
-
-    //    for (int i = 0;i < numcolumn;i++) {
-    //    t->verticalHeaderItem(0)->setBackground(QBrush(QColor(Qt::red)));//警告值背景
-    //    t->verticalHeaderItem(numrow - 1)->setBackground(QBrush(QColor(Qt::red)));//警告值背景
+    qDebug()<<"color head end";
     t->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     t->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     t->setSelectionBehavior(QAbstractItemView::SelectItems);

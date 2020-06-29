@@ -65,7 +65,7 @@ void socket::read_message() {
     in.setDevice(clientConnection);
     in.setVersion(QDataStream::Qt_5_6);
     if (blocksize == 0) {
-        if (clientConnection->bytesAvailable() < sizeof(quint32)) {
+        if (clientConnection->bytesAvailable() < (long)sizeof(quint32)) {
             return;
         }
         in>>blocksize;
@@ -73,9 +73,10 @@ void socket::read_message() {
     if (clientConnection->bytesAvailable() < blocksize||in.atEnd()) {
         return;
     }
+    blocksize = 0;
     in>>flag;
-    qDebug()<<flag<<"flag";
-    qDebug()<<blocksize<<"blocksize";
+//    qDebug()<<flag<<"flag";
+//    qDebug()<<blocksize<<"blocksize";
     switch (flag) {
 //    case 0:
 //        qDebug()<<"ok";
@@ -83,9 +84,9 @@ void socket::read_message() {
 //        emit start_work();//发出信号
 //        break;
     case 1:
-        emit check_identity();
         in>>checker_id;
         qDebug()<<"signal check_ide";
+        emit check_identity();
         break;
     case 2:
         in>>workInfo.worker_id;
@@ -101,7 +102,6 @@ void socket::read_message() {
         emit check_info(3);
         break;
     }
-    blocksize = 0;
 }
 void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,QString y,QString x){
     QByteArray data;
@@ -111,7 +111,7 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
     switch(flag) {
     case 0://产品信息和工作信息
         qDebug()<<quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof(*createinfo) + sizeof(flag));
-        out << quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof(*createinfo) + sizeof(flag));
+        out << quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof((*createinfo).size()*sizeof(tabinfo)) + sizeof(flag));
         out<<flag;
         out<<*info;
         out<<(*createinfo).size();
@@ -143,7 +143,7 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
         out<<user_ide;
         break;
     case 4://请求进程2使用扫码枪验证登录信息
-        out<<quint32(sizeof(flag));
+        //out<<quint32(sizeof(flag));
         break;
     case 5://发送员工信息和设备信息
         out<<quint32(sizeof(flag) + sizeof(worker_info));

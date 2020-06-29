@@ -2,7 +2,7 @@
 #include<QFile>
 #include<QSqlError>
 #include<QMessageBox>
-database::database(database_plugin& net_plugin,mytab& tab1,work_info& Info):plugin(net_plugin),tab(tab),workInfo(Info)//网络版
+database::database(database_plugin& net_plugin,mytab& tab1,work_info& Info):plugin(net_plugin),tab(tab1),workInfo(Info)//网络版
 {
     db = QSqlDatabase::addDatabase("QMYSQL","network");
     createdatabase();
@@ -95,7 +95,9 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         QString find_work = workInfo.instruction_id.split(",")[1].mid(0,6);//暂定
         query.prepare("select * from spc_schemes where product_no = ?");
         query.bindValue(0,find_work);
-        query.exec();
+        if (!query.exec()) {
+            qDebug()<<"read net_sche_info failed!";
+        }
         int row_count = query.size();
         qDebug()<<row_count;
         if (row_count == 0) {
@@ -104,21 +106,25 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
             flag = 2;
             return;
         }
+        qDebug()<<"start read net_sche_info";
         while (query.next()) {
+            qDebug()<<"start read net_sche_info"<<query.value(0).toInt()<<" "<<query.value(1).toString();
             tab.info.product_no = query.value(1).toString();
+            qDebug()<<"1   "<<tab.info.product_no;
             tab.info.warn_thr = query.value(9).toString();
+            qDebug()<<"9";
             tab.info.chk_warn_thr = query.value(10).toString();
             tab.info.detect_mode = query.value(11).toString();
             tab.info.time_interval = query.value(12).toString();
             tab.info.cycle_time = query.value(13).toString();
             tab.info.sample_cnt = query.value(14).toString();
             tab.info.disp_element_cnt = query.value(15).toString();
-            tab.info.trend_warn_win = query.value(16).toString();
-            tab.info.lock_time = query.value(17).toString();
+            tab.info.trend_warn_win = query.value(17).toString();
+            tab.info.lock_time = query.value(16).toString();
             tab.my.x.resize(row_count);
             tab.my.y.resize(row_count);
             tabinfo temp;
-            temp.featureid = query.value(2).toString();
+            temp.featureid = QString::number(query.value(2).toFloat());
             temp.char_desc = query.value(3).toString();
             temp.normvalue =query.value(4).toDouble();
             temp.zgc = query.value(5).toDouble();
@@ -127,6 +133,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
             temp.ejjddw = query.value(8).toDouble();
             tab.createinfo.push_back(temp);
              qDebug()<<"网络版配置已读完";
+             qDebug()<<tab.info.chk_warn_thr<<" "<<tab.info.cycle_time<<" "<<tab.info.detect_mode<<" "<<tab.info.disp_element_cnt<<" "<<tab.info.lock_time;
             tab.tabadd(temp,tab.info);
         }
     }

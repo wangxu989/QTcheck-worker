@@ -119,7 +119,9 @@ public:
     int trend_val = 0;//增长方向趋势值（超出配置预警）
     int temp_trend_val = 0;//暂存，用于修改。下个时间段初始赋值给上面的值
     int trend_plus_minus = 0;//该趋势是正/负趋势
-    double temp_val = -1;//咱存本次操作值，用于下次的趋势比较
+    int temp_trend_plus_minus = 0;//暂存正负标识
+    double val = -1;//上次次操作值.
+    double temp_val = -1;//暂存本次操作值
     //int
     QVector<tflag>flag;//标记该列是否被赋值过
     QAbstractButton *btn = this->findChild<QAbstractButton *>();

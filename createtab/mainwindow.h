@@ -75,7 +75,7 @@ private:
      void start_work();
      void check_identity();
      int result;
-     int time_check(int column);
+     int time_check(int column,int flag);
      int mode;//0本地，1网络
      void draw_init();
      int pagevalue = 8;

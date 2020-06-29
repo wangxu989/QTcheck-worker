@@ -37,6 +37,7 @@ private slots:
     void my_send1();
     void my_send2();
     void my_send3();
+    void my_send4();
 private:
     void my_init();
     Ui::MainWindow *ui;

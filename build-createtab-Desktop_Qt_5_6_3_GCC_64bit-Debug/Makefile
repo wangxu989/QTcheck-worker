@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = createtab1.0.0
-DISTDIR = /home/arm/build-createtab-Desktop_Qt_5_6_3_GCC_64bit-Debug/.tmp/createtab1.0.0
+DISTDIR = /home/arm/project/QTcheck-worker/build-createtab-Desktop_Qt_5_6_3_GCC_64bit-Debug/.tmp/createtab1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.6.3/5.6.3/gcc_64/lib
 LIBS          = $(SUBLIBS) -L/opt/Qt5.6.3/5.6.3/gcc_64/lib -lQt5PrintSupport -L/usr/lib64 -lQt5Widgets -lQt5Gui -lQt5Network -lQt5Sql -lQt5Xml -lQt5Core -lGL -lpthread 
@@ -682,7 +682,7 @@ moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
 		../createtab/dialog.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/dialog.h -o moc_dialog.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/dialog.h -o moc_dialog.cpp
 
 moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDebug \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qdebug.h \
@@ -1030,7 +1030,7 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDebug \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		../createtab/mainwindow.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/mainwindow.h -o moc_mainwindow.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/mainwindow.h -o moc_mainwindow.cpp
 
 moc_process_bar.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QTime \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qdatetime.h \
@@ -1145,7 +1145,7 @@ moc_process_bar.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QTime \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QSemaphore \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qsemaphore.h \
 		../createtab/process_bar.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/process_bar.h -o moc_process_bar.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/process_bar.h -o moc_process_bar.cpp
 
 moc_tab.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QWidget \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
@@ -1309,7 +1309,7 @@ moc_tab.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QWidget \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
 		../createtab/tab.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/tab.h -o moc_tab.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/tab.h -o moc_tab.cpp
 
 moc_socket.cpp: ../createtab/tab.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QWidget \
@@ -1657,7 +1657,7 @@ moc_socket.cpp: ../createtab/tab.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		../createtab/socket.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/socket.h -o moc_socket.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/socket.h -o moc_socket.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
