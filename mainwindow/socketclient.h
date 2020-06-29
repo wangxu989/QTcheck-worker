@@ -91,6 +91,7 @@ public:
     message_worker_evn messageWorkerEnv;
      QLabel *label1;
      int check_flag[3] = {0};
+     volatile int tabnum = 0;
 signals:
     void insert_data(int);
 protected:
@@ -104,7 +105,6 @@ private:
     QTcpSocket *socket;
     //QLocalSocket *socket;
     void initpcustomplot(int num);
-    volatile int tabnum = 0;
     QQueue<communication>temp;
     QVector<QVector<double> >x;
     QVector<QVector<double> >y;

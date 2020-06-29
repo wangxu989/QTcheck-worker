@@ -389,21 +389,31 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
         qDebug()<<"send failed!";
     }
     tab1.table[tabnum]->item(row,column)->setText(QString::number(insy));//插入表格
+    int flag_rlt = 0;
     if (people_flag == 1) {//操作员操作
         if (row == 0 || row == tab1.table[i]->rowCount() - 1) {
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[2]));
             if (mode&&data_server) {
                 data_server->spc_event("1000");//超差
             }
+            flag_rlt = 2;
         }
         else if (row - 0 <= tab1.createinfo[i].warn_thr || tab1.table[i]->rowCount() - 1 - row <= tab1.createinfo[i].warn_thr){
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[1]));
             if (mode&&data_server) {
                 data_server->spc_event("1001");//预警
             }
+            flag_rlt = 1;
         }
         else {
+            flag_rlt = 0;//正常值
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[0]));
+        }
+        if (modify == 0) {
+            data_local->insert_data(insy,flag_rlt,0);//正常插入本地数据库
+        }
+        else {
+            data_local->insert_data(insy,flag_rlt,1);//修改本地数据库数据
         }
         //存储当前操作的时间
         QTime t1  = QTime::currentTime();
@@ -455,10 +465,12 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
         else {
             //超出预警值
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[4]));
-//            if (mode&&data_server) {
-//                data_server->spc_event("1000");//预警
-//            }
+            flag_rlt = 1;
+            if (mode&&data_server) {
+                data_server->spc_event("1003");//巡检超差
+            }
         }
+        data_local->insert_data(insy,flag_rlt,2);//存入核验员值（修改和写入一样）
     }
     temp_color = worker;
     modify = 0;//人员信息恢复

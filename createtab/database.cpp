@@ -7,6 +7,7 @@ database::database(database_plugin& net_plugin,mytab& tab1,work_info& Info):plug
     db = QSqlDatabase::addDatabase("QMYSQL","network");
     createdatabase();
     read_data(tab);//首先读取client_cfg配置文件
+    query = db.exec();
 }
 database::database(work_info& Info,mytab &tab1):workInfo(Info),tab(tab1)//保存本地工作信息
 {
@@ -17,7 +18,6 @@ database::database(work_info& Info,mytab &tab1):workInfo(Info),tab(tab1)//保存
         box.exec();
     }
     query = db.exec();
-    //createdatabase();
     createtable();//创建用于保存数据的本地数据库
     insert_record();
 }
@@ -71,7 +71,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         qDebug()<<id<<" "<<client_mach_id<<" "<<mode<<" "<<cmd;
     }
     if (mode.toInt() == 1) {
-    //正常工作模式
+        //正常工作模式
         //首先判断工作人员信息是否合法
         query.exec("select * from auth_user where user_id = " + workInfo.worker_id.split(",")[workInfo.worker_id.split(",").size() - 1]);
         if (query.size() == 0) {
@@ -132,8 +132,8 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
             temp.jddw = query.value(7).toDouble();
             temp.ejjddw = query.value(8).toDouble();
             tab.createinfo.push_back(temp);
-             qDebug()<<"网络版配置已读完";
-             qDebug()<<tab.info.chk_warn_thr<<" "<<tab.info.cycle_time<<" "<<tab.info.detect_mode<<" "<<tab.info.disp_element_cnt<<" "<<tab.info.lock_time;
+            qDebug()<<"网络版配置已读完";
+            qDebug()<<tab.info.chk_warn_thr<<" "<<tab.info.cycle_time<<" "<<tab.info.detect_mode<<" "<<tab.info.disp_element_cnt<<" "<<tab.info.lock_time;
             tab.tabadd(temp,tab.info);
         }
     }
@@ -143,7 +143,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         //维护逻辑
     }
     else if (mode.toInt() == 3) {
-    //禁用模式
+        //禁用模式
         QMessageBox box(QMessageBox::NoIcon,"title","系统禁用",NULL,NULL);
         box.exec();
         exit(-1);
@@ -154,44 +154,45 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
 }
 void database::createtable() {
     //work_record
-    if (!query.exec("create table if not exists local_work_record(id integer primary key AUTOINCREMENT,"//记录号
-               "user_id varchar(32),"//员工码
-               "start_time varchar(32),"//开工时间
-               "finish_time varchar(32),"//完工时间
-               "work_state varchar(1),"//完工状态
-               "produce_id varchar(32),"//生产令
-               "equip_id varchar(32),"//设备
-               "workstation varchar(32),"//工位
-               "gauge_no varchar(32))")) {//检具号
+    if (!query.exec("create table if not exists local_work_record(id integer primary key AUTOINCREMENT,"//记录号自增
+                    "user_id varchar(32),"//员工码
+                    "start_time varchar(32),"//开工时间
+                    "finish_time varchar(32),"//完工时间
+                    "work_state varchar(1),"//完工状态
+                    "produce_id varchar(32),"//生产令
+                    "equip_id varchar(32),"//设备
+                    "workstation varchar(32),"//工位
+                    "gauge_no varchar(32))")) {//检具号
         QSqlError error = query.lastError();
         QMessageBox box(QMessageBox::NoIcon,"mysql","本地数据库work_record创建失败" + error.databaseText(),NULL,NULL);
         box.exec();
     }
-        ;
-    if (!query.exec("create table if not exists local_measure_data(id integer primary key AUTOINCREMENT,"//记录号
-               "work_id int,"//开工记录号
-               "gauge_no varchar(32),"//检具号
-               "measure_time varchar(32),"//测量时间
-               "measure_value varchar(32),"//测量值
-               "checker varchar(32),"//复核员
-               "chk_time varchar(32),"//复核时间
-               "chk_value varchar(32),"//复核值
-               "meas_rlt_id varchar(1),"//测量结果标识
-               "chk_rlt varchar(1),"//复核结果标识
-               "char_id int,"//规格号
-               "element_SD int,"//零件流水号
-               "CONSTRAINT linkkey FOREIGN KEY(work_id) REFERENCES local_work_record(id) on delete cascade on update cascade)")) {//零件流水号
+    if (!query.exec("create table if not exists local_measure_data(id integer primary key AUTOINCREMENT,"//记录号自增
+                    "work_id int,"//开工记录号
+                    "gauge_no varchar(32),"//检具号
+                    "measure_time varchar(32),"//测量时间
+                    "measure_value varchar(32),"//测量值
+                    "checker varchar(32),"//复核员
+                    "chk_time varchar(32),"//复核时间
+                    "chk_value varchar(32),"//复核值
+                    "meas_rlt_id varchar(1),"//测量结果标识
+                    "chk_rlt varchar(1),"//复核结果标识
+                    "char_id int,"//规格号
+                    "element_SD int,"//零件流水号
+                    "FOREIGN KEY(work_id) REFERENCES local_work_record(id) on delete cascade on update cascade)")) {//零件流水号
         QMessageBox box(QMessageBox::NoIcon,"mysql","本地数据库local_measure_data创建失败",NULL,NULL);
         box.exec();
 
     };
-
+    if (!query.exec("PRAGMA foreign_keys = ON")) {
+        qDebug()<<"foreign_key failed!";
+    }
 }
 void database::insert_record() {
 
     query.prepare("insert into local_work_record (user_id,start_time,finish_time,"
-               "work_state,produce_id,equip_id,workstation,gauge_no)"
-               "values(?,?,?,?,?,?,?,?)");
+                  "work_state,produce_id,equip_id,workstation,gauge_no)"
+                  "values(?,?,?,?,?,?,?,?)");
     query.bindValue(0,workInfo.worker_id.split(",")[1].mid(0,6));
     QDateTime time = QDateTime::currentDateTime();
     QString n = time.toUTC().toString();
@@ -211,26 +212,46 @@ void database::insert_record() {
     }
     last_insert_id = query.lastInsertId().toInt();
 }
-void database::insert_data(const double &data,const  int &flag,QString &work_time,tabinfo &tabinfo) {
+void database::insert_data(const double &data,const  int &flag,const int &operation_flag){
     QDateTime now = QDateTime::currentDateTime();
-    query.prepare("insert into local_measure_data (work_id,gauge_no,measure_time,measure_value,"
-                  "checker,chk_time,chk_value,meas_rlt_id,chk_rlt,char_id,element_SD)"
-                  "values(?,?,?,?,?,?,?,?,?,?,?");
-    query.bindValue(0,last_insert_id);
-    query.bindValue(1,now.toString());
-    query.bindValue(2,tab.messageWorkerEvn.localEnv.gauge_no);
-    query.bindValue(3,QString::number(data));
-    query.bindValue(4,"");
-    query.bindValue(5,"");
-    query.bindValue(6,"");
-    query.bindValue(7,flag);
-    query.bindValue(8,"");
-    query.bindValue(9,tabinfo.featureid);
-    query.bindValue(10,0);
+    int ele_SD = (now.time().hour()*3600 + now.time().minute()*60 + now.time().second() - tab.work_start_time)/tab.table[tab.currentIndex()]->gap *(tab.currentIndex() + 1);
+    if (operation_flag == 0) {//操作员增加
+        query.prepare("insert into local_measure_data(work_id,gauge_no,measure_time,measure_value,"
+                      "checker,chk_time,chk_value,meas_rlt_id,chk_rlt,char_id,element_SD)"
+                      "values(?,?,?,?,?,?,?,?,?,?,?)");
+        query.bindValue(0,last_insert_id);
+        query.bindValue(2,now.toString());
+        query.bindValue(1,tab.messageWorkerEvn.localEnv.gauge_no);
+        query.bindValue(3,QString::number(data));
+        query.bindValue(4,"");
+        query.bindValue(5,"");
+        query.bindValue(6,"");
+        query.bindValue(7,flag);
+        query.bindValue(8,"");
+        query.bindValue(9,tab.createinfo[tab.currentIndex()].featureid.toInt());
+        query.bindValue(10,ele_SD);
+    }
+    else if (operation_flag == 1) {//操作员修改
+        query.prepare("update local_measure_data set measure_time = ?,measure_value = ?,meas_rlt_id = ? where element_SD = ? and work_id = ?");
+        query.bindValue(0,now.toString());
+        query.bindValue(1,QString::number(data));
+        query.bindValue(2,flag);
+        query.bindValue(3,ele_SD);
+        query.bindValue(4,last_insert_id);
+    }
+    else if (operation_flag == 2) {//核验员操作,和修改
+        query.prepare("update local_measure_data set checker = ?,chk_time = ?,chk_value = ?,chk_rlt = ? where element_SD = ? and work_id = ?");
+        query.bindValue(0,workInfo.checker_id);
+        query.bindValue(1,now.toString());
+        query.bindValue(2,QString::number(data));
+        query.bindValue(3,flag);
+        query.bindValue(4,ele_SD);
+        query.bindValue(5,last_insert_id);
+    }
     if (!query.exec()) {
         QSqlError error = query.lastError();
         qDebug()<<error.databaseText();
-        QMessageBox box(QMessageBox::NoIcon,"mysql","本地数据库local_record插入失败" + error.databaseText(),NULL,NULL);
+        QMessageBox box(QMessageBox::NoIcon,"sqlite3","本地数据库local_record插入失败" + error.databaseText() + QString::number(last_insert_id),NULL,NULL);
         box.exec();
     }
 }

@@ -16,12 +16,13 @@ public:
     database(work_info& workInfo,mytab &tab1);
     ~database();
     int flag = -1;//0员工信息不合法,1您无权访问此机器,2无对应工作信息
-    void insert_data(const double &data,const int &flag,QString &work_time,tabinfo &tabInfo);
+    void insert_data(const double &data,const int &flag,const int &operaton_flag);//
+
     void spc_event(QString type);
 
 private:
     database_plugin plugin = {"127.0.0.1","0","MYDB","root","arm","0"};
-    QSqlDatabase db;
+    QSqlDatabase db,db_data;
     void createdatabase();
     void createtable();
     void read_data(mytab& tab);

@@ -57,6 +57,7 @@ typedef struct work_info{
     QString worker_id;
     QString product_id;
     QString instruction_id;
+    QString checker_id;
     friend QDataStream& operator>>(QDataStream &os,struct work_info &info);
 }work_info;
 
@@ -209,7 +210,7 @@ public:
     QMap<QString,serialport_info>Serial_port;
     QString  auto_zero(double from,double to);//自动补全'0'
     int start_time;//当前tab工作开始时间
-    //int work_start_time;//当天工作开始时间
+    int work_start_time;//当天工作开始时间
 private:
     bool eventFilter(QObject *watched, QEvent *event);
     void trend_warn();//趋势预警处理函数

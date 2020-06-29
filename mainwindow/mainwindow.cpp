@@ -15,7 +15,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(my_client,SIGNAL(insert_data(int)),this,SLOT(insert_data_to_table(int)));
     my_init();
     my_client->label1 = label2;
-
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","local");
+    db.setDatabaseName("word_record");
+    if (!db.open()) {
+        qDebug()<<"open local_sqlite failed!";
+        QMessageBox box(QMessageBox::NoIcon,"sqlite","open filed!",NULL,NULL);
+        box.exec();
+    }
+    query = db.exec();
 
 }
 void MainWindow::insert_data_to_table(int flag) {
@@ -182,7 +189,7 @@ void MainWindow::change() {
 }
 void MainWindow::enlarge_plot(){
     double dCenter = pCustomPlot->xAxis->range().center();
-    ///缩小区间 (放大 plotTables 鼠标向外滚动)
+    //缩小区间 (放大 plotTables 鼠标向外滚动)
     pCustomPlot->xAxis->scaleRange(0.5, dCenter);
 }
 void MainWindow::narrow_plot(){
@@ -190,6 +197,18 @@ void MainWindow::narrow_plot(){
     // 扩大区间 （缩小 plottables 鼠标向内滚动）
     pCustomPlot->xAxis->scaleRange(2.0, dCenter);
     QSharedPointer<QCPAxisTicker>timer = pCustomPlot->xAxis->ticker();
+    query.prepare("select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where  local_work_record.user_id = ? ");
+    query.bindValue(0,workInfo.worker_id.split(",")[1]);
+    if (!query.exec()) {
+        QMessageBox box(QMessageBox::NoIcon,"sqlite","导出数据失败!",NULL,NULL);
+    }
+    qDebug()<<"查询结果："<<query.size();
+    while (query.next()) {
+        qDebug()<<query.value(3).toString();
+        QDateTime time = QDateTime::fromString(query.value(3).toString());
+        QString value = query.value(4).toString();
+        pCustomPlot->graph(my_client->tabnum*2)->addData(time.toTime_t(),value.toDouble());
+    }
     //(QCPAxisTickerDateTime*)pCustomPlot->xAxis->ticker()->setDateTimeFormat("d. MMMM\nyyyy");
 }
 

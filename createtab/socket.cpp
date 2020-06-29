@@ -84,7 +84,7 @@ void socket::read_message() {
 //        emit start_work();//发出信号
 //        break;
     case 1:
-        in>>checker_id;
+        in>>workInfo.checker_id;
         qDebug()<<"signal check_ide";
         emit check_identity();
         break;
@@ -101,6 +101,9 @@ void socket::read_message() {
         in>>workInfo.product_id;
         emit check_info(3);
         break;
+    }
+    if (clientConnection->bytesAvailable() > 0) {
+        emit clientConnection->readyRead();
     }
 }
 void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,QString y,QString x){

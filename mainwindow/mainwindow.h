@@ -6,6 +6,8 @@
 #include <QWidget>
 //#include"qcustomplot.h"
 #include"socketclient.h"
+#include<QtSql/QSqlDatabase>
+#include<QtSql/QSqlQuery>
 
 namespace Ui {
 class MainWindow;
@@ -51,6 +53,7 @@ private:
     my_port my_port1;
     work_info workInfo = {"YG,02294","SB,001073","ZL,20016101180122000101,17121618739,1,1800"};
     QLabel *label2 ;
+    QSqlQuery query;
 };
 
 #endif // MAINWINDOW_H

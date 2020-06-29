@@ -46,6 +46,7 @@ mytab::mytab() {
     color_scheme[5] = Qt::gray;
     color_scheme[6] = Qt::white;
     color_scheme[7] = Qt::blue;
+    work_start_time = 8*3600 + 60*30;
 
 }
 mytab::~mytab(){
