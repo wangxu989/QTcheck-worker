@@ -99,7 +99,6 @@ void mytab::flash_table(int start) {
             }
             this->table[i]->flag[j] = {0,-1,-1,0,0,color_scheme[6],0};
         }
-
         this->table[i]->setHorizontalHeaderLabels(verticalhead);//水平表头
     }
 }

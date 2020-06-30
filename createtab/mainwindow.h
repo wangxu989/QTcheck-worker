@@ -43,7 +43,7 @@ private slots:
     //void on_pushButton_2_clicked();
     void tabchanged(int i);
     void login();
-    void flash(QTime current_time);
+    void flash();
     void prePage();
     void nextPage();
     void check_info(int flag);

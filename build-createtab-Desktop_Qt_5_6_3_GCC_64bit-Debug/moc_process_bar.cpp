@@ -52,10 +52,10 @@ static const uint qt_meta_data_process_bar[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   19,    2, 0x06 /* Public */,
+       1,    0,   19,    2, 0x06 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::QTime,    2,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -66,20 +66,21 @@ void process_bar::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         process_bar *_t = static_cast<process_bar *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->flash_progressBar((*reinterpret_cast< QTime(*)>(_a[1]))); break;
+        case 0: _t->flash_progressBar(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         void **func = reinterpret_cast<void **>(_a[1]);
         {
-            typedef void (process_bar::*_t)(QTime );
+            typedef void (process_bar::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&process_bar::flash_progressBar)) {
                 *result = 0;
                 return;
             }
         }
     }
+    Q_UNUSED(_a);
 }
 
 const QMetaObject process_bar::staticMetaObject = {
@@ -119,9 +120,8 @@ int process_bar::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void process_bar::flash_progressBar(QTime _t1)
+void process_bar::flash_progressBar()
 {
-    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+    QMetaObject::activate(this, &staticMetaObject, 0, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE

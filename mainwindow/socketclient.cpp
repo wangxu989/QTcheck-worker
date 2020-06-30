@@ -230,33 +230,6 @@ void socketclient::readmessage(){
         emit socket->readyRead();
     }
 }
-void socketclient::send_message(int flag,void *info) {
-    QByteArray data;
-    QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_6);
-    switch (flag) {
-    //    case 0:
-    //        out<<quint32(sizeof(flag) + sizeof(info))<<flag<<info;
-    //        break;
-    case 1:
-        out<<quint32(sizeof(flag) + sizeof(QString))<<flag<<*(QString *)info;//审核员
-        break;
-    case 2:
-        out<<quint32(sizeof(flag) + sizeof(QString))<<flag<<*(QString *)info;//员工
-        qDebug()<<*(QString *)info;
-        break;
-    case 3:
-        out<<quint32(sizeof(flag)+sizeof(QString))<<flag<<*(QString *)info;//指令
-        qDebug()<<*(QString *)info;
-        break;
-    case 4:
-        out<<quint32(sizeof(flag)+sizeof(QString))<<flag<<*(QString *)info;//设备
-        qDebug()<<*(QString *)info;
-        break;
-    }
-    socket->write(data);
-    socket->waitForBytesWritten();
-}
 void socketclient::run(){
     //pCustomPlot->graph(0)->data()->clear();
     qDebug()<<"thread start";

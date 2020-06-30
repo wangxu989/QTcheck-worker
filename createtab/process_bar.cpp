@@ -11,7 +11,7 @@ void process_bar::run() {
         QTime current_time = QTime::currentTime();
         hour = current_time.hour();
         minute = current_time.minute();
-        emit flash_progressBar(current_time);
+        emit flash_progressBar();
         //sleep(60 - current_time.second());
         sleep(1);
     }

@@ -87,7 +87,33 @@ public:
     QCustomPlot *pCustomPlot = new QCustomPlot();
     int count = 0;
     volatile bool stop;
-    void send_message(int flag,void *info);
+    template <typename T>
+    void send_message(const int &flag,const T &info) const{
+        QByteArray data;
+        QDataStream out(&data, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_6);
+        switch (flag) {
+        //    case 0:
+        //        out<<quint32(sizeof(flag) + sizeof(info))<<flag<<info;
+        //        break;
+        case 1:
+            out<<quint32(sizeof(flag) + sizeof(T))<<flag<<info;//审核员
+            break;
+        case 2:
+            out<<quint32(sizeof(flag) + sizeof(T))<<flag<<info;//员工
+            qDebug()<<info;
+            break;
+        case 3:
+            out<<quint32(sizeof(flag)+sizeof(T))<<flag<<info;//指令
+            qDebug()<<info;
+            break;
+        case 4:
+            out<<quint32(sizeof(flag)+sizeof(T))<<flag<<info;//设备
+            break;
+        }
+        socket->write(data);
+        socket->waitForBytesWritten();
+    }
     message_worker_evn messageWorkerEnv;
      QLabel *label1;
      int check_flag[3] = {0};

@@ -72,17 +72,17 @@ void MainWindow::my_read() {
         //string_scan.push_back(temp_scan);
         if (my_port1.temp_scan.contains("YG")) {
             workInfo.worker_id = my_port1.temp_scan;
-            my_client->send_message(2,(void *)&my_port1.temp_scan);
+            my_client->send_message(2,my_port1.temp_scan);
             my_client->check_flag[0] = 1;
         }
         else if (my_port1.temp_scan.contains("ZL")){
             workInfo.instruction_id = my_port1.temp_scan;
-            my_client->send_message(3,(void *)&my_port1.temp_scan);
+            my_client->send_message(3,my_port1.temp_scan);
             my_client->check_flag[1] = 1;
         }
         else if (my_port1.temp_scan.contains("SB")) {
             workInfo.product_id = my_port1.temp_scan;
-            my_client->send_message(4,(void *)&my_port1.temp_scan);
+            my_client->send_message(4,my_port1.temp_scan);
             my_client->check_flag[2] = 1;
         }
         //        if ((my_port1.flag[0] == 0||my_port1.flag[1] == 0||my_port1.flag[2] == 0)&&my_port1.check_first(*table_work,*table_worker,*table_product,workInfo)) {
@@ -91,7 +91,7 @@ void MainWindow::my_read() {
         //else {//此时为识别核验员身份
         if (my_port1.temp_scan.contains("YG") && my_client->check_flag[0] == 1 && my_client->check_flag[1] == 1 && my_client->check_flag[2] == 1) {
             qDebug()<<"send 1";
-            my_client->send_message(1,(void*) &my_port1.temp_scan);
+            my_client->send_message(1,my_port1.temp_scan);
         }
         //}
         qDebug()<<my_port1.temp_scan;
@@ -197,7 +197,7 @@ void MainWindow::narrow_plot(){
     // 扩大区间 （缩小 plottables 鼠标向内滚动）
     pCustomPlot->xAxis->scaleRange(2.0, dCenter);
     QSharedPointer<QCPAxisTicker>timer = pCustomPlot->xAxis->ticker();
-    query.prepare("select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where  local_work_record.user_id = ? ");
+    query.prepare("select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where local_work_record.user_id = ? and  ");
     query.bindValue(0,workInfo.worker_id.split(",")[1]);
     if (!query.exec()) {
         QMessageBox box(QMessageBox::NoIcon,"sqlite","导出数据失败!",NULL,NULL);
@@ -214,22 +214,23 @@ void MainWindow::narrow_plot(){
 
 void MainWindow::my_send1() {
     QString temp = "YG,02294";
-    my_client->send_message(2,(void *)&temp);
+    my_client->send_message(2,temp);
     my_client->check_flag[0] = 1;
 }
 
 void MainWindow::my_send2() {
     QString temp = "SB,001073";
-    my_client->send_message(4,(void *)&temp);
+    my_client->send_message(4,temp);
     my_client->check_flag[2] = 1;
 }
 
 void MainWindow::my_send3() {
     QString temp = "ZL,20016101180122000101,17121618739,1,1800";
-    my_client->send_message(3,(void *)&temp);
+    my_client->send_message(3,temp);
     my_client->check_flag[1] = 1;
 }
 void MainWindow::my_send4() {
      QString temp = "YG,02294";
-     my_client->send_message(1,(void*)&temp);
+     my_client->send_message(1,temp);
 }
+

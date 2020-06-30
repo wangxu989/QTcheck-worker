@@ -20,7 +20,7 @@ private:
 private slots:
 
 signals:
-    void flash_progressBar(QTime);
+    void flash_progressBar();
 
 };
 

@@ -135,7 +135,7 @@ void MainWindow::start_work(){
     }
     //表格配置已配置
     pro_bar = new process_bar(this);
-    connect(pro_bar,SIGNAL(flash_progressBar(QTime)),this,SLOT(flash(QTime)));
+    connect(pro_bar,SIGNAL(flash_progressBar()),this,SLOT(flash()));
 
     progress_bar->setRange(0,100);
     pro_bar->start();
@@ -499,7 +499,7 @@ int MainWindow::time_check(int column,int flag) {//检查当前点击时间段�
     }
     return 1;
 }
-void MainWindow::flash(QTime current_time1) {//刷新进度条+工作表
+void MainWindow::flash() {//刷新进度条+工作表
 
     QTime current_time = QTime::currentTime();
     int i = tabnum;
@@ -525,7 +525,7 @@ void MainWindow::flash(QTime current_time1) {//刷新进度条+工作表
     if (tab1.table[i]->flag[temp_j].flash_flag == 0) {//刷新上个时间段
         qDebug()<<"真实值写入";
         for (int f = 0; f < tab1.table.size();f++) {
-            for (int k = 0;k < tab1.table[f]->rowCount() && temp_j == j - 1;k++) {
+            for (int k = 0;k < tab1.table[f]->rowCount();k++) {
                 if (tab1.table[f]->item(k,temp_j)->background() == QBrush(tab1.color_scheme[6])) {//白色
                     tab1.table[f]->item(k,temp_j)->setBackground(QBrush(tab1.color_scheme[5]));//灰色
                 }
@@ -533,10 +533,7 @@ void MainWindow::flash(QTime current_time1) {//刷新进度条+工作表
             tab1.table[f]->val = tab1.table[f]->temp_val;//将上个时间段的真实值写入
             tab1.table[f]->trend_val = tab1.table[f]->temp_trend_val;//将上个时间段的真实趋势值写入
             tab1.table[f]->trend_plus_minus = tab1.table[f]->temp_trend_plus_minus;//将上个时间段的真实趋势标识写入
-            if (temp_j != j - 1) {
-                 tab1.table[f]->flag[temp_j].flash_flag = -1;
-            }
-            else {
+            if (temp_j == j - 1) {
                 tab1.table[f]->flag[temp_j].flash_flag = 1;
             }
         }

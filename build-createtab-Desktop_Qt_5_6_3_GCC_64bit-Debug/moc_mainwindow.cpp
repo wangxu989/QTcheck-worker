@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[20];
-    char stringdata0[196];
+    QByteArrayData data[19];
+    char stringdata0[183];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -44,19 +44,17 @@ QT_MOC_LITERAL(11, 125, 10), // "tabchanged"
 QT_MOC_LITERAL(12, 136, 1), // "i"
 QT_MOC_LITERAL(13, 138, 5), // "login"
 QT_MOC_LITERAL(14, 144, 5), // "flash"
-QT_MOC_LITERAL(15, 150, 12), // "current_time"
-QT_MOC_LITERAL(16, 163, 7), // "prePage"
-QT_MOC_LITERAL(17, 171, 8), // "nextPage"
-QT_MOC_LITERAL(18, 180, 10), // "check_info"
-QT_MOC_LITERAL(19, 191, 4) // "flag"
+QT_MOC_LITERAL(15, 150, 7), // "prePage"
+QT_MOC_LITERAL(16, 158, 8), // "nextPage"
+QT_MOC_LITERAL(17, 167, 10), // "check_info"
+QT_MOC_LITERAL(18, 178, 4) // "flag"
 
     },
     "MainWindow\0onClicked\0\0row\0column\0"
     "pushButton_exit\0pushButtonclickedej\0"
     "pushButton_finish\0ejClicked\0pushform_button\0"
     "start_after\0tabchanged\0i\0login\0flash\0"
-    "current_time\0prePage\0nextPage\0check_info\0"
-    "flag"
+    "prePage\0nextPage\0check_info\0flag"
 };
 #undef QT_MOC_LITERAL
 
@@ -83,10 +81,10 @@ static const uint qt_meta_data_MainWindow[] = {
       10,    0,   93,    2, 0x0a /* Public */,
       11,    1,   94,    2, 0x08 /* Private */,
       13,    0,   97,    2, 0x08 /* Private */,
-      14,    1,   98,    2, 0x08 /* Private */,
-      16,    0,  101,    2, 0x08 /* Private */,
-      17,    0,  102,    2, 0x08 /* Private */,
-      18,    1,  103,    2, 0x08 /* Private */,
+      14,    0,   98,    2, 0x08 /* Private */,
+      15,    0,   99,    2, 0x08 /* Private */,
+      16,    0,  100,    2, 0x08 /* Private */,
+      17,    1,  101,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    3,    4,
@@ -98,10 +96,10 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,   12,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QTime,   15,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   19,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   18,
 
        0        // eod
 };
@@ -121,7 +119,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 6: _t->start_after(); break;
         case 7: _t->tabchanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 8: _t->login(); break;
-        case 9: _t->flash((*reinterpret_cast< QTime(*)>(_a[1]))); break;
+        case 9: _t->flash(); break;
         case 10: _t->prePage(); break;
         case 11: _t->nextPage(); break;
         case 12: _t->check_info((*reinterpret_cast< int(*)>(_a[1]))); break;
