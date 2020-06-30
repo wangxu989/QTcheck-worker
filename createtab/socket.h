@@ -12,7 +12,7 @@ class socket:public QObject
 public:
     ~socket();
     socket();
-    void sendmessage(int flag,void *content = NULL,const int num = 0,int column = 0,int user_ide = 0,const QString y = "",const QString x = "");
+    void sendmessage(int flag,void *content = NULL,const int num = 0,int column = 0,int user_ide = 0,const QString y = "",const QString x = "")const;
     infomation *info;
     QVector<tabinfo> *createinfo;
     int rule;//0为传createinfo和info,1传tab切换信息,2传point
@@ -27,7 +27,7 @@ public slots:
     void my_connection();
     void delete_connect();
     void sendpoit();
-    void displayError(QAbstractSocket::SocketError);
+    void displayError(QAbstractSocket::SocketError)const ;
 private:
     QTcpServer *server;
     //QLocalServer *server;

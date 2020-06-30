@@ -106,7 +106,7 @@ void socket::read_message() {
         emit clientConnection->readyRead();
     }
 }
-void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,QString y,QString x){
+void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,QString y,QString x)const {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_6);
@@ -191,6 +191,6 @@ void socket::delete_connect() {
 void socket::sendpoit() {
     //clientConnection->write();
 }
-void socket::displayError(QAbstractSocket::SocketError) {
+void socket::displayError(QAbstractSocket::SocketError) const {
 
 }
