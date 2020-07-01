@@ -8,7 +8,6 @@
 #include"socketclient.h"
 #include<QtSql/QSqlDatabase>
 #include<QtSql/QSqlQuery>
-
 namespace Ui {
 class MainWindow;
 }
@@ -21,14 +20,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     virtual void draw();
-    QQueue<double> *x;
-    QQueue<double> *y;
-    volatile int tabnum;
-    QCustomPlot *pCustomPlot;
-    volatile bool stopped;
-    my_tablewidget *table_work,*table_worker,*table_product;
-    QPushButton *button1;
-    void change();
     //void initpcustomplot(int num);
 
 private slots:
@@ -54,6 +45,16 @@ private:
     work_info workInfo = {"YG,02294","SB,001073","ZL,20016101180122000101,17121618739,1,1800"};
     QLabel *label2 ;
     QSqlQuery query;
+    QQueue<double> *x;
+    QQueue<double> *y;
+    volatile int tabnum;
+    QCustomPlot *pCustomPlot;
+    volatile bool stopped;
+    my_tablewidget *table_work,*table_worker,*table_product;
+    QPushButton *button1;
+    void change();
+    QString set_range();
+    QStack<QVector<uint>> plot_narrow;
 };
 
 #endif // MAINWINDOW_H

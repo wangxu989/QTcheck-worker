@@ -30,14 +30,16 @@ QDataStream& operator<<(QDataStream &os,const struct work_info &info) {
     return os;
 }
 QDataStream& operator>>(QDataStream &os,infomation &a) {
-    os>>a.id;
-    os>>a.value0;
-    os>>a.value1;
-    os>>a.value2;
-    os>>a.value3;
-    os>>a.value4;
-    os>>a.value5;
-    os>>a.value6;
+    os>>a.product_no;
+    os>>a.warn_thr;
+    os>>a.chk_warn_thr;
+    os>>a.detect_mode;
+    os>>a.time_interval;
+    os>>a.cycle_time;
+    os>>a.sample_cnt;
+    os>>a.disp_element_cnt;
+    os>>a.trend_warn_win;
+    os>>a.lock_time;
     return os;
 }
 QDataStream& operator>>(QDataStream &os,tabinfo &a) {
@@ -49,6 +51,7 @@ QDataStream& operator>>(QDataStream &os,tabinfo &a) {
     os>>a.ejjddw;
     os>>a.chk_warn_thr;
     os>>a.warn_thr;
+    os>>a.char_desc;
     return os;
 }
 socketclient::socketclient()
@@ -113,11 +116,13 @@ void socketclient::readmessage(){
         createinfo.resize(size);
         x.resize(size*2);
         y.resize(size*2);
+        x_range.resize(size);
         for (i =0;i < size;i++) {
-            x[i*2].resize(info.value6.toInt());
-            y[i*2].resize(info.value6.toInt());
-            x[i*2+1].resize(info.value6.toInt());
-            y[i*2+1].resize(info.value6.toInt());
+            x[i*2].resize(info.disp_element_cnt.toInt());
+            y[i*2].resize(info.disp_element_cnt.toInt());
+            x[i*2+1].resize(info.disp_element_cnt.toInt());
+            y[i*2+1].resize(info.disp_element_cnt.toInt());
+            x_range[i] = temp_xr(time.toTime_t(),time.toTime_t() + 3600*24,0);
             in>>createinfo[i];
             initpcustomplot(i*2);
             initpcustomplot(i*2+1);
@@ -147,6 +152,7 @@ void socketclient::readmessage(){
 //            pCustomPlot->setBackground(plotGradient);
         }
         qDebug()<<pCustomPlot->graphCount()<<" "<<i;
+        pCustomPlot->xAxis->setRange(x_range[tabnum].start,x_range[tabnum].end);
         pCustomPlot->yAxis->setRange(createinfo[i].normvalue + createinfo[i].fgc - createinfo[i].jddw,createinfo[i].normvalue + createinfo[i].zgc + createinfo[i].jddw);//y轴范围
         pCustomPlot->yAxis->ticker()->setTickCount((createinfo[i].zgc - createinfo[i].fgc)/createinfo[i].jddw + 1 + 1);
         //pCustomPlot->yAxis->
@@ -261,7 +267,7 @@ void socketclient::initpcustomplot(int num){//初始化plot
     pCustomPlot->yAxis->setLabel("误差");
     QDateTime dateTime = QDateTime::currentDateTime();
     QString s = dateTime.toString().split(" ")[0] + " " + dateTime.toString().split(" ")[1] + " " + dateTime.toString().split(" ")[2] + " " + "08:30:00" + " " + dateTime.toString().split(" ")[4];
-    QDateTime time = QDateTime::fromString(s);
+    time = QDateTime::fromString(s);
     double start = time.toTime_t();
     int showtime = 60*60*24;
     //pCustomPlot->yAxis->setRange(min,max);//y轴范围
@@ -271,7 +277,7 @@ void socketclient::initpcustomplot(int num){//初始化plot
     //设置刻度
 
 
-    //timer->setTickCount(8);
+    timer->setTickCount(info.disp_element_cnt.toInt());
 
 
     pCustomPlot->xAxis2->setTicks(false);

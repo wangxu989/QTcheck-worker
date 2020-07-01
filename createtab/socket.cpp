@@ -10,6 +10,8 @@ QDataStream& operator<<(QDataStream &os,infomation &a) {
     os<<a.cycle_time;
     os<<a.sample_cnt;
     os<<a.disp_element_cnt;
+    os<<a.trend_warn_win;
+    os<<a.lock_time;
     return os;
 }
 QDataStream& operator<<(QDataStream &os,tabinfo &a) {
@@ -21,6 +23,7 @@ QDataStream& operator<<(QDataStream &os,tabinfo &a) {
     os<<a.ejjddw;
     os<<a.chk_warn_thr;
     os<<a.warn_thr;
+    os<<a.char_desc;
     return os;
 }
 socket::~socket(){

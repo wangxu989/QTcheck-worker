@@ -106,9 +106,13 @@ void MainWindow::my_init() {
     Vlayout = new QVBoxLayout();//存放工作信息
     Hlayout = new QHBoxLayout();//总表
     H_plot_layout = new QHBoxLayout();//存放图表和按钮
-    narrow = new QPushButton("缩小");
-    enlarge = new QPushButton("放大");
+    narrow = new QPushButton();
+    enlarge = new QPushButton();
+    enlarge->setIcon(QIcon(":/img/减号.png"));
+    narrow->setIcon(QIcon(":/img/放大 (3).png"));
+    narrow->setIconSize(QSize(50,50));
     narrow->setFixedSize(50,50);
+    enlarge->setIconSize(QSize(50,50));
     enlarge->setFixedSize(50,50);
     V_button = new QVBoxLayout();//存放按钮
     table_work = new my_tablewidget(6,2,"工作信息");
@@ -188,27 +192,80 @@ void MainWindow::change() {
 
 }
 void MainWindow::enlarge_plot(){
-    double dCenter = pCustomPlot->xAxis->range().center();
+    if (plot_narrow.isEmpty()) {
+        return;
+    }
+    my_client->x_range[my_client->tabnum].narrow--;
+    QVector<uint> &temp_large = plot_narrow.top();
+    foreach (uint x, temp_large) {
+        pCustomPlot->graph((my_client->tabnum)*2)->data()->remove(x);
+    }
+    plot_narrow.pop();
+    //double dCenter = pCustomPlot->xAxis->range().center();
     //缩小区间 (放大 plotTables 鼠标向外滚动)
-    pCustomPlot->xAxis->scaleRange(0.5, dCenter);
+    //pCustomPlot->xAxis->scaleRange(0.5, dCenter);
+    set_range();
+    pCustomPlot->replot(QCustomPlot::rpQueuedReplot);
+}
+QString MainWindow::set_range(){
+    uint start = my_client->time.toTime_t();
+    uint com_s = my_client->time.toTime_t();
+    QString temp_s("");
+    switch( my_client->x_range[my_client->tabnum].narrow) {
+    case 1://two days
+        start =start - 3600*48;
+        temp_s = "and local_measure_data.measure_time > " + QString::number(start) + " and local_measure_data.measure_time < " + QString::number(com_s + 3600*24);
+        break;
+    case 2://four daysw
+        start =start -  3600*24*4;
+        temp_s = "and local_measure_data.measure_time > " + QString::number(start) + " and local_measure_data.measure_time < " + QString::number(com_s - 3600*48);
+        break;
+    case 3://eight days
+        start =start - 3600*24*8;
+        temp_s = "and local_measure_data.measure_time > " + QString::number(start) + " and local_measure_data.measure_time < " + QString::number(com_s - 3600*24*4);
+        break;
+    case 4:// one month
+        start =start - 3600*24*30;
+        temp_s = "and local_measure_data.measure_time > " + QString::number(start) + " and local_measure_data.measure_time < " + QString::number(com_s - 3600*24*8);
+        break;
+    case 5://one year
+        start =start - 3600*24*365;
+        temp_s = "and local_measure_data.measure_time > " + QString::number(start) + " and local_measure_data.measure_time < " + QString::number(com_s - 3600*24*30);
+        break;
+    }
+    pCustomPlot->xAxis->setRange(start,my_client->time.toTime_t() + 3600*24);
+    my_client->x_range[my_client->tabnum].start = start;
+    my_client->x_range[my_client->tabnum].end = my_client->time.toTime_t() + 3600*24;
+    return temp_s;
 }
 void MainWindow::narrow_plot(){
-    double dCenter = pCustomPlot->xAxis->range().center();
+    if (my_client->x_range[my_client->tabnum].narrow >= 5) {
+        return;
+    }
+    my_client->x_range[my_client->tabnum].narrow++;
+    //double dCenter = pCustomPlot->xAxis->range().center();
     // 扩大区间 （缩小 plottables 鼠标向内滚动）
-    pCustomPlot->xAxis->scaleRange(2.0, dCenter);
-    QSharedPointer<QCPAxisTicker>timer = pCustomPlot->xAxis->ticker();
-    query.prepare("select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where local_work_record.user_id = ? and  ");
+    QString temp_s = set_range();
+    //QSharedPointer<QCPAxisTicker>timer = pCustomPlot->xAxis->ticker();
+    query.prepare("select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where local_work_record.user_id = ? "
+                  "and local_work_record.produce_id = ? and local_measure_data.char_id = ? " + temp_s);
     query.bindValue(0,workInfo.worker_id.split(",")[1]);
+    query.bindValue(1,workInfo.instruction_id.split(",")[1]);
+    query.bindValue(2,my_client->createinfo[my_client->tabnum].featureid);
     if (!query.exec()) {
         QMessageBox box(QMessageBox::NoIcon,"sqlite","导出数据失败!",NULL,NULL);
     }
     qDebug()<<"查询结果："<<query.size();
+    QVector<uint>temp_narrow;
     while (query.next()) {
         qDebug()<<query.value(3).toString();
-        QDateTime time = QDateTime::fromString(query.value(3).toString());
-        QString value = query.value(4).toString();
-        pCustomPlot->graph(my_client->tabnum*2)->addData(time.toTime_t(),value.toDouble());
+        uint time = query.value(3).toUInt();
+        double value = query.value(4).toDouble();
+        pCustomPlot->graph(my_client->tabnum*2)->addData(time,value);
+        temp_narrow.push_back(time);
     }
+    plot_narrow.push(temp_narrow);
+    pCustomPlot->replot(QCustomPlot::rpQueuedReplot);
     //(QCPAxisTickerDateTime*)pCustomPlot->xAxis->ticker()->setDateTimeFormat("d. MMMM\nyyyy");
 }
 

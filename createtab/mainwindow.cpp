@@ -38,8 +38,17 @@ void MainWindow::draw_init() {
     tempw->setLayout(templayout);
 
 
-    button_quit = new QPushButton("退出");
-    button_ret = new QPushButton("返回");
+    button_quit = new QPushButton();
+    button_quit->setIcon(QIcon(":/new/prefix1/img/返回 (1).png"));
+    button_quit->setIconSize(QSize(50,50));
+    button_quit->setFixedSize(50,50);
+
+
+    button_ret = new QPushButton();
+    button_ret->setIcon(QIcon(":/new/prefix1/img/退出.png"));
+    button_ret->setFixedSize(50,50);
+      button_ret->setIconSize(QSize(50,50));
+
     //button_quit->setStyleSheet("qproperty-icon:url(:/new/prefix1/img/退出.png)");
     //button_ret->setStyleSheet("qproperty-icon:url(:/new/prefix1/img/返回.png)");
     connect(button_ret,SIGNAL(clicked()),this,SLOT(pushButton_finish()));

@@ -195,13 +195,13 @@ void database::insert_record() {
                   "values(?,?,?,?,?,?,?,?)");
     query.bindValue(0,workInfo.worker_id.split(",")[1].mid(0,6));
     QDateTime time = QDateTime::currentDateTime();
-    QString n = time.toUTC().toString();
-    qDebug()<<n;
-    query.bindValue(1,n);
+    //QString n = time.toUTC().toString();
+    //qDebug()<<n;
+    query.bindValue(1,QString::number(time.toTime_t()));
     query.bindValue(2,"");
     query.bindValue(3,'0');
-    query.bindValue(4,workInfo.instruction_id.split(",")[1].mid(0,10));
-    query.bindValue(5,workInfo.product_id.split(",")[1].mid(0,10));
+    query.bindValue(4,workInfo.instruction_id.split(",")[1]);
+    query.bindValue(5,workInfo.product_id.split(",")[1]);
     query.bindValue(6,tab.messageWorkerEvn.localEnv.workstation);
     query.bindValue(7,tab.messageWorkerEvn.localEnv.gauge_no);
     if (!query.exec()) {
@@ -220,7 +220,7 @@ void database::insert_data(const double &data,const  int &flag,const int &operat
                       "checker,chk_time,chk_value,meas_rlt_id,chk_rlt,char_id,element_SD)"
                       "values(?,?,?,?,?,?,?,?,?,?,?)");
         query.bindValue(0,last_insert_id);
-        query.bindValue(2,now.toString());
+        query.bindValue(2,QString::number(now.toTime_t()));
         query.bindValue(1,tab.messageWorkerEvn.localEnv.gauge_no);
         query.bindValue(3,QString::number(data));
         query.bindValue(4,"");
@@ -233,7 +233,7 @@ void database::insert_data(const double &data,const  int &flag,const int &operat
     }
     else if (operation_flag == 1) {//操作员修改
         query.prepare("update local_measure_data set measure_time = ?,measure_value = ?,meas_rlt_id = ? where element_SD = ? and work_id = ?");
-        query.bindValue(0,now.toString());
+        query.bindValue(0,QString::number(now.toTime_t()));
         query.bindValue(1,QString::number(data));
         query.bindValue(2,flag);
         query.bindValue(3,ele_SD);
@@ -242,7 +242,7 @@ void database::insert_data(const double &data,const  int &flag,const int &operat
     else if (operation_flag == 2) {//核验员操作,和修改
         query.prepare("update local_measure_data set checker = ?,chk_time = ?,chk_value = ?,chk_rlt = ? where element_SD = ? and work_id = ?");
         query.bindValue(0,workInfo.checker_id);
-        query.bindValue(1,now.toString());
+        query.bindValue(1,QString::number(now.toTime_t()));
         query.bindValue(2,QString::number(data));
         query.bindValue(3,flag);
         query.bindValue(4,ele_SD);
@@ -260,7 +260,7 @@ void database::spc_event(QString type) {
     query.prepare("insert into spc_event (client_id,event_time,event_type,user_id,equip_id,work_id)"
                   "values(?,?,?,?,?,?)");
     query.bindValue(0,mac_address);
-    query.bindValue(1,now.toString());
+    query.bindValue(1,QString::number(now.toTime_t()));
     query.bindValue(2,type);
     query.bindValue(3,workInfo.worker_id);
     query.bindValue(4,workInfo.product_id);
