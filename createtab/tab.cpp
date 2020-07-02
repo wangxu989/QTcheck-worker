@@ -263,8 +263,8 @@ int mytab::readxml(const work_info &workInfo,int flag) {
                             temp.fgc = node.toElement().attribute("n_tolerance").toDouble();
                             temp.jddw = node.toElement().attribute("pre_unit").toDouble();
                             temp.ejjddw = node.toElement().attribute("snd_pre_unit").toDouble();
-                            temp.chk_warn_thr = info.chk_warn_thr.toInt();
-                            temp.warn_thr = info.warn_thr.toInt();
+                            //temp.chk_warn_thr = info.chk_warn_thr.toInt();
+                            //temp.warn_thr = info.warn_thr.toInt();
                             if (flag == 0) {
                                 createinfo.push_back(temp);//
                                 tabadd(temp,info);

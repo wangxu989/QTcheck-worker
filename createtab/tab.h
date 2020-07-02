@@ -111,8 +111,8 @@ struct tabinfo{
     double fgc;//负公差
     double jddw;//精度单位
     double ejjddw;//二级精度单位
-    int chk_warn_thr;//二级预警值
-    int warn_thr;//一级预警值
+    //int chk_warn_thr;//二级预警值
+    //int warn_thr;//一级预警值
 };
 class my_tablewidget:public QTableWidget {
 public:

@@ -260,9 +260,14 @@ void database::spc_event(QString type) {
     query.prepare("insert into spc_event (client_id,event_time,event_type,user_id,equip_id,work_id)"
                   "values(?,?,?,?,?,?)");
     query.bindValue(0,mac_address);
-    query.bindValue(1,QString::number(now.toTime_t()));
+    query.bindValue(1,now.toString("yyyyMMddhhmmss"));
     query.bindValue(2,type);
-    query.bindValue(3,workInfo.worker_id);
-    query.bindValue(4,workInfo.product_id);
-    query.bindValue(5,workInfo.instruction_id);
+    query.bindValue(3,workInfo.worker_id.split(",")[1]);
+    query.bindValue(4,workInfo.product_id.split(",")[1]);
+    query.bindValue(5,workInfo.instruction_id.split(",")[1]);
+    if (!query.exec()) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql","上报失败 " + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
 }

@@ -49,8 +49,8 @@ QDataStream& operator>>(QDataStream &os,tabinfo &a) {
     os>>a.fgc;
     os>>a.jddw;
     os>>a.ejjddw;
-    os>>a.chk_warn_thr;
-    os>>a.warn_thr;
+    //os>>a.chk_warn_thr;
+    //os>>a.warn_thr;
     os>>a.char_desc;
     return os;
 }

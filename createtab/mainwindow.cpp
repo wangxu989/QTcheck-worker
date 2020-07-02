@@ -11,6 +11,7 @@ QColor worker = Qt::blue,checker = Qt::yellow,temp_color = worker;
 static socket *my_socket;
 static int people_flag = 1;
 static int modify = 0;
+int mode;
 void MainWindow::check_identity() {//接收核验成功的信号
     //qDebug()<<"check identity";
     result = QMessageBox::Yes;
@@ -25,6 +26,24 @@ void MainWindow::login() {
     QStringList argument;
     argument<<"-platform";//<<"eglfs"
     //start_work();
+//    mode = tab1.nekwork_or_local();
+//    qDebug()<<"mode:"<<mode;
+//    switch(mode) {
+//    case 0://单机版
+//        qDebug()<<"单机版";
+//        if (tab1.readxml(my_socket->workInfo) < 0) {//人员信息不匹配
+//            return;
+//        }
+//        break;
+//    case 1://网络版
+//        qDebug()<<"网络版";
+//        data_server = new database(tab1.net_plugin,tab1,my_socket->workInfo);
+//        if (data_server->flag > 0) {
+//            //0员工信息不合法,1您无权访问此机器,2无对应工作信息
+//            return;
+//        }
+//        break;
+//    }
 }
 void MainWindow::draw_init() {
     buttonej = new QPushButton("返回");
@@ -110,13 +129,14 @@ void MainWindow::start_work(){
     qDebug()<<my_socket->workInfo.product_id<<"product_id";
     qDebug()<<my_socket->workInfo.worker_id<<"worker_id";
     qDebug()<<my_socket->workInfo.instruction_id<<"instruction_id";
-    switch(tab1.nekwork_or_local()) {
+    mode = tab1.nekwork_or_local();
+    qDebug()<<"mode:"<<mode;
+    switch(mode) {
     case 0://单机版
         qDebug()<<"单机版";
         if (tab1.readxml(my_socket->workInfo) < 0) {//人员信息不匹配
             return;
         }
-        mode = 0;
         break;
     case 1://网络版
         qDebug()<<"网络版";
@@ -125,7 +145,6 @@ void MainWindow::start_work(){
             //0员工信息不合法,1您无权访问此机器,2无对应工作信息
             return;
         }
-        mode = 1;
         break;
     }
     draw_init();
@@ -341,6 +360,7 @@ void MainWindow::ejClicked(int row,int column) {//二级表格点击信号槽函
 }
 int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队列写入值
     qDebug()<<QDateTime::currentDateTime().toString();
+    //qDebug()tab1.createinfo[i].chk_warn_thr
     if (people_flag == 1) {//员工标识
         int flag = tab1.table[i]->flag[column].worker_row_flag;
         if (flag != -1) {
@@ -407,7 +427,7 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
             }
             flag_rlt = 2;
         }
-        else if (row - 0 <= tab1.createinfo[i].warn_thr || tab1.table[i]->rowCount() - 1 - row <= tab1.createinfo[i].warn_thr){
+        else if (row - 0 <= tab1.info.warn_thr.toInt() || tab1.table[i]->rowCount() - 1 - row <= tab1.info.warn_thr.toInt()){
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[1]));
             if (mode&&data_server) {
                 data_server->spc_event("1001");//预警
@@ -464,8 +484,12 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
             tab1.table[i]->flag[column].temp_worker_color =  tab1.table[i]->item(row,column)->background().color();
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[7]));
         }
-        else if (tab1.table[i]->flag[mycolumn].worker_row_flag - myrow <= tab1.createinfo[i].chk_warn_thr &&  myrow - tab1.table[i]->flag[mycolumn].worker_row_flag <= tab1.createinfo[i].chk_warn_thr) {
+        else if (tab1.table[i]->flag[mycolumn].worker_row_flag - myrow <= tab1.info.chk_warn_thr.toInt() &&  myrow - tab1.table[i]->flag[mycolumn].worker_row_flag <= tab1.info.chk_warn_thr.toInt()) {
             //在预警值内
+            qDebug()<<"核验预警值内";
+            qDebug()<<tab1.info.chk_warn_thr;
+            qDebug()<<tab1.info.chk_warn_thr<<"相减："<<tab1.table[i]->flag[mycolumn].worker_row_flag - myrow ;
+            qDebug()<<tab1.info.chk_warn_thr<<"相减："<<-tab1.table[i]->flag[mycolumn].worker_row_flag + myrow ;
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[3]));
             if (mode&&data_server) {
                 data_server->spc_event("1002");//巡检预警
@@ -545,6 +569,9 @@ void MainWindow::flash() {//刷新进度条+工作表
             if (temp_j == j - 1) {
                 tab1.table[f]->flag[temp_j].flash_flag = 1;
             }
+            else {
+                tab1.table[f]->flag[temp_j].flash_flag  = -1;
+            }
         }
     }
     if (tab1.table[i]->flag[j].recover_flag == 0) {//将本时间段恢复可编辑色
@@ -593,7 +620,7 @@ void MainWindow::flash() {//刷新进度条+工作表
 
 }
 void MainWindow::check_info(int flag) {
-    qDebug()<<"check_info"<<flag;
+    qDebug()<<"check_info"<<flag<<"mode :"<<mode;
     if (start_flag != 0) {
         return;
     }
