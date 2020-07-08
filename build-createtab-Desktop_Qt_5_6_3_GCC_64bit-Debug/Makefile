@@ -2011,6 +2011,7 @@ dialog.o: ../createtab/dialog.cpp ../createtab/dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QSpacerItem \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QPixmap \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QImage
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o ../createtab/dialog.cpp

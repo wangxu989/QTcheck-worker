@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<GeneralConfig>
+    <!--工作模式：0,单机模式(配置文件获取配置)， 1,网络模式（数据库配置表中获取配置）-->
+	<WorkMode mode="0"/>
+	
+	
+	<DatabaseConnect>
+		<!--远程服务数据库(MySQL)配置Begin-->
+		<RemoteDatabase active="1" hostName="112.124.23.36" port="1521" databaseName="ring" userName="root" password="212124"/>
+		<!--远程数据库oracle配置End-->
+	</DatabaseConnect>
+
+
+    <SerialPorts>
+    	<!--device 使用串口的设备-->
+		<!--portName 串口名称-->
+		<!--baudRate 串口波特率-->
+		<!--dataBits 数据位-->
+		<!--stopBits 停止位-->
+		<!--parity 奇偶校验-->
+		<!--writeBufferSize 写缓冲区大小-->
+		<!--readBufferSize 读缓冲区大小-->
+        <SerialPort device="Scanner" portName="ttymxc3" baudRate="9600" dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
+		<SerialPort device="Printer" portName="ttymxc0" baudRate="19200" dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
+    </SerialPorts>
+	
+</GeneralConfig>

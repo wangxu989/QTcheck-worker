@@ -5,6 +5,7 @@
 #include<QDebug>
 #include<QVector>
 #include<QMessageBox>
+#include<QScrollBar>
 QDataStream& operator << (QDataStream &os,worker_info &workInfo) {
     os<<workInfo.name;
     os<<workInfo.role;
@@ -53,6 +54,14 @@ mytab::~mytab(){
     //    for (int i = 0;i < table.size();i++) {//释放所有tablewidget空间
     //        delete table[i];
     //    }
+}
+void mytab::showEvent(QShowEvent *) {
+    int width = this->width();
+    int tabcnt = this->count();
+
+    int e_width = width/tabcnt;
+    this->setStyleSheet("QTabBar::scroller {width:0}");
+    this->setStyleSheet(QString("QTabBar::tab{width:%1px;}").arg(e_width));
 }
 
 bool mytab::eventFilter(QObject *o, QEvent *e) {
@@ -128,7 +137,9 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     int minute = 30;
     int second = 0;
     int start = hour*3600 + minute*60 + second;
-    QWidget *widget = new QWidget();
+
+    QWidget *widget = new QWidget();//泄漏了!!!!!
+
     my_tablewidget *t = new my_tablewidget();
     t->gap = gap;//   间隔
     //t->info.gap = gap;//该表格的时间间隔
@@ -218,7 +229,7 @@ int mytab::readxml(const work_info &workInfo,int flag) {
     //    int minute = currenttime.minute();
     //    int second = currenttime.second();
     start_time = hour*3600 + minute*60 + second;//初始化工作时间
-    QFile file("./LocalSchemes.xml");
+    QFile file("./data/LocalSchemes.xml");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug()<<"open failed !!!"<<endl;
         return -1;
@@ -282,7 +293,7 @@ int mytab::readxml(const work_info &workInfo,int flag) {
 }
 
 int mytab::read_local_authuser(const work_info &workInfo) {
-    QFile file("./LocalAuthUser.xml");
+    QFile file("./data/LocalAuthUser.xml");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug()<<"open failed !!!"<<endl;
         return -1;
@@ -317,7 +328,7 @@ int mytab::read_local_authuser(const work_info &workInfo) {
     return 0;
 }
 int mytab::read_local_env(const work_info &workInfo,int flag) {
-    QFile file("./LocalEnv.xml");
+    QFile file("./data/LocalEnv.xml");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug()<<"open failed !!!"<<endl;
         return -1;
@@ -414,7 +425,7 @@ int mytab::read_local_env(const work_info &workInfo,int flag) {
 }
 
 int  mytab::nekwork_or_local() {//0为网络版1为本地版
-    QFile file("./GeneralConfig.xml");
+    QFile file("./data/GeneralConfig.xml");
     if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox messageBox;
         messageBox.setText("open ./GeneralConfig.xml failed !");

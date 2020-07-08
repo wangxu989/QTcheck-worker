@@ -2,10 +2,7 @@
     <qresource prefix="/">
         <file>img/员工.png</file>
         <file>img/扫码.png</file>
-        <file>../build-mainwindow-Desktop_Qt_5_6_3_GCC_64bit-Debug/img/放大 (1).png</file>
         <file>img/放大 (3).png</file>
-        <file>img/缩小 (3).png</file>
-        <file>img/缩小-1.png</file>
         <file>img/减号.png</file>
     </qresource>
 </RCC>

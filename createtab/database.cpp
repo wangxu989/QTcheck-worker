@@ -12,7 +12,7 @@ database::database(database_plugin& net_plugin,mytab& tab1,work_info& Info):plug
 database::database(work_info& Info,mytab &tab1):workInfo(Info),tab(tab1)//保存本地工作信息
 {
     db = QSqlDatabase::addDatabase("QSQLITE","local");
-    db.setDatabaseName("word_record");
+    db.setDatabaseName("./data/work_record");
     if (!db.open()) {
         QMessageBox box(QMessageBox::NoIcon,"sqlite","open filed!",NULL,NULL);
         box.exec();

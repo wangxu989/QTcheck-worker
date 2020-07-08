@@ -47,6 +47,9 @@ private slots:
     void prePage();
     void nextPage();
     void check_info(int flag);
+    void plot_enlarge();
+    void plot_narrow();
+    void in_keyboard(const int& row,const int& column);
 private:
     Dialog *dialog;
     QMessageBox *messageBox;
@@ -81,6 +84,15 @@ private:
      int pagevalue = 8;
      int ret_checkout[3] = {0};
      int start_flag = 0;
+     //缩放
+     QPushButton *narrow;
+     QPushButton *enlarge;
+     //数字键盘交互
+     QWidget *keyboard;
+     QLabel *display;
+     my_tablewidget *figure;
+     QVBoxLayout *fig_key;
+
 
 };
 #endif // MAINWINDOW_H

@@ -136,6 +136,8 @@ public:
      volatile int tabnum = 0;
 signals:
     void insert_data(int);
+    void plot_enlarge();
+    void plot_narrow();
 protected:
     void run();
 public slots:

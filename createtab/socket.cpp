@@ -33,7 +33,7 @@ socket::~socket(){
 socket::socket()
 {
     server = new QTcpServer(this);
-    QFile file("./ip");
+    QFile file("./data/ip");
     file.open(QIODevice::ReadOnly);
     QString ip = file.read(15);
     qDebug()<<ip;
@@ -178,6 +178,12 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
         out<<quint32(sizeof(flag));
         out<<flag;
         break;
+     case 11://放大
+        out<<quint32(sizeof(flag));
+        out<<flag;
+     case 12://缩小
+        out<<quint32(sizeof(flag));
+        out<<flag;
     }
     //    data.resize(sizeof(*info));
     //    memcpy(data.data(),info,sizeof(*info));

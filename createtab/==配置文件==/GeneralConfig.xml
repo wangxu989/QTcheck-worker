@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="gb2312" ?>
-<GeneralConfig>
-	<!--远程数据库oracle配置Begin-->
-	<RemoteDatabase active="0" hostName="192.168.0.8" port="1521" databaseName="orcl" userName="aaa" password="123456"/>
-	<!--远程数据库oracle配置End-->
-</GeneralConfig>

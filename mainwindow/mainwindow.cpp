@@ -13,10 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
     pCustomPlot = my_client->pCustomPlot;
     connect(my_port1.port1,SIGNAL(readyRead()),this,SLOT(my_read()));//扫码枪串口
     connect(my_client,SIGNAL(insert_data(int)),this,SLOT(insert_data_to_table(int)));
+     connect(my_client,SIGNAL(plot_enlarge()),this,SLOT(enlarge_plot()));
+    connect(my_client,SIGNAL(plot_narrow()),this,SLOT(narrow_plot()));
     my_init();
     my_client->label1 = label2;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","local");
-    db.setDatabaseName("word_record");
+    db.setDatabaseName("./data/work_record");
     if (!db.open()) {
         qDebug()<<"open local_sqlite failed!";
         QMessageBox box(QMessageBox::NoIcon,"sqlite","open filed!",NULL,NULL);
@@ -28,12 +30,12 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::insert_data_to_table(int flag) {
     if (flag == 1) {
         qDebug()<<"worker info"<<workInfo.worker_id;
-        table_worker->setSpan(1,2,2,2);
-        QPixmap pix(":/img/员工.png");  //图片路径
-        QLabel *label1 = new QLabel();
-        label1->setScaledContents(true);//设置图片适应label
-        label1->setPixmap(pix);
-        table_worker->setCellWidget(1,2,label1);
+//        table_worker->setSpan(1,2,2,2);
+//        QPixmap pix(":/img/员工.png");  //图片路径
+//        QLabel *label1 = new QLabel();
+//        label1->setScaledContents(true);//设置图片适应label
+//        label1->setPixmap(pix);
+//        table_worker->setCellWidget(1,2,label1);
         table_worker->item(1,0)->setText("姓名");
         table_worker->item(1,1)->setText(my_client->messageWorkerEnv.workerInfo.name);
         table_worker->item(2,0)->setText("角色");
@@ -106,17 +108,9 @@ void MainWindow::my_init() {
     Vlayout = new QVBoxLayout();//存放工作信息
     Hlayout = new QHBoxLayout();//总表
     H_plot_layout = new QHBoxLayout();//存放图表和按钮
-    narrow = new QPushButton();
-    enlarge = new QPushButton();
-    enlarge->setIcon(QIcon(":/img/减号.png"));
-    narrow->setIcon(QIcon(":/img/放大 (3).png"));
-    narrow->setIconSize(QSize(50,50));
-    narrow->setFixedSize(50,50);
-    enlarge->setIconSize(QSize(50,50));
-    enlarge->setFixedSize(50,50);
-    V_button = new QVBoxLayout();//存放按钮
+    V_button = new QVBoxLayout();
     table_work = new my_tablewidget(6,2,"工作信息");
-    table_worker = new my_tablewidget(3,4,"员工信息");
+    table_worker = new my_tablewidget(3,2,"员工信息");
     table_product = new my_tablewidget(3,2,"设备信息");
     draw();
     widget = new QWidget(this);
@@ -133,9 +127,6 @@ MainWindow::~MainWindow()
     delete table_product;
     delete label2;
     delete Vlayout;
-    delete narrow;
-    delete enlarge;
-    delete V_button;
     delete H_plot_layout;
     delete  Hlayout;
     delete widget;
@@ -166,17 +157,14 @@ void MainWindow::draw() {
     connect(send_work,SIGNAL(clicked()),this,SLOT(my_send2()));
     connect(send_worker,SIGNAL(clicked()),this,SLOT(my_send1()));
     connect(send_inst,SIGNAL(clicked()),this,SLOT(my_send3()));
-    V_button->addWidget(enlarge);
-    V_button->addWidget(narrow);
+    //sssssssssssssssssssss
     V_button->addWidget(send_work);
     V_button->addWidget(send_worker);
     V_button->addWidget(send_inst);
     V_button->addWidget(send_checker);
-    connect(enlarge,SIGNAL(clicked()),this,SLOT(enlarge_plot()));
-    connect(narrow,SIGNAL(clicked()),this,SLOT(narrow_plot()));
+    //xxxxxxxxxxxxxxxxxxxxxxxx
     H_plot_layout->addWidget(pCustomPlot);
     H_plot_layout->addLayout(V_button);
-    H_plot_layout->setStretchFactor(V_button,1);
     H_plot_layout->setStretchFactor(pCustomPlot,10);
     Hlayout->addLayout(Vlayout);
     Hlayout->addLayout(H_plot_layout);

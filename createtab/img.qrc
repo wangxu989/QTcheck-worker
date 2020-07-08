@@ -5,5 +5,8 @@
         <file>img/spc.png</file>
         <file>img/返回 (1).png</file>
         <file>img/退出.png</file>
+        <file>img/减号.png</file>
+        <file>img/放大 (3).png</file>
+        <file>img/撤销.png</file>
     </qresource>
 </RCC>

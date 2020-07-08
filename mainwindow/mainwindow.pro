@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network sql
+QT       += core gui network sql xml
 QT += serialport
 QT +=printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

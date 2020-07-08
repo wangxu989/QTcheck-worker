@@ -125,10 +125,12 @@ public:
     double temp_val = -1;//暂存本次操作值
     //int
     QVector<tflag>flag;//标记该列是否被赋值过
-    QAbstractButton *btn = this->findChild<QAbstractButton *>();
     my_tablewidget(){
+        this->setStyleSheet("QTableView QTableCornerButton::section{padding:12px 0 0 10px;"
+                            "background-position:center;");
+         QAbstractButton *btn = this->findChild<QAbstractButton *>();
         if (btn) {
-            btn->setText("范围/时间");
+            btn->setText(QStringLiteral("范围/时间"));
             btn->installEventFilter(this);
             //btn->setStyleSheet("QAbstractButton{text-align : right;}");
             QStyleOptionHeader opt;
@@ -142,6 +144,24 @@ public:
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
+    explicit my_tablewidget(const int& row,const int& column) {
+       this->setColumnCount(column);
+        this->setRowCount(row);
+        this->horizontalHeader()->setHidden(true);
+        this->verticalHeader()->setHidden(true);
+        this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        this->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        for (int i = 0;i < 4;i++) {
+            for (int j = 0;j < 4;j++) {
+                if (!(this->item(i,j))) {
+                    this->setItem(i,j,new QTableWidgetItem());
+                    this->item(i,j)->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+                }
+            }
+        }
+    }
+
     bool eventFilter(QObject *o, QEvent *e) {
         if (e->type() == QEvent::Paint)
         {
@@ -159,6 +179,7 @@ public:
                     state |= QStyle::State_Active;
                 if (btn->isDown())
                     state |= QStyle::State_Sunken;
+                opt.textAlignment = Qt::AlignCenter;
                 opt.state = state;
                 opt.rect = btn->rect();
                 opt.text = btn->text(); // this line is the only difference to QTableCornerButton
@@ -214,6 +235,7 @@ public:
 private:
     bool eventFilter(QObject *watched, QEvent *event);
     void trend_warn();//趋势预警处理函数
+    void showEvent(QShowEvent *);
 
 private slots:
 

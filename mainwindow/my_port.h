@@ -7,6 +7,7 @@
 #include<QHeaderView>
 #include<QSemaphore>
 #include<socketclient.h>
+#include<QtXml/QDomDocument>
 class my_tablewidget:public QTableWidget {
 public:
     int row,column;
@@ -27,6 +28,15 @@ public:
         this->item(0,0)->setText(info);
     }
 };
+struct P_scanner{
+    QString name;
+    QString baudRate;
+    QString dataBits;
+    QString stopBits;
+    QString parity;
+    QString writeBufferSize;
+    QString readBufferSize;
+};
 class my_port
 {
 public:
@@ -44,6 +54,7 @@ private:
     QString name;
     QSerialPortInfo my_info;
     QSemaphore sem;
+    P_scanner scanner;
 };
 
 #endif // MY_PORT_H

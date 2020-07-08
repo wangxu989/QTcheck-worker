@@ -64,7 +64,7 @@ socketclient::socketclient()
     //connect(socket, QOverload<QLocalSocket::LocalSocketError>::of(&QLocalSocket::error),this,&socketclient::displayError);
     in.setDevice(socket);
     in.setVersion(QDataStream::Qt_5_6);
-    QFile file("./ip");
+    QFile file("./data/ip");
     file.open(QIODevice::ReadOnly);
     QString ip = file.read(15);
     socket->connectToHost(QHostAddress(ip),6666);
@@ -231,6 +231,13 @@ void socketclient::readmessage(){
         label1->setText("无此产品,请重新扫描");
         check_flag[2] = 0;
         break;
+
+    case 11:
+        emit plot_enlarge();
+        break;
+    case 12:
+        emit plot_narrow();
+        break;
     }
     if (socket->bytesAvailable() > 0) {
         emit socket->readyRead();
@@ -241,7 +248,7 @@ void socketclient::run(){
     qDebug()<<"thread start";
     while(!stop) {
 //        sem.acquire();
-        pCustomPlot->xAxis->setLabel("时间轴" + QDateTime::currentDateTime().toString());
+        pCustomPlot->xAxis->setLabel("时间轴    " + QDateTime::currentDateTime().toString("yyyy年MM月dd日 hh:mm:ss"));
          pCustomPlot->replot(QCustomPlot::rpQueuedReplot);
          sleep(1);
 //        if (!stop){
@@ -263,7 +270,7 @@ void socketclient::initpcustomplot(int num){//初始化plot
     if (num > 1) {
         pCustomPlot->legend->removeItem(num);
     }
-    pCustomPlot->xAxis->setLabel("时间轴" + QDateTime::currentDateTime().toString());
+    pCustomPlot->xAxis->setLabel("时间轴    " + QDateTime::currentDateTime().toString("yyyy年MM月dd日 hh:mm:ss"));
     pCustomPlot->yAxis->setLabel("误差");
     QDateTime dateTime = QDateTime::currentDateTime();
     QString s = dateTime.toString().split(" ")[0] + " " + dateTime.toString().split(" ")[1] + " " + dateTime.toString().split(" ")[2] + " " + "08:30:00" + " " + dateTime.toString().split(" ")[4];

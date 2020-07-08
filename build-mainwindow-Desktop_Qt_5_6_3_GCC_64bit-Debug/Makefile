@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_SERIALPORT_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_XML_LIB -DQT_SERIALPORT_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../mainwindow -I. -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. -I. -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../mainwindow -I. -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. -I. -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt5.6.3/5.6.3/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -36,7 +36,7 @@ DISTNAME      = mainwindow1.0.0
 DISTDIR = /home/arm/project/QTcheck-worker/build-mainwindow-Desktop_Qt_5_6_3_GCC_64bit-Debug/.tmp/mainwindow1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.6.3/5.6.3/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/opt/Qt5.6.3/5.6.3/gcc_64/lib -lQt5PrintSupport -L/usr/lib64 -lQt5Widgets -lQt5Gui -lQt5Network -lQt5Sql -lQt5SerialPort -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/opt/Qt5.6.3/5.6.3/gcc_64/lib -lQt5PrintSupport -L/usr/lib64 -lQt5Widgets -lQt5Gui -lQt5Network -lQt5Sql -lQt5Xml -lQt5SerialPort -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -361,6 +361,7 @@ Makefile: ../mainwindow/mainwindow.pro /opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g
 		/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Gui.prl \
 		/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Network.prl \
 		/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Sql.prl \
+		/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Xml.prl \
 		/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5SerialPort.prl \
 		/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Core.prl
 	$(QMAKE) -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug -o Makefile ../mainwindow/mainwindow.pro
@@ -506,6 +507,7 @@ Makefile: ../mainwindow/mainwindow.pro /opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g
 /opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Gui.prl:
 /opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Network.prl:
 /opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Sql.prl:
+/opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Xml.prl:
 /opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5SerialPort.prl:
 /opt/Qt5.6.3/5.6.3/gcc_64/lib/libQt5Core.prl:
 qmake: FORCE
@@ -1102,13 +1104,16 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QVector \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qtprintsupportversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QThread \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QLinearGradient \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/QDomDocument \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qdom.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlDatabase \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqldatabase.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqlquery.h \
 		../mainwindow/mainwindow.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/mainwindow -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../mainwindow/mainwindow.h -o moc_mainwindow.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/mainwindow -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../mainwindow/mainwindow.h -o moc_mainwindow.cpp
 
 moc_qcustomplot.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qconfig.h \
@@ -1594,7 +1599,7 @@ moc_qcustomplot.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qprintpreviewwidget.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qtprintsupportversion.h \
 		../mainwindow/qcustomplot.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/mainwindow -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../mainwindow/qcustomplot.h -o moc_qcustomplot.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/mainwindow -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../mainwindow/qcustomplot.h -o moc_qcustomplot.cpp
 
 moc_socketclient.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
@@ -2132,7 +2137,7 @@ moc_socketclient.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QSemaphore \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QLinearGradient \
 		../mainwindow/socketclient.h
-	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/mainwindow -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../mainwindow/socketclient.h -o moc_socketclient.cpp
+	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/mainwindow -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../mainwindow/socketclient.h -o moc_socketclient.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -2698,6 +2703,9 @@ main.o: ../mainwindow/main.cpp ../mainwindow/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qtprintsupportversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QThread \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QLinearGradient \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/QDomDocument \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qdom.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlDatabase \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqldatabase.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
@@ -3252,6 +3260,9 @@ mainwindow.o: ../mainwindow/mainwindow.cpp ../mainwindow/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qtprintsupportversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QThread \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QLinearGradient \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/QDomDocument \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qdom.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlDatabase \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqldatabase.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
@@ -3810,6 +3821,9 @@ my_port.o: ../mainwindow/my_port.cpp ../mainwindow/my_port.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qtprintsupportversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QThread \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QLinearGradient \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/QDomDocument \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qdom.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QTime
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o my_port.o ../mainwindow/my_port.cpp
 

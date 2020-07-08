@@ -66,10 +66,20 @@ void MainWindow::draw_init() {
     button_ret = new QPushButton();
     button_ret->setIcon(QIcon(":/new/prefix1/img/退出.png"));
     button_ret->setFixedSize(50,50);
-      button_ret->setIconSize(QSize(50,50));
+    button_ret->setIconSize(QSize(50,50));
 
-    //button_quit->setStyleSheet("qproperty-icon:url(:/new/prefix1/img/退出.png)");
-    //button_ret->setStyleSheet("qproperty-icon:url(:/new/prefix1/img/返回.png)");
+    narrow = new QPushButton();
+    enlarge = new QPushButton();
+    enlarge->setIcon(QIcon(":/new/prefix1/img/减号.png"));
+    narrow->setIcon(QIcon(":/new/prefix1/img/放大 (3).png"));
+    narrow->setIconSize(QSize(50,50));
+    narrow->setFixedSize(50,50);
+    enlarge->setIconSize(QSize(50,50));
+    enlarge->setFixedSize(50,50);
+    connect(narrow,SIGNAL(clicked()),this,SLOT(plot_narrow()));
+    connect(enlarge,SIGNAL(clicked()),this,SLOT(plot_enlarge()));
+
+
     connect(button_ret,SIGNAL(clicked()),this,SLOT(pushButton_finish()));
     connect(button_quit,SIGNAL(clicked()),this,SLOT(pushButton_exit()));
     widget = new QWidget();
@@ -81,6 +91,8 @@ void MainWindow::draw_init() {
     v_layout->addWidget(&tab1);
     v_button_layout->addWidget(button_quit);
     v_button_layout->addWidget(button_ret);
+    v_button_layout->addWidget(enlarge);
+    v_button_layout->addWidget(narrow);
     //    pre_page = new QPushButton();
     //    pre_page->setText("上一页");
     //    connect(pre_page,SIGNAL(clicked()),this,SLOT(prePage()));
@@ -191,9 +203,52 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(dialog);
     connect(dialog,SIGNAL(sendData()),this,SLOT(login()));//登录按钮信号
     messageBox = new QMessageBox(QMessageBox::NoIcon,"title","是否为核验员",QMessageBox::No,NULL);
-
+    keyboard = new QWidget();
+    display = new QLabel();
+    display->setStyleSheet("border:2px solid black;");
+    QFont ft;//字体大小
+    ft.setPointSize(30);
+    display->setFont(ft);
+    figure = new my_tablewidget(4,4);
+    fig_key = new QVBoxLayout();
+    fig_key->addWidget(display);
+    fig_key->addWidget(figure);
+    fig_key->setStretchFactor(display,1);
+    fig_key->setStretchFactor(figure,4);
+    keyboard->setLayout(fig_key);
+    figure->setSpan(0,3,2,1);
+    figure->setSpan(2,3,2,1);
+    figure->setSpan(3,0,1,2);
+    figure->item(3,2)->setText(".");
+    figure->item(2,3)->setText("Enter");
+    for (int i = 0;i <3;i++) {
+        for (int j = 0;j < 3;j++) {
+            figure->item(i,j)->setText(QString::number(7 - i*3 + j));
+        }
+    }
+    QLabel *t_label = new QLabel();
+    t_label->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+    t_label->setPixmap(QPixmap(":/new/prefix1/img/撤销.png"));
+    figure->setCellWidget(0,3,t_label);
+    figure->item(3,0)->setText("0");
+    connect(figure,SIGNAL(cellClicked(int,int)),this,SLOT(in_keyboard(int,int)));
     show();
 }
+void MainWindow::in_keyboard(const int &row,const int &column) {
+    if (row == 0 && column == 3) {
+        display->setText(display->text().mid(0,display->text().size() - 1));
+    }
+    else if (row == 2 && column == 3) {
+         valuel2  = display->text().toDouble();
+         insertvalue(myrow,tab1.currentIndex(),valuel2,mycolumn);
+         this->takeCentralWidget();
+         this->setCentralWidget(widget);
+    }
+    else {
+        display->setText(display->text() + figure->item(row,column)->text());
+    }
+}
+
 void MainWindow::pushform_button() {
     show();
 }
@@ -227,21 +282,21 @@ void MainWindow::start_after() {
 MainWindow::~MainWindow()
 {
     my_process.close();
-    delete pro_bar;
-    delete progress_bar;
-    delete button_quit;
-    delete button_ret;
-    delete messageBox;
-    delete ui;
-    delete temp;
-    delete templayout;
-    delete tempw;
-    delete v_layout;
-    delete layout;
+    delete[] pro_bar;
+    delete[] progress_bar;
+    delete[] button_quit;
+    delete[] button_ret;
+    delete[] messageBox;
+    delete[] ui;
+    delete[] temp;
+    delete[] templayout;
+    delete[] tempw;
+    delete[] v_layout;
+    delete[] layout;
     //delete widget;
     //delete data_local;
     //delete data_server;
-    delete dialog;
+    delete[] dialog;
 }
 void MainWindow::onClicked(int row,int column) {//一级表格的槽函数（检测身份）
     myrow = row;
@@ -294,7 +349,9 @@ void MainWindow::first_tablogic(int &row,int &column) {//一级表格的逻辑�
         }
         qDebug()<<flag;
         if (row == 0 || row == tab1.table[i]->rowCount() - 1) {//警告值无二级精度
-            insertvalue(row,i,valuel2,column);
+            this->takeCentralWidget();
+            this->setCentralWidget(keyboard);
+            display->setText("");
             //return;
         }
         else if (flag  <= tab1.createinfo[i].normvalue + tab1.createinfo[i].zgc){
@@ -359,6 +416,9 @@ void MainWindow::ejClicked(int row,int column) {//二级表格点击信号槽函
     //level1and2 = 1;
 }
 int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队列写入值
+    if (!time_check(mycolumn,0)) {
+        return 0;
+    }
     qDebug()<<QDateTime::currentDateTime().toString();
     //qDebug()tab1.createinfo[i].chk_warn_thr
     if (people_flag == 1) {//员工标识
@@ -395,13 +455,13 @@ int MainWindow::insertvalue(int row,int i,double valuel2,int column) {//向队�
     QString temp = tab1.table[i]->verticalHeaderItem(row)->text();
     //qDebug()<<valuel2;
     if (row == 0) {
-        temp = temp.split("<")[0];
+        temp = "0";
     }
     else if (row == tab1.table[i]->rowCount() - 2) {
         temp = temp.split("≤")[0];
     }
     else if (row == tab1.table[i]->rowCount() - 1) {
-        temp = temp.split("<")[1];
+        temp = "0";
     }
     else {
         temp = temp.split("<")[0];
@@ -696,4 +756,10 @@ void MainWindow::check_info(int flag) {
         qDebug()<<"start";
         start_flag = 1;
     }
+}
+void MainWindow::plot_enlarge() {
+    my_socket->sendmessage(11);
+}
+void MainWindow::plot_narrow() {
+    my_socket->sendmessage(12);
 }

@@ -39,8 +39,6 @@ private:
     QHBoxLayout *Hlayout;
     QWidget *widget;
     QVBoxLayout *V_button;
-    QPushButton *enlarge;
-    QPushButton *narrow;
     my_port my_port1;
     work_info workInfo = {"YG,02294","SB,001073","ZL,20016101180122000101,17121618739,1,1800"};
     QLabel *label2 ;

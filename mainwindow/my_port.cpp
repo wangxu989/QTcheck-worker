@@ -45,6 +45,46 @@ int my_port::check_first(const my_tablewidget &a,const my_tablewidget &b,const m
     return 0;
 }
 void my_port::lookup() {
+    //first readxml 
+    QFile file("./data/GeneralConfig.xml");
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox box(QMessageBox::NoIcon,"config","open GeneralConfig.xml failed!",NULL,NULL);
+        return;
+    }
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        QMessageBox messageBox;
+        messageBox.setText("read GeneralConfig.xml failed !");
+        messageBox.exec();
+        return ;
+    }
+    file.close();
+    QDomElement domele = doc.documentElement();
+    QDomNode n = domele.firstChild();
+    while(!n.isNull()) {
+        QDomElement e = n.toElement();
+        QDomNodeList list = e.childNodes();
+        if (e.tagName() == "SerialPorts") {
+            for(int i = 0;i < list.size();i++){
+                QDomNode node = list.at(i);
+                QDomElement E_temp = node.toElement();
+                if (E_temp.attribute("device") == "Scanner") {
+                    scanner.name = E_temp.attribute("portName");
+                    scanner.baudRate = E_temp.attribute("baudRate");
+                    scanner.dataBits = E_temp.attribute("dataBits");
+                    scanner.stopBits = E_temp.attribute("stopBits");
+                    scanner.parity = E_temp.attribute("parity");
+                    scanner.writeBufferSize = E_temp.attribute("writeBufferSize");
+                    scanner.readBufferSize = E_temp.attribute("readBufferSize");
+                    qDebug()<<scanner.name;
+                }
+
+            }
+        }
+        n = n.nextSibling();
+        
+    }
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
 
