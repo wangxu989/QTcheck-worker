@@ -18,7 +18,7 @@ public:
     int rule;//0为传createinfo和info,1传tab切换信息,2传point
     //QLocalSocket *clientConnection = NULL;
     QTcpSocket *clientConnection = NULL;
-    work_info workInfo = {"YG,2294","SB,001073","ZL,20016101180122000101,171216",};
+    work_info workInfo = {"YG,2294","SB,001073","ZL,20016101180122000101,171216",""};
 signals:
     void start_work();
     void check_identity();

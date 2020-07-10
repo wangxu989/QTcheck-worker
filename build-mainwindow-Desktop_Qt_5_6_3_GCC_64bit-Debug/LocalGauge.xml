@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--LocalSchemes说明:-->
+<LocalGauge>
+   <User user_id = "234556">
+        <Item product_no="207803" char_no="1" char_desc="长"   gauge_no="12345" />
+		<Item product_no="207803" char_no="2" char_desc="内径" gauge_no="12346"/>
+		<Item product_no="207803" char_no="3" char_desc="宽"   gauge_no="12335"/>
+    </User >
+	
+   <User user_id = "345345">
+        <Item product_no="207803" char_no="1" char_desc="长"   gauge_no="12345" />
+		<Item product_no="207803" char_no="2" char_desc="内径" gauge_no="12346"/>
+		<Item product_no="207803" char_no="3" char_desc="宽"   gauge_no="12335"/>
+    </User>
+</LocalGauge>

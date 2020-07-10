@@ -104,6 +104,7 @@ typedef struct {
 }tflag;
 struct tabinfo{
     friend QDataStream& operator<<(QDataStream &os,tabinfo&a);
+    QString gauge;
     QString featureid;//零件特性号
     QString char_desc;//特征描述(长宽，内径...)
     double normvalue;//规格值
@@ -232,6 +233,8 @@ public:
     QString  auto_zero(double from,double to);//自动补全'0'
     int start_time;//当前tab工作开始时间
     int work_start_time;//当天工作开始时间
+    void read_gauge(work_info &workInfo);
+    void modify_gauge(work_info &workInfo,int index);
 private:
     bool eventFilter(QObject *watched, QEvent *event);
     void trend_warn();//趋势预警处理函数

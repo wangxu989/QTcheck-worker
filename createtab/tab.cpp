@@ -201,7 +201,7 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     }
     qDebug()<<t->rowCount()<<" "<<t->columnCount();
     t->verticalHeaderItem(0)->setBackground(QBrush(color_scheme[2]));
-        qDebug()<<"color head end";
+    qDebug()<<"color head end";
     t->verticalHeaderItem(t->rowCount()-1)->setBackground(QBrush(color_scheme[2]));
     for (int i = 1;i < t->rowCount() - 2;i++) {//设置垂直表头颜色
         if (i <= info.warn_thr.toInt() || t->rowCount() -1 - i <= info.warn_thr.toInt()) {
@@ -325,8 +325,48 @@ int mytab::read_local_authuser(const work_info &workInfo) {
         box.exec();
         return -1;
     }
+    //read_gauge(workInfo);
     return 0;
 }
+void mytab::read_gauge(work_info &workInfo) {
+    QFile file("./data/LocalGauge.xml");
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug()<<"open gaugeinfo failed !!!"<<endl;
+        return ;
+    }
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        qDebug()<<"read xml failed !!!"<<endl;
+        return ;
+    }
+    file.close();
+    QDomElement docelem = doc.documentElement();
+    QDomNode n = docelem.firstChild();
+    qDebug()<<"open Gaugexml";
+    while (!n.isNull()) {
+        if (n.isElement()) {
+            QDomElement e = n.toElement();
+                if (e.tagName() == "User") {
+                    if (e.attribute("user_id") == workInfo.worker_id.split(",")[1]) {
+                        QDomNodeList list = e.childNodes();
+                        for (int i = 0;i < list.size();i++) {
+                            QDomNode node = list.at(i);
+                            QDomElement e_node = node.toElement();
+                            QString t = workInfo.instruction_id.split(",")[1].mid(0,6);
+                            qDebug()<<t<<" "<<e_node.attribute("product_no");
+                            if (e_node.tagName() == "Item" && e_node.attribute("product_no") == t && e_node.attribute("char_no").toInt()<= createinfo.size()) {
+                                createinfo[e_node.attribute("char_no").toInt() - 1].gauge = e_node.attribute("gauge_no");
+                                qDebug()<<createinfo[e_node.attribute("char_no").toInt() - 1].gauge<<"gauge_no!!!";
+                            }
+                        }
+                    }
+                }
+            }
+        n = n.nextSibling();
+    }
+}
+
 int mytab::read_local_env(const work_info &workInfo,int flag) {
     QFile file("./data/LocalEnv.xml");
     if (!file.open(QIODevice::ReadOnly)) {
@@ -507,6 +547,58 @@ QString mytab::auto_zero(double from, double to) {
 }
 void mytab::trend_warn() {//趋势预警处理函数
 
+}
+void mytab::modify_gauge(work_info &workInfo, int index) {
+    QFile file("./data/LocalGauge.xml");
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug()<<"open gaugeinfo failed !!!"<<endl;
+        return ;
+    }
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        qDebug()<<"read xml failed !!!"<<endl;
+        return ;
+    }
+    file.close();
+    QDomElement docelem = doc.documentElement();
+    QDomNode n = docelem.firstChild();
+    qDebug()<<"open Gaugexml";
+    while (!n.isNull()) {
+        if (n.isElement()) {
+            QDomElement e = n.toElement();
+                if (e.tagName() == "User") {
+                    if (e.attribute("user_id") == workInfo.worker_id.split(",")[1]) {
+                        QDomNodeList list = e.childNodes();
+                        int i = 0;
+                        for (;i < list.size();i++) {
+                            QDomNode node = list.at(i);
+                            QDomElement e_node = node.toElement();
+                            if (e_node.tagName() == "Item" &&  e_node.attribute("char_no").toInt() == index + 1) {
+                                //modify
+                                e_node.setAttribute("gauge_no",this->createinfo[index].gauge);
+                                break;
+                            }
+                        }
+                        if (i == list.size()) {
+                            //add
+                            QDomElement addInfo=doc.createElement("Item");
+                            addInfo.setAttribute("product_no",workInfo.instruction_id.split(",")[1].mid(0,6));
+                            addInfo.setAttribute("char_no",index + 1);
+                            addInfo.setAttribute("char_desc",createinfo[index].char_desc);
+                            addInfo.setAttribute("gauge_no",createinfo[index].gauge);
+                            e.appendChild(addInfo);
+                        }
+                    }
+                }
+            }
+        n = n.nextSibling();
+    }
+    if(!file.open(QFile::WriteOnly|QFile::Truncate)){ return;} //先读进来，再重写，如果不用truncate就是在后面追加内容，就无效了
+         //输出到文件
+         QTextStream out_stream(&file);
+         doc.save(out_stream,4); //缩进4格
+         file.close();
 }
 
 

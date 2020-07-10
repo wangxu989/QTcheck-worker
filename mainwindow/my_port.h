@@ -11,7 +11,7 @@
 class my_tablewidget:public QTableWidget {
 public:
     int row,column;
-    my_tablewidget(const int &row,const int &column,const QString &info):row(row),column(column){
+    my_tablewidget(const int &row,const int &column,const QString &info = ""):row(row),column(column){
         this->setColumnCount(column);
         this->setRowCount(row);
         this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -24,8 +24,10 @@ public:
                 this->item(i,j)->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
             }
         }
-        this->setSpan(0,0,1,this->columnCount());
-        this->item(0,0)->setText(info);
+        if (info.size()) {
+            this->setSpan(0,0,1,this->columnCount());
+            this->item(0,0)->setText(info);
+        }
     }
 };
 struct P_scanner{

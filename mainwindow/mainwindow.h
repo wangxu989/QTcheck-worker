@@ -1,5 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#define _TEXT
 #include<QVector>
 #include <QMainWindow>
 #include"my_port.h"
@@ -31,6 +32,7 @@ private slots:
     void my_send2();
     void my_send3();
     void my_send4();
+    void gauge_no_flash(const QString* const);
 private:
     void my_init();
     Ui::MainWindow *ui;
@@ -48,7 +50,7 @@ private:
     volatile int tabnum;
     QCustomPlot *pCustomPlot;
     volatile bool stopped;
-    my_tablewidget *table_work,*table_worker,*table_product;
+    my_tablewidget *table_work,*table_worker,*table_product ,*local_gauge;
     QPushButton *button1;
     void change();
     QString set_range();

@@ -21,6 +21,7 @@ QDataStream& operator<<(QDataStream &os,tabinfo &a) {
     os<<a.fgc;
     os<<a.jddw;
     os<<a.ejjddw;
+    os<<a.gauge;
     //os<<a.chk_warn_thr;
     //os<<a.warn_thr;
     os<<a.char_desc;
@@ -184,6 +185,11 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
      case 12://缩小
         out<<quint32(sizeof(flag));
         out<<flag;
+     case 13://增加gauge_no
+        out<<quint32(sizeof(flag) + sizeof(int) + sizeof(QString));
+        out<<flag<<num;
+        out<<(*createinfo)[num].gauge;
+        qDebug()<<(*createinfo)[num].gauge;
     }
     //    data.resize(sizeof(*info));
     //    memcpy(data.data(),info,sizeof(*info));

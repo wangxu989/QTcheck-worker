@@ -64,6 +64,7 @@ public:
 class tabinfo{
 public:
     friend QDataStream& operator>>(QDataStream &os,tabinfo&a);
+    QString gauge;
     QString featureid;//零件特性号
     QString char_desc;//特征描述(长宽，内径...)
     double normvalue;//规格值
@@ -138,6 +139,7 @@ signals:
     void insert_data(int);
     void plot_enlarge();
     void plot_narrow();
+    void gauge_no(const QString* const);
 protected:
     void run();
 public slots:

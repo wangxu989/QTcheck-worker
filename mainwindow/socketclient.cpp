@@ -51,6 +51,7 @@ QDataStream& operator>>(QDataStream &os,tabinfo &a) {
     os>>a.ejjddw;
     //os>>a.chk_warn_thr;
     //os>>a.warn_thr;
+    os>>a.gauge;
     os>>a.char_desc;
     return os;
 }
@@ -129,6 +130,7 @@ void socketclient::readmessage(){
         }
         pCustomPlot->yAxis->setRange(createinfo[0].normvalue + createinfo[0].fgc - createinfo[0].jddw,createinfo[0].normvalue + createinfo[0].zgc + createinfo[0].jddw);//y轴范围
         pCustomPlot->yAxis->ticker()->setTickCount((createinfo[0].zgc - createinfo[0].fgc)/createinfo[0].jddw + 1 + 1);
+        emit gauge_no(&createinfo[0].gauge);
         pCustomPlot->replot(QCustomPlot::rpQueuedReplot);//刷新图表
         //qDebug()<<pCustomPlot->
         break;
@@ -136,6 +138,7 @@ void socketclient::readmessage(){
         in>>i;
         tabnum = i;
         //qDebug()<<i;
+        emit gauge_no(&createinfo[tabnum].gauge);
         for (j = 0;j < pCustomPlot->graphCount();j++) {//只展示当前graph，其他隐藏
             if (j == i*2 || j == i*2 + 1) {
                 pCustomPlot->graph(j)->setVisible(true);
@@ -238,6 +241,13 @@ void socketclient::readmessage(){
     case 12:
         emit plot_narrow();
         break;
+    case 13:
+        in>>i;
+        in>>createinfo[i].gauge;
+        qDebug()<<createinfo[i].gauge<<"read gauge"<<i;
+        emit gauge_no(&createinfo[i].gauge);
+        break;
+
     }
     if (socket->bytesAvailable() > 0) {
         emit socket->readyRead();

@@ -12,6 +12,7 @@ static socket *my_socket;
 static int people_flag = 1;
 static int modify = 0;
 int mode;
+static int keyboard_flag = 0;
 void MainWindow::check_identity() {//接收核验成功的信号
     //qDebug()<<"check identity";
     result = QMessageBox::Yes;
@@ -25,25 +26,6 @@ void MainWindow::login() {
     connect(my_socket,SIGNAL(check_info(int)),this,SLOT(check_info(int)));
     QStringList argument;
     argument<<"-platform";//<<"eglfs"
-    //start_work();
-//    mode = tab1.nekwork_or_local();
-//    qDebug()<<"mode:"<<mode;
-//    switch(mode) {
-//    case 0://单机版
-//        qDebug()<<"单机版";
-//        if (tab1.readxml(my_socket->workInfo) < 0) {//人员信息不匹配
-//            return;
-//        }
-//        break;
-//    case 1://网络版
-//        qDebug()<<"网络版";
-//        data_server = new database(tab1.net_plugin,tab1,my_socket->workInfo);
-//        if (data_server->flag > 0) {
-//            //0员工信息不合法,1您无权访问此机器,2无对应工作信息
-//            return;
-//        }
-//        break;
-//    }
 }
 void MainWindow::draw_init() {
     buttonej = new QPushButton("返回");
@@ -70,15 +52,18 @@ void MainWindow::draw_init() {
 
     narrow = new QPushButton();
     enlarge = new QPushButton();
+    gauge = new QPushButton("检具");
+    gauge->setFixedSize(50,50);
     enlarge->setIcon(QIcon(":/new/prefix1/img/减号.png"));
     narrow->setIcon(QIcon(":/new/prefix1/img/放大 (3).png"));
     narrow->setIconSize(QSize(50,50));
     narrow->setFixedSize(50,50);
     enlarge->setIconSize(QSize(50,50));
     enlarge->setFixedSize(50,50);
+    //connect(gauge,SIGNAL(clicked(),this,SLOT());
     connect(narrow,SIGNAL(clicked()),this,SLOT(plot_narrow()));
     connect(enlarge,SIGNAL(clicked()),this,SLOT(plot_enlarge()));
-
+    connect(gauge,SIGNAL(clicked()),this,SLOT(gauge_add()));
 
     connect(button_ret,SIGNAL(clicked()),this,SLOT(pushButton_finish()));
     connect(button_quit,SIGNAL(clicked()),this,SLOT(pushButton_exit()));
@@ -93,6 +78,7 @@ void MainWindow::draw_init() {
     v_button_layout->addWidget(button_ret);
     v_button_layout->addWidget(enlarge);
     v_button_layout->addWidget(narrow);
+    v_button_layout->addWidget(gauge);
     //    pre_page = new QPushButton();
     //    pre_page->setText("上一页");
     //    connect(pre_page,SIGNAL(clicked()),this,SLOT(prePage()));
@@ -111,6 +97,13 @@ void MainWindow::draw_init() {
     layout->setStretchFactor(v_button_layout,1);
     widget->setLayout(layout);
 }
+void MainWindow::gauge_add() {
+    keyboard_flag = 2;
+    this->takeCentralWidget();
+    this->setCentralWidget(keyboard);
+    display->setText("");
+}
+
 void MainWindow::prePage() {
     int maxValue = tab1.table[tabnum]->horizontalScrollBar()->maximum();
     int nCurScroller = tab1.table[tabnum]->horizontalScrollBar()->value();
@@ -159,6 +152,8 @@ void MainWindow::start_work(){
         }
         break;
     }
+    //读取检具信息
+    tab1.read_gauge(my_socket->workInfo);
     draw_init();
     qDebug()<<tab1.messageWorkerEvn.workerInfo.name;
     qDebug()<<tab1.messageWorkerEvn.localEnv.process_id<<"process_id";
@@ -203,6 +198,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(dialog);
     connect(dialog,SIGNAL(sendData()),this,SLOT(login()));//登录按钮信号
     messageBox = new QMessageBox(QMessageBox::NoIcon,"title","是否为核验员",QMessageBox::No,NULL);
+    //超差键盘
     keyboard = new QWidget();
     display = new QLabel();
     display->setStyleSheet("border:2px solid black;");
@@ -239,10 +235,19 @@ void MainWindow::in_keyboard(const int &row,const int &column) {
         display->setText(display->text().mid(0,display->text().size() - 1));
     }
     else if (row == 2 && column == 3) {
+        if (keyboard_flag == 1) {
          valuel2  = display->text().toDouble();
          insertvalue(myrow,tab1.currentIndex(),valuel2,mycolumn);
-         this->takeCentralWidget();
-         this->setCentralWidget(widget);
+
+        }
+        else if (keyboard_flag == 2){
+            qDebug()<<"检具录入";
+            tab1.createinfo[tab1.currentIndex()].gauge = display->text();
+            my_socket->sendmessage(13,NULL,tab1.currentIndex());
+            tab1.modify_gauge(my_socket->workInfo,tab1.currentIndex());
+        }
+        this->takeCentralWidget();
+        this->setCentralWidget(widget);
     }
     else {
         display->setText(display->text() + figure->item(row,column)->text());
@@ -286,6 +291,9 @@ MainWindow::~MainWindow()
     delete[] progress_bar;
     delete[] button_quit;
     delete[] button_ret;
+    delete[] narrow;
+    delete[] enlarge;
+    delete[] gauge;
     delete[] messageBox;
     delete[] ui;
     delete[] temp;
@@ -349,6 +357,7 @@ void MainWindow::first_tablogic(int &row,int &column) {//一级表格的逻辑�
         }
         qDebug()<<flag;
         if (row == 0 || row == tab1.table[i]->rowCount() - 1) {//警告值无二级精度
+            keyboard_flag = 1;
             this->takeCentralWidget();
             this->setCentralWidget(keyboard);
             display->setText("");

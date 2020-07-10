@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(my_client,SIGNAL(insert_data(int)),this,SLOT(insert_data_to_table(int)));
      connect(my_client,SIGNAL(plot_enlarge()),this,SLOT(enlarge_plot()));
     connect(my_client,SIGNAL(plot_narrow()),this,SLOT(narrow_plot()));
+    connect(my_client,SIGNAL(gauge_no(const QString* const)),this,SLOT(gauge_no_flash(const QString* const)));
     my_init();
     my_client->label1 = label2;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","local");
@@ -49,14 +50,12 @@ void MainWindow::insert_data_to_table(int flag) {
         table_work->item(2,0)->setText("工序号");
         table_work->item(3,0)->setText("产品");
         table_work->item(4,0)->setText("工位");
-        table_work->item(5,0)->setText("检具号");
 
 
         table_work->item(1,1)->setText(my_client->messageWorkerEnv.localEnv.process);
         table_work->item(2,1)->setText(workInfo.instruction_id.split(",")[1].mid(6,2));
         table_work->item(3,1)->setText(workInfo.instruction_id.split(",")[1].mid(0,6));
         table_work->item(4,1)->setText(my_client->messageWorkerEnv.localEnv.workstation);
-        table_work->item(5,1)->setText(my_client->messageWorkerEnv.localEnv.gauge_no);
     }
     else if (flag == 3) {
                 qDebug()<<"product info";
@@ -109,9 +108,11 @@ void MainWindow::my_init() {
     Hlayout = new QHBoxLayout();//总表
     H_plot_layout = new QHBoxLayout();//存放图表和按钮
     V_button = new QVBoxLayout();
-    table_work = new my_tablewidget(6,2,"工作信息");
+    table_work = new my_tablewidget(5,2,"工作信息");
     table_worker = new my_tablewidget(3,2,"员工信息");
     table_product = new my_tablewidget(3,2,"设备信息");
+    local_gauge = new my_tablewidget(1,2);
+    local_gauge->item(0,0)->setText("检具号");
     draw();
     widget = new QWidget(this);
     widget->setLayout(Hlayout);
@@ -125,6 +126,7 @@ MainWindow::~MainWindow()
     delete table_work;
     delete table_worker;
     delete table_product;
+    delete local_gauge;
     delete label2;
     delete Vlayout;
     delete H_plot_layout;
@@ -141,10 +143,12 @@ void MainWindow::draw() {
     Vlayout->addWidget(table_worker);
     Vlayout->addWidget(table_work);
     Vlayout->addWidget(table_product);
+    Vlayout->addWidget(local_gauge);
     Vlayout->setStretchFactor(label2,1);
     Vlayout->setStretchFactor(table_worker,2);
     Vlayout->setStretchFactor(table_work,2);
     Vlayout->setStretchFactor(table_product,2);
+    Vlayout->setStretchFactor(local_gauge,1);
     QPushButton *send_work = new QPushButton("员工");
     QPushButton *send_worker = new QPushButton("设备");
     QPushButton *send_inst = new QPushButton("指令");
@@ -158,10 +162,12 @@ void MainWindow::draw() {
     connect(send_worker,SIGNAL(clicked()),this,SLOT(my_send1()));
     connect(send_inst,SIGNAL(clicked()),this,SLOT(my_send3()));
     //sssssssssssssssssssss
+#ifdef _TEXT
     V_button->addWidget(send_work);
     V_button->addWidget(send_worker);
     V_button->addWidget(send_inst);
     V_button->addWidget(send_checker);
+#endif
     //xxxxxxxxxxxxxxxxxxxxxxxx
     H_plot_layout->addWidget(pCustomPlot);
     H_plot_layout->addLayout(V_button);
@@ -277,5 +283,13 @@ void MainWindow::my_send3() {
 void MainWindow::my_send4() {
      QString temp = "YG,02294";
      my_client->send_message(1,temp);
+}
+void MainWindow::gauge_no_flash(const QString * const s) {
+    if (s->size()) {
+        local_gauge->item(0,1)->setText(*s);
+    }
+    else {
+        local_gauge->item(0,1)->setText("检具未录入");
+    }
 }
 

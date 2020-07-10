@@ -16,6 +16,7 @@
 #include"dialog.h"
 #include<QMap>
 #include<QScrollBar>
+//#include<qpa
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -50,6 +51,7 @@ private slots:
     void plot_enlarge();
     void plot_narrow();
     void in_keyboard(const int& row,const int& column);
+    void gauge_add();
 private:
     Dialog *dialog;
     QMessageBox *messageBox;
@@ -92,6 +94,7 @@ private:
      QLabel *display;
      my_tablewidget *figure;
      QVBoxLayout *fig_key;
+     QPushButton *gauge;//检具
 
 
 };
