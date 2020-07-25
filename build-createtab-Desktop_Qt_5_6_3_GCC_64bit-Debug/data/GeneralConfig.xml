@@ -6,9 +6,18 @@
 	
 	<DatabaseConnect>
 		<!--远程服务数据库(MySQL)配置Begin-->
-		<RemoteDatabase active="1" hostName="112.124.23.36" port="1521" databaseName="ring" userName="root" password="212124"/>
+		<RemoteDatabase active="0" hostName="192.168.100.8" port="1521" databaseName="orcl" userName="aaa" password="123456"/>
 		<!--远程数据库oracle配置End-->
 	</DatabaseConnect>
+
+
+	<!--number: 界面可启动的子功能个数，常见的数值有：4 ，6，9，如果为4就是4宫格-->
+	<Applications number="4">
+		<Application startup_args="SPC -egls" logo=""/>
+		<Application startup_args="SA"  logo=""/>
+		<Application startup_args="reserve" logo=""/>
+		<Application startup_args="Settings" logo=""/>
+	</Applications>
 
 
     <SerialPorts>	
@@ -20,7 +29,7 @@
 		<!--parity 奇偶校验-->
 		<!--writeBufferSize 写缓冲区大小-->
 		<!--readBufferSize 读缓冲区大小-->
-        <SerialPort device="Scanner" portName="ttymxc0" baudRate="9600" dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
+        <SerialPort device="Scanner" portName="ttymxc0" baudRate="9600"  dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
 		<SerialPort device="Printer" portName="ttymxc0" baudRate="19200" dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
     </SerialPorts>
 	

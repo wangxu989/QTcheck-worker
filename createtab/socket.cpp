@@ -182,14 +182,17 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
      case 11://放大
         out<<quint32(sizeof(flag));
         out<<flag;
+        break;
      case 12://缩小
         out<<quint32(sizeof(flag));
         out<<flag;
+        break;
      case 13://增加gauge_no
         out<<quint32(sizeof(flag) + sizeof(int) + sizeof(QString));
         out<<flag<<num;
         out<<(*createinfo)[num].gauge;
         qDebug()<<(*createinfo)[num].gauge;
+        break;
     }
     //    data.resize(sizeof(*info));
     //    memcpy(data.data(),info,sizeof(*info));

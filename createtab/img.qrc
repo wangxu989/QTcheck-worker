@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/new/prefix1">
-        <file>img/员工.png</file>
+        <file>img/worker.png</file>
         <file>img/bj.jpg</file>
         <file>img/spc.png</file>
-        <file>img/返回 (1).png</file>
-        <file>img/退出.png</file>
-        <file>img/减号.png</file>
-        <file>img/放大 (3).png</file>
-        <file>img/撤销.png</file>
+        <file>img/return.png</file>
+        <file>img/exit.png</file>
+        <file>img/-.png</file>
+        <file>img/+.png</file>
+        <file>img/cancel.png</file>
     </qresource>
 </RCC>

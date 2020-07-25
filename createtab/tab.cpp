@@ -51,9 +51,9 @@ mytab::mytab() {
 
 }
 mytab::~mytab(){
-    //    for (int i = 0;i < table.size();i++) {//释放所有tablewidget空间
-    //        delete table[i];
-    //    }
+        for (int i = 0;i < table.size();i++) {//释放所有tablewidget空间
+            delete table[i];
+        }
 }
 void mytab::showEvent(QShowEvent *) {
     int width = this->width();
@@ -465,65 +465,65 @@ int mytab::read_local_env(const work_info &workInfo,int flag) {
 }
 
 int  mytab::nekwork_or_local() {//0为网络版1为本地版
-    QFile file("./data/GeneralConfig.xml");
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox messageBox;
-        messageBox.setText("open ./GeneralConfig.xml failed !");
-        messageBox.exec();
-        return -1;
-    }
-    QDomDocument doc;
-    if (!doc.setContent(&file)) {
-        file.close();
-        QMessageBox messageBox;
-        messageBox.setText("read GeneralConfig.xml failed !");
-        messageBox.exec();
-        return -1;
-    }
-    file.close();
-    QDomElement domele = doc.documentElement();
-    QDomNode n = domele.firstChild();
-    while (!n.isNull()) {
-        if (n.isElement()) {
-            QDomElement e = n.toElement();
-            if (e.tagName() == "WorkMode") {
-                net_plugin.status = e.attribute("mode");
-            }
-            else if (e.tagName() == "DatabaseConnect") {
-                QDomNodeList list = e.childNodes();
-                qDebug()<<list.count()<<"databaseconnect";
-                for (int i = 0;i < list.count();i++) {
-                    if (list.at(i).toElement().tagName() == "RemoteDatabase") {
-                        net_plugin.hostname = list.at(i).toElement().attribute("hostName");
-                        net_plugin.port = list.at(i).toElement().attribute("port");
-                        net_plugin.databaseName = list.at(i).toElement().attribute("databaseName");
-                        net_plugin.userName =list.at(i).toElement().attribute("userName");
-                        net_plugin.passwd = list.at(i).toElement().attribute("password");
-                        qDebug()<<net_plugin.status<<" "<<net_plugin.hostname<<" "<<net_plugin.port;
-                    }
-                }
-            }
-            else if (e.tagName() == "SerialPorts") {
-                QDomNodeList list = e.childNodes();
-                //qDebug()<<list.count()<<"serialPorts";
-                for (int i = 0;i < list.count();i++) {
-                    QDomElement temp = list.at(i).toElement();
-                    qDebug()<<temp.tagName();
-                    if (temp.tagName() == "SerialPort") {
-                        Serial_port[temp.attribute("device")] = {temp.attribute("portName"),
-                                temp.attribute("baudRate"),temp.attribute("dataBits"),temp.attribute("stopBits"),
-                                temp.attribute("parity"),temp.attribute("writeBufferSize"),
-                                temp.attribute("readBufferSize")};
+//    QFile file("./data/GeneralConfig.xml");
+//    if (!file.open(QIODevice::ReadOnly)) {
+//        QMessageBox messageBox;
+//        messageBox.setText("open ./GeneralConfig.xml failed !");
+//        messageBox.exec();
+//        return -1;
+//    }
+//    QDomDocument doc;
+//    if (!doc.setContent(&file)) {
+//        file.close();
+//        QMessageBox messageBox;
+//        messageBox.setText("read GeneralConfig.xml failed !");
+//        messageBox.exec();
+//        return -1;
+//    }
+//    file.close();
+//    QDomElement domele = doc.documentElement();
+//    QDomNode n = domele.firstChild();
+//    while (!n.isNull()) {
+//        if (n.isElement()) {
+//            QDomElement e = n.toElement();
+//            if (e.tagName() == "WorkMode") {
+//                net_plugin.status = e.attribute("mode");
+//            }
+//            else if (e.tagName() == "DatabaseConnect") {
+//                QDomNodeList list = e.childNodes();
+//                qDebug()<<list.count()<<"databaseconnect";
+//                for (int i = 0;i < list.count();i++) {
+//                    if (list.at(i).toElement().tagName() == "RemoteDatabase") {
+//                        net_plugin.hostname = list.at(i).toElement().attribute("hostName");
+//                        net_plugin.port = list.at(i).toElement().attribute("port");
+//                        net_plugin.databaseName = list.at(i).toElement().attribute("databaseName");
+//                        net_plugin.userName =list.at(i).toElement().attribute("userName");
+//                        net_plugin.passwd = list.at(i).toElement().attribute("password");
+//                        qDebug()<<net_plugin.status<<" "<<net_plugin.hostname<<" "<<net_plugin.port;
+//                    }
+//                }
+//            }
+//            else if (e.tagName() == "SerialPorts") {
+//                QDomNodeList list = e.childNodes();
+//                //qDebug()<<list.count()<<"serialPorts";
+//                for (int i = 0;i < list.count();i++) {
+//                    QDomElement temp = list.at(i).toElement();
+//                    qDebug()<<temp.tagName();
+//                    if (temp.tagName() == "SerialPort") {
+//                        Serial_port[temp.attribute("device")] = {temp.attribute("portName"),
+//                                temp.attribute("baudRate"),temp.attribute("dataBits"),temp.attribute("stopBits"),
+//                                temp.attribute("parity"),temp.attribute("writeBufferSize"),
+//                                temp.attribute("readBufferSize")};
 
-                        //qDebug()<<Serial_port[temp.attribute("device")].parity;
+//                        //qDebug()<<Serial_port[temp.attribute("device")].parity;
 
-                    }
-                }
-            }
-        }
-        n = n.nextSibling();
-    }
-    return net_plugin.status.toInt();
+//                    }
+//                }
+//            }
+//        }
+//        n = n.nextSibling();
+//    }
+//    return net_plugin.status.toInt();
 }
 QString mytab::auto_zero(double from, double to) {
     QString tos = QString::number(to);

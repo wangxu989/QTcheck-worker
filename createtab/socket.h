@@ -12,6 +12,7 @@ class socket:public QObject
 public:
     ~socket();
     socket();
+    //sendmessage有待改善，做成template
     void sendmessage(int flag,void *content = NULL,const int num = 0,int column = 0,int user_ide = 0,const QString y = "",const QString x = "")const;
     infomation *info;
     QVector<tabinfo> *createinfo;

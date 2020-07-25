@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>img/员工.png</file>
-        <file>img/扫码.png</file>
-        <file>img/放大 (3).png</file>
-        <file>img/减号.png</file>
+        <file>img/worker.png</file>
+        <file>img/scan.png</file>
+        <file>img/+.png</file>
+        <file>img/-.png</file>
     </qresource>
 </RCC>

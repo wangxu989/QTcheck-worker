@@ -5,7 +5,6 @@
 #include <QFile>
 #include<QtXml/QDomDocument>
 #include<QTableWidget>
-//#include<qcustomplot.h>
 #include<QMouseEvent>
 #include<QDateTime>
 #include<QTime>
@@ -60,25 +59,6 @@ typedef struct work_info{
     QString checker_id;
     friend QDataStream& operator>>(QDataStream &os,struct work_info &info);
 }work_info;
-
-typedef struct{
-    QString hostname;
-    QString port;
-    QString databaseName;
-    QString userName;
-    QString passwd;
-    QString status;
-    //    friend QDataStream& operator<<(QDataStream &os,const struct network_plugin &a);
-}database_plugin;
-typedef  struct serialport{
-    QString portName;
-    QString baudRate;
-    QString dataBits;
-    QString stopBits;
-    QString parity;
-    QString writeBufferSize;
-    QString readBufferSize;
-}serialport_info;
 class infomation{
 public:
     friend QDataStream& operator<<(QDataStream &os,infomation &a);
@@ -126,9 +106,12 @@ public:
     double temp_val = -1;//暂存本次操作值
     //int
     QVector<tflag>flag;//标记该列是否被赋值过
+//    ~my_tablewidget() override{//无指针可以不用虚析构
+
+//    }
     my_tablewidget(){
-        this->setStyleSheet("QTableView QTableCornerButton::section{padding:12px 0 0 10px;"
-                            "background-position:center;");
+//        this->setStyleSheet("QTableView QTableCornerButton::section{padding:12px 0 0 10px"
+//                            "background-position:center;");
          QAbstractButton *btn = this->findChild<QAbstractButton *>();
         if (btn) {
             btn->setText(QStringLiteral("范围/时间"));
@@ -180,7 +163,7 @@ public:
                     state |= QStyle::State_Active;
                 if (btn->isDown())
                     state |= QStyle::State_Sunken;
-                opt.textAlignment = Qt::AlignCenter;
+                opt.textAlignment = Qt::AlignCenter;//居中
                 opt.state = state;
                 opt.rect = btn->rect();
                 opt.text = btn->text(); // this line is the only difference to QTableCornerButton
@@ -228,8 +211,6 @@ public:
     QVector<float>table_gap;
     QVector<QColor> color_scheme;//配色方案
     message_worker_evn messageWorkerEvn;
-    database_plugin net_plugin;
-    QMap<QString,serialport_info>Serial_port;
     QString  auto_zero(double from,double to);//自动补全'0'
     int start_time;//当前tab工作开始时间
     int work_start_time;//当天工作开始时间

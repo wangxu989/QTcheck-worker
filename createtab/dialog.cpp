@@ -2,20 +2,144 @@
 #include "ui_dialog.h"
 #include<QPixmap>
 #include<QImage>
+#include<QtXml/QDomDocument>
+#include<QFile>
+#include<QMessageBox>
+#include<QDebug>
+#include<QPushButton>
+//登录界面
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
     this->setStyleSheet("QWidget#Dialog{border-image: url(:/new/prefix1/img/bj.jpg);}");
+    mode = read_generalxml();
+    V_layout1 = new QVBoxLayout();
+    V_layout2 = new QVBoxLayout();
+    H_layout = new QHBoxLayout(this);
+    my_button::init_num();//初始化按钮个数
+    draw_init();
 }
 
 Dialog::~Dialog()
 {
     delete ui;
+    delete V_layout1;
+    delete V_layout2;
+    delete H_layout;
+    for (auto& a:app_button) {
+        delete a;
+    }
 }
+void Dialog::draw_init() {
+    int i = 0;
+    for (;i < app_button.size()/2;i++) {
+        app_button[i]->setText(app_name[i].second.split(" ")[0]);
+        app_button[i]->setFixedSize(160,160);
+        V_layout1->addWidget(app_button[i]);
+        app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
+        QPushButton{background-color:rgb(170,200,50)}\
+        QPushButton:hover{background-color:rgb(50, 170, 200)}");
+        connect(app_button[i],&my_button::clicked,this,[=]()mutable{emit ctl(i);});
+    }
+    for (;i < app_button.size();i++) {
+        app_button[i]->setText(app_name[i].second.split(" ")[0]);
+        app_button[i]->setFixedSize(160,160);
+        V_layout2->addWidget(app_button[i]);
+        app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
+        QPushButton{background-color:rgb(170,200,50)}\ QPushButton:hover{background-color:rgb(50, 170, 200)}");
+                                      connect(app_button[i],&my_button::clicked,this,[=]()mutable{emit ctl(i);});
+    }
+    H_layout->addLayout(V_layout1);
+    H_layout->addLayout(V_layout2);
+    connect(this,&Dialog::ctl,this,[&](int i)->void{
+        qDebug()<<i;
+        switch(i) {
+            case 0:
+            emit app1();
+            break;
+        case 1:
+            emit app2();
+            break;
+        case 2:
+            emit app3();
+            break;
+        case 3:
+            emit app4();
+            break;
+        }
+    });
 
-void Dialog::on_pushButton_clicked()
-{
-    emit sendData();
+}
+int Dialog::read_generalxml(){
+    QFile file("./data/GeneralConfig.xml");
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox messageBox;
+        messageBox.setText("open ./GeneralConfig.xml failed !");
+        messageBox.exec();
+        return -1;
+    }
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        QMessageBox messageBox;
+        messageBox.setText("read GeneralConfig.xml failed !");
+        messageBox.exec();
+        return -1;
+    }
+    file.close();
+    QDomElement domele = doc.documentElement();
+    QDomNode n = domele.firstChild();
+    while (!n.isNull()) {
+        if (n.isElement()) {
+            QDomElement e = n.toElement();
+            if (e.tagName() == "WorkMode") {
+                net_plugin.status = e.attribute("mode");
+            }
+            else if (e.tagName() == "DatabaseConnect") {
+                QDomNodeList list = e.childNodes();
+                qDebug()<<list.count()<<"databaseconnect";
+                for (int i = 0;i < list.count();i++) {
+                    if (list.at(i).toElement().tagName() == "RemoteDatabase") {
+                        net_plugin.hostname = list.at(i).toElement().attribute("hostName");
+                        net_plugin.port = list.at(i).toElement().attribute("port");
+                        net_plugin.databaseName = list.at(i).toElement().attribute("databaseName");
+                        net_plugin.userName =list.at(i).toElement().attribute("userName");
+                        net_plugin.passwd = list.at(i).toElement().attribute("password");
+                        qDebug()<<net_plugin.status<<" "<<net_plugin.hostname<<" "<<net_plugin.port;
+                    }
+                }
+            }
+            else if (e.tagName() == "SerialPorts") {
+                QDomNodeList list = e.childNodes();
+                //qDebug()<<list.count()<<"serialPorts";
+                for (int i = 0;i < list.count();i++) {
+                    QDomElement temp = list.at(i).toElement();
+                    qDebug()<<temp.tagName();
+                    if (temp.tagName() == "SerialPort") {
+                        Serial_port[temp.attribute("device")] = {temp.attribute("portName"),
+                                temp.attribute("baudRate"),temp.attribute("dataBits"),temp.attribute("stopBits"),
+                                temp.attribute("parity"),temp.attribute("writeBufferSize"),
+                                temp.attribute("readBufferSize")};
+
+                    }
+                }
+            }
+            else if (e.tagName() == "Applications") {
+                application_nums = e.attribute("number").toInt();
+                QDomNodeList list = e.childNodes();
+                for (int i = 0;i < list.size();i++) {
+                    QDomElement temp = list.at(i).toElement();
+                    if (temp.tagName() == "Application") {
+                        app_name.push_back( {temp.attribute("logo"),temp.attribute("startup_args")});
+                        qDebug()<<temp.attribute("startup_args");
+                        app_button.push_back(new my_button());
+                    }
+                }
+            }
+        }
+        n = n.nextSibling();
+    }
+    return net_plugin.status.toInt();
 }

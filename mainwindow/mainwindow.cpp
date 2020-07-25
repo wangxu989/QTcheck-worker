@@ -135,7 +135,7 @@ MainWindow::~MainWindow()
 }
 void MainWindow::draw() {
     button1 = new QPushButton("登陆确认");
-    QPixmap pix(":/img/扫码.png");  //图片路径
+    QPixmap pix(":/img/scan.png");  //图片路径
     label2 = new QLabel();
     label2->setScaledContents(true);//设置图片适应label
     label2->setPixmap(pix);

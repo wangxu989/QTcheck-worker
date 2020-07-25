@@ -553,7 +553,11 @@ benchmark: first
 compiler_rcc_make_all: qrc_img.cpp
 compiler_rcc_clean:
 	-$(DEL_FILE) qrc_img.cpp
-qrc_img.cpp: ../mainwindow/img.qrc
+qrc_img.cpp: ../mainwindow/img.qrc \
+		../mainwindow/img/-.png \
+		../mainwindow/img/+.png \
+		../mainwindow/img/scan.png \
+		../mainwindow/img/worker.png
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/rcc -name img ../mainwindow/img.qrc -o qrc_img.cpp
 
 compiler_moc_header_make_all: moc_mainwindow.cpp moc_qcustomplot.cpp moc_socketclient.cpp
@@ -3268,13 +3272,7 @@ mainwindow.o: ../mainwindow/mainwindow.cpp ../mainwindow/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqlquery.h \
-		ui_mainwindow.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAction \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QApplication \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QButtonGroup \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMenuBar \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QStatusBar \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QToolBar
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mainwindow/mainwindow.cpp
 
 my_port.o: ../mainwindow/my_port.cpp ../mainwindow/my_port.h \

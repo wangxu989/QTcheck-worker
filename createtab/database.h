@@ -6,6 +6,7 @@
 #include<QSqlQuery>
 #include<QDomDocument>
 #include<tab.h>
+#include<dialog.h>
 #include<QNetworkInterface>
 #include<QTime>
 //#include<socket.h>

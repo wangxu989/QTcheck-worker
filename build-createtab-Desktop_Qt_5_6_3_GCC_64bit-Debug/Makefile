@@ -564,17 +564,21 @@ compiler_rcc_make_all: qrc_img.cpp
 compiler_rcc_clean:
 	-$(DEL_FILE) qrc_img.cpp
 qrc_img.cpp: ../createtab/img.qrc \
+		../createtab/img/-.png \
 		../createtab/img/bj.jpg \
-		../createtab/img/spc.png
+		../createtab/img/cancel.png \
+		../createtab/img/spc.png \
+		../createtab/img/exit.png \
+		../createtab/img/return.png \
+		../createtab/img/+.png \
+		../createtab/img/worker.png
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/rcc -name img ../createtab/img.qrc -o qrc_img.cpp
 
 compiler_moc_header_make_all: moc_dialog.cpp moc_mainwindow.cpp moc_process_bar.cpp moc_tab.cpp moc_socket.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_dialog.cpp moc_mainwindow.cpp moc_process_bar.cpp moc_tab.cpp moc_socket.cpp
-moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs.h \
+moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qpair.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qconfig.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qfeatures.h \
@@ -604,6 +608,10 @@ moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qmutex.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qnumeric.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qobjectdefs.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qnamespace.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qobjectdefs_impl.h \
@@ -619,7 +627,6 @@ moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qalgorithms.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qiterator.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qhashfunctions.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qpair.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qbytearraylist.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qstringlist.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qregexp.h \
@@ -676,11 +683,17 @@ moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qfiledevice.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qvector2d.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qicon.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		../createtab/dialog.h
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/dialog.h -o moc_dialog.cpp
 
@@ -857,6 +870,19 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDebug \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/dialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -1019,16 +1045,6 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDebug \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QSemaphore \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
-		../createtab/dialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		../createtab/mainwindow.h
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/mainwindow.h -o moc_mainwindow.cpp
 
@@ -1637,6 +1653,19 @@ moc_socket.cpp: ../createtab/tab.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqlquery.h \
+		../createtab/dialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QProcess \
 		../createtab/socket.h \
@@ -1646,16 +1675,6 @@ moc_socket.cpp: ../createtab/tab.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qprogressbar.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
-		../createtab/dialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		../createtab/socket.h
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/socket.h -o moc_socket.cpp
 
@@ -1852,6 +1871,19 @@ database.o: ../createtab/database.cpp ../createtab/database.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/dialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -1859,15 +1891,12 @@ database.o: ../createtab/database.cpp ../createtab/database.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlError \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqlerror.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o database.o ../createtab/database.cpp
 
 dialog.o: ../createtab/dialog.cpp ../createtab/dialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qpair.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qconfig.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qfeatures.h \
@@ -1897,6 +1926,10 @@ dialog.o: ../createtab/dialog.cpp ../createtab/dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qmutex.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qnumeric.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qobjectdefs.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qnamespace.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qobjectdefs_impl.h \
@@ -1912,7 +1945,6 @@ dialog.o: ../createtab/dialog.cpp ../createtab/dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qalgorithms.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qiterator.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qhashfunctions.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qpair.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qbytearraylist.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qstringlist.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qregexp.h \
@@ -1969,16 +2001,21 @@ dialog.o: ../createtab/dialog.cpp ../createtab/dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/qfiledevice.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qvector2d.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qicon.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		ui_dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QVariant \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAction \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qaction.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qicon.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qactiongroup.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QApplication \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qapplication.h \
@@ -2007,13 +2044,15 @@ dialog.o: ../createtab/dialog.cpp ../createtab/dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtabbar.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qrubberband.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QSpacerItem \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QPixmap \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QImage
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QImage \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/QDomDocument \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qdom.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QFile \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o ../createtab/dialog.cpp
 
 main.o: ../createtab/main.cpp ../createtab/mainwindow.h \
@@ -2190,6 +2229,19 @@ main.o: ../createtab/main.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/dialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -2351,16 +2403,6 @@ main.o: ../createtab/main.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qprogressbar.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
-		../createtab/dialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		../createtab/form.h \
 		../createtab/qcustomplot.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPointer \
@@ -2546,7 +2588,6 @@ main.o: ../createtab/main.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qcheckbox.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qcombobox.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qcommandlinkbutton.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdatetimeedit.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdial.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialogbuttonbox.h \
@@ -2582,7 +2623,6 @@ main.o: ../createtab/main.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qprintengine.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qprinter.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qprinterinfo.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qprintpreviewwidget.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport/qtprintsupportversion.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../createtab/main.cpp
@@ -2761,6 +2801,19 @@ mainwindow.o: ../createtab/mainwindow.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/dialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -2922,16 +2975,6 @@ mainwindow.o: ../createtab/mainwindow.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qprogressbar.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
-		../createtab/dialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		ui_mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAction \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qaction.h \
@@ -2945,8 +2988,6 @@ mainwindow.o: ../createtab/mainwindow.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstatusbar.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QToolBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtoolbar.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/QPixmap
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../createtab/mainwindow.cpp
 
@@ -3566,6 +3607,19 @@ socket.o: ../createtab/socket.cpp ../createtab/socket.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqlquery.h \
+		../createtab/dialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QPair \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QProcess \
 		../createtab/process_bar.h \
@@ -3574,16 +3628,6 @@ socket.o: ../createtab/socket.cpp ../createtab/socket.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QSemaphore \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
-		../createtab/dialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QDialog \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QMap \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QAbstractSocket
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o socket.o ../createtab/socket.cpp
 
