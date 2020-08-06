@@ -203,7 +203,8 @@ DIST          = /opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/features/spec_pre.prf \
 		../mainwindow/mainwindow.pro ../mainwindow/mainwindow.h \
 		../mainwindow/my_port.h \
 		../mainwindow/qcustomplot.h \
-		../mainwindow/socketclient.h ../mainwindow/main.cpp \
+		../mainwindow/socketclient.h \
+		../mainwindow/base_pragram.h ../mainwindow/main.cpp \
 		../mainwindow/mainwindow.cpp \
 		../mainwindow/my_port.cpp \
 		../mainwindow/qcustomplot.cpp \
@@ -525,7 +526,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../mainwindow/img.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../mainwindow/mainwindow.h ../mainwindow/my_port.h ../mainwindow/qcustomplot.h ../mainwindow/socketclient.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../mainwindow/mainwindow.h ../mainwindow/my_port.h ../mainwindow/qcustomplot.h ../mainwindow/socketclient.h ../mainwindow/base_pragram.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../mainwindow/main.cpp ../mainwindow/mainwindow.cpp ../mainwindow/my_port.cpp ../mainwindow/qcustomplot.cpp ../mainwindow/socketclient.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../mainwindow/mainwindow.ui $(DISTDIR)/
 
@@ -3272,7 +3273,10 @@ mainwindow.o: ../mainwindow/mainwindow.cpp ../mainwindow/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsql.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql/qsqlquery.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAction \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QButtonGroup
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mainwindow/mainwindow.cpp
 
 my_port.o: ../mainwindow/my_port.cpp ../mainwindow/my_port.h \

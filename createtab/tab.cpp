@@ -43,17 +43,18 @@ mytab::mytab() {
     color_scheme[1] = Qt::yellow;
     color_scheme[2] = Qt::red;
     color_scheme[3] = QColor::fromRgb(QRgb(0xFF8C00));//橙色
-    color_scheme[4] = QColor::fromRgb(QRgb(0x8c1717));//猩红色
+    color_scheme[4] = QColor::fromRgb(QRgb(0xC71585));//紫罗兰色
     color_scheme[5] = Qt::gray;
     color_scheme[6] = Qt::white;
     color_scheme[7] = Qt::blue;
     work_start_time = 8*3600 + 60*30;
+    qDebug()<<work_start_time<<" work_start_time";
 
 }
 mytab::~mytab(){
-        for (int i = 0;i < table.size();i++) {//释放所有tablewidget空间
-            delete table[i];
-        }
+    for (int i = 0;i < table.size();i++) {//释放所有tablewidget空间
+        delete table[i];
+    }
 }
 void mytab::showEvent(QShowEvent *) {
     int width = this->width();
@@ -120,7 +121,10 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
         box.exec();
         exit(-1);
     }
-    int numrow = (int)((createinfo.zgc - createinfo.fgc)/createinfo.jddw) + 1 + 1;//行数
+    int numrow = (int)createinfo.normvalue == 0?2: (int)((createinfo.zgc - createinfo.fgc)/createinfo.jddw) + 1 + 1;//行数
+    //OK,NG和普通版本
+
+
     qDebug()<<"正公差:"<<createinfo.zgc<<"负公差 "<<createinfo.fgc<<"精度单位 "<<createinfo.jddw;
     double gap;//按秒
     if (info.detect_mode == "0") {//按时间
@@ -173,23 +177,41 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     t->setHorizontalHeaderLabels(verticalhead);//水平表头
     //纵表头
     QStringList verti;
-    verti.append(auto_zero(createinfo.jddw,createinfo.normvalue + createinfo.zgc) + "<X");
-    for (int i = 1;i < numrow - 1;i++) {
-        double temp = (sum - createinfo.jddw) < (createinfo.normvalue + createinfo.fgc)? createinfo.normvalue + createinfo.fgc:sum - createinfo.jddw;
-        QString left = auto_zero(createinfo.jddw,temp);
-        QString right = auto_zero(createinfo.jddw,sum);
-        if (i != numrow - 2) {
-            verti.append(left + "<" + "X" + "≤" + right);
-        }
-        else {
-            verti.append(left + "≤" + "X" + "≤" + right);
-        }
-        sum = temp;
+    if ((int)createinfo.normvalue == 0) {
+        verti<<"OK"<<"NG";
+        t->setVerticalHeaderLabels(verti);
     }
-    verti.append("X<"+ auto_zero(createinfo.jddw,createinfo.normvalue + createinfo.fgc));
-    t->setVerticalHeaderLabels(verti);
-    t->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-    t->verticalHeader()->setDefaultAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+    else {
+        verti.append(auto_zero(createinfo.jddw,createinfo.normvalue + createinfo.zgc) + "<X");
+        for (int i = 1;i < numrow - 1;i++) {
+            double temp = (sum - createinfo.jddw) < (createinfo.normvalue + createinfo.fgc)? createinfo.normvalue + createinfo.fgc:sum - createinfo.jddw;
+            QString left = auto_zero(createinfo.jddw,temp);
+            QString right = auto_zero(createinfo.jddw,sum);
+            if (i != numrow - 2) {
+                verti.append(left + "<" + "X" + "≤" + right);
+            }
+            else {
+                verti.append(left + "≤" + "X" + "≤" + right);
+            }
+            sum = temp;
+        }
+        verti.append("X<"+ auto_zero(createinfo.jddw,createinfo.normvalue + createinfo.fgc));
+        t->setVerticalHeaderLabels(verti);
+        qDebug()<<t->rowCount()<<" "<<t->columnCount();
+        t->verticalHeaderItem(0)->setBackground(QBrush(color_scheme[2]));
+        qDebug()<<"color head end";
+        t->verticalHeaderItem(t->rowCount()-1)->setBackground(QBrush(color_scheme[2]));
+        for (int i = 1;i <= t->rowCount() - 2;i++) {//设置垂直表头颜色
+            if (i <= info.warn_thr.toInt() || t->rowCount() -1 - i <= info.warn_thr.toInt()) {
+                t->verticalHeaderItem(i)->setBackground(QBrush(color_scheme[1]));//黄色
+            }
+            else {
+                t->verticalHeaderItem(i)->setBackground(QBrush(color_scheme[0]));//绿色
+            }
+
+        }
+        qDebug()<<"color head end";
+    }
     for (int i = 0;i < numcolumn;i++) {
         for (int j = 0;j < numrow;j++) {
             if (!(t->item(j,i))) {
@@ -199,24 +221,13 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
             }
         }
     }
-    qDebug()<<t->rowCount()<<" "<<t->columnCount();
-    t->verticalHeaderItem(0)->setBackground(QBrush(color_scheme[2]));
-    qDebug()<<"color head end";
-    t->verticalHeaderItem(t->rowCount()-1)->setBackground(QBrush(color_scheme[2]));
-    for (int i = 1;i < t->rowCount() - 2;i++) {//设置垂直表头颜色
-        if (i <= info.warn_thr.toInt() || t->rowCount() -1 - i <= info.warn_thr.toInt()) {
-            t->verticalHeaderItem(i)->setBackground(QBrush(color_scheme[1]));
-        }
-        else {
-            t->verticalHeaderItem(i)->setBackground(QBrush(color_scheme[0]));
-        }
-
-    }
-    qDebug()<<"color head end";
+    t->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+    t->verticalHeader()->setDefaultAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
     t->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     t->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    t->setSelectionBehavior(QAbstractItemView::SelectItems);
-    t->setSelectionMode(QAbstractItemView::SingleSelection);
+    //t->setSelectionBehavior(QAbstractItemView::SelectItems);
+    //t->setSelectionMode(QAbstractItemView::SingleSelection);//选中一行
+    //t->setSelectionMode(QAbstractItemView::NoSelection);//取消选中样式
     t->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->addTab(widget,name);
 }
@@ -347,22 +358,22 @@ void mytab::read_gauge(work_info &workInfo) {
     while (!n.isNull()) {
         if (n.isElement()) {
             QDomElement e = n.toElement();
-                if (e.tagName() == "User") {
-                    if (e.attribute("user_id") == workInfo.worker_id.split(",")[1]) {
-                        QDomNodeList list = e.childNodes();
-                        for (int i = 0;i < list.size();i++) {
-                            QDomNode node = list.at(i);
-                            QDomElement e_node = node.toElement();
-                            QString t = workInfo.instruction_id.split(",")[1].mid(0,6);
-                            qDebug()<<t<<" "<<e_node.attribute("product_no");
-                            if (e_node.tagName() == "Item" && e_node.attribute("product_no") == t && e_node.attribute("char_no").toInt()<= createinfo.size()) {
-                                createinfo[e_node.attribute("char_no").toInt() - 1].gauge = e_node.attribute("gauge_no");
-                                qDebug()<<createinfo[e_node.attribute("char_no").toInt() - 1].gauge<<"gauge_no!!!";
-                            }
+            if (e.tagName() == "User") {
+                if (e.attribute("user_id") == workInfo.worker_id.split(",")[1]) {
+                    QDomNodeList list = e.childNodes();
+                    for (int i = 0;i < list.size();i++) {
+                        QDomNode node = list.at(i);
+                        QDomElement e_node = node.toElement();
+                        QString t = workInfo.instruction_id.split(",")[1].mid(0,6);
+                        qDebug()<<t<<" "<<e_node.attribute("product_no");
+                        if (e_node.tagName() == "Item" && e_node.attribute("product_no") == t && e_node.attribute("char_no").toInt()<= createinfo.size()) {
+                            createinfo[e_node.attribute("char_no").toInt() - 1].gauge = e_node.attribute("gauge_no");
+                            qDebug()<<createinfo[e_node.attribute("char_no").toInt() - 1].gauge<<"gauge_no!!!";
                         }
                     }
                 }
             }
+        }
         n = n.nextSibling();
     }
 }
@@ -465,65 +476,65 @@ int mytab::read_local_env(const work_info &workInfo,int flag) {
 }
 
 int  mytab::nekwork_or_local() {//0为网络版1为本地版
-//    QFile file("./data/GeneralConfig.xml");
-//    if (!file.open(QIODevice::ReadOnly)) {
-//        QMessageBox messageBox;
-//        messageBox.setText("open ./GeneralConfig.xml failed !");
-//        messageBox.exec();
-//        return -1;
-//    }
-//    QDomDocument doc;
-//    if (!doc.setContent(&file)) {
-//        file.close();
-//        QMessageBox messageBox;
-//        messageBox.setText("read GeneralConfig.xml failed !");
-//        messageBox.exec();
-//        return -1;
-//    }
-//    file.close();
-//    QDomElement domele = doc.documentElement();
-//    QDomNode n = domele.firstChild();
-//    while (!n.isNull()) {
-//        if (n.isElement()) {
-//            QDomElement e = n.toElement();
-//            if (e.tagName() == "WorkMode") {
-//                net_plugin.status = e.attribute("mode");
-//            }
-//            else if (e.tagName() == "DatabaseConnect") {
-//                QDomNodeList list = e.childNodes();
-//                qDebug()<<list.count()<<"databaseconnect";
-//                for (int i = 0;i < list.count();i++) {
-//                    if (list.at(i).toElement().tagName() == "RemoteDatabase") {
-//                        net_plugin.hostname = list.at(i).toElement().attribute("hostName");
-//                        net_plugin.port = list.at(i).toElement().attribute("port");
-//                        net_plugin.databaseName = list.at(i).toElement().attribute("databaseName");
-//                        net_plugin.userName =list.at(i).toElement().attribute("userName");
-//                        net_plugin.passwd = list.at(i).toElement().attribute("password");
-//                        qDebug()<<net_plugin.status<<" "<<net_plugin.hostname<<" "<<net_plugin.port;
-//                    }
-//                }
-//            }
-//            else if (e.tagName() == "SerialPorts") {
-//                QDomNodeList list = e.childNodes();
-//                //qDebug()<<list.count()<<"serialPorts";
-//                for (int i = 0;i < list.count();i++) {
-//                    QDomElement temp = list.at(i).toElement();
-//                    qDebug()<<temp.tagName();
-//                    if (temp.tagName() == "SerialPort") {
-//                        Serial_port[temp.attribute("device")] = {temp.attribute("portName"),
-//                                temp.attribute("baudRate"),temp.attribute("dataBits"),temp.attribute("stopBits"),
-//                                temp.attribute("parity"),temp.attribute("writeBufferSize"),
-//                                temp.attribute("readBufferSize")};
+    //    QFile file("./data/GeneralConfig.xml");
+    //    if (!file.open(QIODevice::ReadOnly)) {
+    //        QMessageBox messageBox;
+    //        messageBox.setText("open ./GeneralConfig.xml failed !");
+    //        messageBox.exec();
+    //        return -1;
+    //    }
+    //    QDomDocument doc;
+    //    if (!doc.setContent(&file)) {
+    //        file.close();
+    //        QMessageBox messageBox;
+    //        messageBox.setText("read GeneralConfig.xml failed !");
+    //        messageBox.exec();
+    //        return -1;
+    //    }
+    //    file.close();
+    //    QDomElement domele = doc.documentElement();
+    //    QDomNode n = domele.firstChild();
+    //    while (!n.isNull()) {
+    //        if (n.isElement()) {
+    //            QDomElement e = n.toElement();
+    //            if (e.tagName() == "WorkMode") {
+    //                net_plugin.status = e.attribute("mode");
+    //            }
+    //            else if (e.tagName() == "DatabaseConnect") {
+    //                QDomNodeList list = e.childNodes();
+    //                qDebug()<<list.count()<<"databaseconnect";
+    //                for (int i = 0;i < list.count();i++) {
+    //                    if (list.at(i).toElement().tagName() == "RemoteDatabase") {
+    //                        net_plugin.hostname = list.at(i).toElement().attribute("hostName");
+    //                        net_plugin.port = list.at(i).toElement().attribute("port");
+    //                        net_plugin.databaseName = list.at(i).toElement().attribute("databaseName");
+    //                        net_plugin.userName =list.at(i).toElement().attribute("userName");
+    //                        net_plugin.passwd = list.at(i).toElement().attribute("password");
+    //                        qDebug()<<net_plugin.status<<" "<<net_plugin.hostname<<" "<<net_plugin.port;
+    //                    }
+    //                }
+    //            }
+    //            else if (e.tagName() == "SerialPorts") {
+    //                QDomNodeList list = e.childNodes();
+    //                //qDebug()<<list.count()<<"serialPorts";
+    //                for (int i = 0;i < list.count();i++) {
+    //                    QDomElement temp = list.at(i).toElement();
+    //                    qDebug()<<temp.tagName();
+    //                    if (temp.tagName() == "SerialPort") {
+    //                        Serial_port[temp.attribute("device")] = {temp.attribute("portName"),
+    //                                temp.attribute("baudRate"),temp.attribute("dataBits"),temp.attribute("stopBits"),
+    //                                temp.attribute("parity"),temp.attribute("writeBufferSize"),
+    //                                temp.attribute("readBufferSize")};
 
-//                        //qDebug()<<Serial_port[temp.attribute("device")].parity;
+    //                        //qDebug()<<Serial_port[temp.attribute("device")].parity;
 
-//                    }
-//                }
-//            }
-//        }
-//        n = n.nextSibling();
-//    }
-//    return net_plugin.status.toInt();
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        n = n.nextSibling();
+    //    }
+    //    return net_plugin.status.toInt();
 }
 QString mytab::auto_zero(double from, double to) {
     QString tos = QString::number(to);
@@ -567,38 +578,38 @@ void mytab::modify_gauge(work_info &workInfo, int index) {
     while (!n.isNull()) {
         if (n.isElement()) {
             QDomElement e = n.toElement();
-                if (e.tagName() == "User") {
-                    if (e.attribute("user_id") == workInfo.worker_id.split(",")[1]) {
-                        QDomNodeList list = e.childNodes();
-                        int i = 0;
-                        for (;i < list.size();i++) {
-                            QDomNode node = list.at(i);
-                            QDomElement e_node = node.toElement();
-                            if (e_node.tagName() == "Item" &&  e_node.attribute("char_no").toInt() == index + 1) {
-                                //modify
-                                e_node.setAttribute("gauge_no",this->createinfo[index].gauge);
-                                break;
-                            }
+            if (e.tagName() == "User") {
+                if (e.attribute("user_id") == workInfo.worker_id.split(",")[1]) {
+                    QDomNodeList list = e.childNodes();
+                    int i = 0;
+                    for (;i < list.size();i++) {
+                        QDomNode node = list.at(i);
+                        QDomElement e_node = node.toElement();
+                        if (e_node.tagName() == "Item" &&  e_node.attribute("char_no").toInt() == index + 1) {
+                            //modify
+                            e_node.setAttribute("gauge_no",this->createinfo[index].gauge);
+                            break;
                         }
-                        if (i == list.size()) {
-                            //add
-                            QDomElement addInfo=doc.createElement("Item");
-                            addInfo.setAttribute("product_no",workInfo.instruction_id.split(",")[1].mid(0,6));
-                            addInfo.setAttribute("char_no",index + 1);
-                            addInfo.setAttribute("char_desc",createinfo[index].char_desc);
-                            addInfo.setAttribute("gauge_no",createinfo[index].gauge);
-                            e.appendChild(addInfo);
-                        }
+                    }
+                    if (i == list.size()) {
+                        //add
+                        QDomElement addInfo=doc.createElement("Item");
+                        addInfo.setAttribute("product_no",workInfo.instruction_id.split(",")[1].mid(0,6));
+                        addInfo.setAttribute("char_no",index + 1);
+                        addInfo.setAttribute("char_desc",createinfo[index].char_desc);
+                        addInfo.setAttribute("gauge_no",createinfo[index].gauge);
+                        e.appendChild(addInfo);
                     }
                 }
             }
+        }
         n = n.nextSibling();
     }
     if(!file.open(QFile::WriteOnly|QFile::Truncate)){ return;} //先读进来，再重写，如果不用truncate就是在后面追加内容，就无效了
-         //输出到文件
-         QTextStream out_stream(&file);
-         doc.save(out_stream,4); //缩进4格
-         file.close();
+    //输出到文件
+    QTextStream out_stream(&file);
+    doc.save(out_stream,4); //缩进4格
+    file.close();
 }
 
 

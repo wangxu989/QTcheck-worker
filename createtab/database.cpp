@@ -2,30 +2,47 @@
 #include<QFile>
 #include<QSqlError>
 #include<QMessageBox>
-database::database(database_plugin& net_plugin,mytab& tab1,work_info& Info):plugin(net_plugin),tab(tab1),workInfo(Info)//网络版
-{
-    db = QSqlDatabase::addDatabase("QMYSQL","network");
-    createdatabase();
-    read_data(tab);//首先读取client_cfg配置文件
-    query = db.exec();
+extern socket *my_socket;
+QDataStream& operator<<(QDataStream& os,const producttab& p) {
+    os<<p.productID;
+    os<<p.productName;
+    os<<p.productState;
+    os<<p.clientProductName;
+    os<<p.clientDrawingID;
+    os<<p.ourDrawingID;
+    os<<p.clientVersion;
+    return os;
 }
-database::database(work_info& Info,mytab &tab1):workInfo(Info),tab(tab1)//保存本地工作信息
-{
-    db = QSqlDatabase::addDatabase("QSQLITE","local");
-    db.setDatabaseName("./data/work_record");
-    if (!db.open()) {
-        QMessageBox box(QMessageBox::NoIcon,"sqlite","open filed!",NULL,NULL);
-        box.exec();
-    }
-    query = db.exec();
-    createtable();//创建用于保存数据的本地数据库
-    insert_record();
+QDataStream& operator<<(QDataStream& os,const plansteptab& p1) {
+    os<<p1.PlanStepID;
+    os<<p1.cProcessIndex;
+    os<<p1.cProcessName;
+    os<<p1.cProcessDetail;
+    os<<p1.cWorkShop;
+    os<<p1.cWorkSection;
+    os<<p1.cDevice;
+    os<<p1.cProcessEquip;
+    os<<p1.cWorkHour;
+    os<<p1.cMustQC;
+    os<<p1.cStdCount;
+    os<<p1.cCountRatio;
+    return os;
 }
-database::~database() {
 
+QDataStream& operator<<(QDataStream& os,const plantab& p1) {
+    os<<p1.PlanID;//计划号18位
+    os<<p1.PlanCount;
+    os<<p1.EndCount;
+    os<<p1.PlanEndDate;
+    os<<p1.PlanState;
+    os<<p1.cCappName;
+    os<<p1.ElseInf;//物料编码
+    os<<p1.IsRework;
+    os<<p1.CreateUser;
+    os<<p1.CreateTime;
+    return os;
 }
-
-void database::createdatabase() {
+void database_server::createdatabase() {
     db.setHostName(plugin.hostname);
     db.setUserName(plugin.userName);
     db.setDatabaseName(plugin.databaseName);
@@ -43,7 +60,8 @@ void database::createdatabase() {
     }
 
 }
-void database::read_data(mytab& tab) {//读取远程数据库中工作信息
+
+void database_server::read_data() {//读取远程数据库中工作信息
     //1.获取本机mac地址
     QList<QNetworkInterface> nets = QNetworkInterface::allInterfaces();//获取所有网络接口列表
     for (int i = 0;i < nets.count();i++) {
@@ -73,7 +91,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
     if (mode.toInt() == 1) {
         //正常工作模式
         //首先判断工作人员信息是否合法
-        query.exec("select * from auth_user where user_id = " + workInfo.worker_id.split(",")[workInfo.worker_id.split(",").size() - 1]);
+        query.exec("select * from auth_user where user_id = " + workInfo->worker_id.split(",")[workInfo->worker_id.split(",").size() - 1]);
         if (query.size() == 0) {
             QMessageBox box(QMessageBox::NoIcon,"title","员工信息不合法",NULL,NULL);
             box.exec();
@@ -92,7 +110,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         }
 
         //检索数据库寻找对应的工作信息
-        QString find_work = workInfo.instruction_id.split(",")[1].mid(0,6);//暂定
+        QString find_work = workInfo->instruction_id.split(",")[1].mid(0,6);//暂定
         query.prepare("select * from spc_schemes where product_no = ?");
         query.bindValue(0,find_work);
         if (!query.exec()) {
@@ -109,20 +127,20 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
         qDebug()<<"start read net_sche_info";
         while (query.next()) {
             qDebug()<<"start read net_sche_info"<<query.value(0).toInt()<<" "<<query.value(1).toString();
-            tab.info.product_no = query.value(1).toString();
-            qDebug()<<"1   "<<tab.info.product_no;
-            tab.info.warn_thr = query.value(9).toString();
+            tab->info.product_no = query.value(1).toString();
+            qDebug()<<"1   "<<tab->info.product_no;
+            tab->info.warn_thr = query.value(9).toString();
             qDebug()<<"9";
-            tab.info.chk_warn_thr = query.value(10).toString();
-            tab.info.detect_mode = query.value(11).toString();
-            tab.info.time_interval = query.value(12).toString();
-            tab.info.cycle_time = query.value(13).toString();
-            tab.info.sample_cnt = query.value(14).toString();
-            tab.info.disp_element_cnt = query.value(15).toString();
-            tab.info.trend_warn_win = query.value(17).toString();
-            tab.info.lock_time = query.value(16).toString();
-            tab.my.x.resize(row_count);
-            tab.my.y.resize(row_count);
+            tab->info.chk_warn_thr = query.value(10).toString();
+            tab->info.detect_mode = query.value(11).toString();
+            tab->info.time_interval = query.value(12).toString();
+            tab->info.cycle_time = query.value(13).toString();
+            tab->info.sample_cnt = query.value(14).toString();
+            tab->info.disp_element_cnt = query.value(15).toString();
+            tab->info.trend_warn_win = query.value(17).toString();
+            tab->info.lock_time = query.value(16).toString();
+            tab->my.x.resize(row_count);
+            tab->my.y.resize(row_count);
             tabinfo temp;
             temp.featureid = QString::number(query.value(2).toFloat());
             temp.char_desc = query.value(3).toString();
@@ -131,10 +149,10 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
             temp.fgc = query.value(6).toDouble();
             temp.jddw = query.value(7).toDouble();
             temp.ejjddw = query.value(8).toDouble();
-            tab.createinfo.push_back(temp);
+            tab->createinfo.push_back(temp);
             qDebug()<<"网络版配置已读完";
-            qDebug()<<tab.info.chk_warn_thr<<" "<<tab.info.cycle_time<<" "<<tab.info.detect_mode<<" "<<tab.info.disp_element_cnt<<" "<<tab.info.lock_time;
-            tab.tabadd(temp,tab.info);
+            qDebug()<<tab->info.chk_warn_thr<<" "<<tab->info.cycle_time<<" "<<tab->info.detect_mode<<" "<<tab->info.disp_element_cnt<<" "<<tab->info.lock_time;
+            tab->tabadd(temp,tab->info);
         }
     }
     else if (mode.toInt() == 2){//维护模式
@@ -152,7 +170,7 @@ void database::read_data(mytab& tab) {//读取远程数据库中工作信息
 
 
 }
-void database::createtable() {
+void database_local::createtable() {
     //work_record
     if (!query.exec("create table if not exists local_work_record(id integer primary key AUTOINCREMENT,"//记录号自增
                     "user_id varchar(32),"//员工码
@@ -188,22 +206,22 @@ void database::createtable() {
         qDebug()<<"foreign_key failed!";
     }
 }
-void database::insert_record() {
+void database_local::insert_record() {
 
     query.prepare("insert into local_work_record (user_id,start_time,finish_time,"
                   "work_state,produce_id,equip_id,workstation,gauge_no)"
                   "values(?,?,?,?,?,?,?,?)");
-    query.bindValue(0,workInfo.worker_id.split(",")[1].mid(0,6));
+    query.bindValue(0,workInfo->worker_id.split(",")[1].mid(0,6));
     QDateTime time = QDateTime::currentDateTime();
     //QString n = time.toUTC().toString();
     //qDebug()<<n;
     query.bindValue(1,QString::number(time.toTime_t()));
     query.bindValue(2,"");
     query.bindValue(3,'0');
-    query.bindValue(4,workInfo.instruction_id.split(",")[1]);
-    query.bindValue(5,workInfo.product_id.split(",")[1]);
-    query.bindValue(6,tab.messageWorkerEvn.localEnv.workstation);
-    query.bindValue(7,tab.messageWorkerEvn.localEnv.gauge_no);
+    query.bindValue(4,workInfo->instruction_id.split(",")[1]);
+    query.bindValue(5,workInfo->product_id.split(",")[1]);
+    query.bindValue(6,tab->messageWorkerEvn.localEnv.workstation);
+    query.bindValue(7,tab->messageWorkerEvn.localEnv.gauge_no);
     if (!query.exec()) {
         QSqlError error = query.lastError();
         qDebug()<<error.databaseText();
@@ -212,23 +230,25 @@ void database::insert_record() {
     }
     last_insert_id = query.lastInsertId().toInt();
 }
-void database::insert_data(const double &data,const  int &flag,const int &operation_flag){
+void database_local::insert_data(const double &data,const  int &flag,const int &operation_flag){//flag为是否合格
     QDateTime now = QDateTime::currentDateTime();
-    int ele_SD = (now.time().hour()*3600 + now.time().minute()*60 + now.time().second() - tab.work_start_time)/tab.table[tab.currentIndex()]->gap *(tab.currentIndex() + 1);
+    qDebug()<<" "<<tab->table[tab->currentIndex()]->gap<<" "<<tab->currentIndex() + 1;
+    int ele_SD = (now.time().hour()*3600 + now.time().minute()*60 + now.time().second() - tab->work_start_time)/tab->table[tab->currentIndex()]->gap *(tab->currentIndex() + 1);
+    qDebug()<<ele_SD<<"SD";
     if (operation_flag == 0) {//操作员增加
         query.prepare("insert into local_measure_data(work_id,gauge_no,measure_time,measure_value,"
                       "checker,chk_time,chk_value,meas_rlt_id,chk_rlt,char_id,element_SD)"
                       "values(?,?,?,?,?,?,?,?,?,?,?)");
         query.bindValue(0,last_insert_id);
         query.bindValue(2,QString::number(now.toTime_t()));
-        query.bindValue(1,tab.messageWorkerEvn.localEnv.gauge_no);
+        query.bindValue(1,tab->messageWorkerEvn.localEnv.gauge_no);
         query.bindValue(3,QString::number(data));
         query.bindValue(4,"");
         query.bindValue(5,"");
         query.bindValue(6,"");
         query.bindValue(7,flag);
         query.bindValue(8,"");
-        query.bindValue(9,tab.createinfo[tab.currentIndex()].featureid.toInt());
+        query.bindValue(9,tab->createinfo[tab->currentIndex()].featureid.toInt());
         query.bindValue(10,ele_SD);
     }
     else if (operation_flag == 1) {//操作员修改
@@ -241,7 +261,7 @@ void database::insert_data(const double &data,const  int &flag,const int &operat
     }
     else if (operation_flag == 2) {//核验员操作,和修改
         query.prepare("update local_measure_data set checker = ?,chk_time = ?,chk_value = ?,chk_rlt = ? where element_SD = ? and work_id = ?");
-        query.bindValue(0,workInfo.checker_id);
+        query.bindValue(0,workInfo->checker_id);
         query.bindValue(1,QString::number(now.toTime_t()));
         query.bindValue(2,QString::number(data));
         query.bindValue(3,flag);
@@ -255,19 +275,134 @@ void database::insert_data(const double &data,const  int &flag,const int &operat
         box.exec();
     }
 }
-void database::spc_event(QString type) {
+void database_server::spc_event(QString type) {
     QDateTime now = QDateTime::currentDateTime();
     query.prepare("insert into spc_event (client_id,event_time,event_type,user_id,equip_id,work_id)"
                   "values(?,?,?,?,?,?)");
     query.bindValue(0,mac_address);
     query.bindValue(1,now.toString("yyyyMMddhhmmss"));
     query.bindValue(2,type);
-    query.bindValue(3,workInfo.worker_id.split(",")[1]);
-    query.bindValue(4,workInfo.product_id.split(",")[1]);
-    query.bindValue(5,workInfo.instruction_id.split(",")[1]);
+    query.bindValue(3,workInfo->worker_id.split(",")[1]);
+    query.bindValue(4,workInfo->product_id.split(",")[1]);
+    query.bindValue(5,workInfo->instruction_id.split(",")[1]);
     if (!query.exec()) {
         QSqlError error = query.lastError();
         QMessageBox box(QMessageBox::NoIcon,"mysql","上报失败 " + error.databaseText(),NULL,NULL);
         box.exec();
     }
+}
+void database_server::remove_t() {
+    int id = query.lastInsertId().toInt();
+    if (!query.exec("delete from spc_event where id = " + QString::number(id))) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql","删除上条上报信息失败" + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
+}
+void database_server::read_plantab(const QString& s,const QString& flag) {
+    //read_producttab
+    QString prod = "select * from producttab where productID = " + s;
+    if (!query.exec(prod)) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
+    producttab prod_t;
+    while (query.next()) {
+            prod_t.productID = query.value(1).toString();
+            prod_t.productName = query.value(2).toString();
+            prod_t.clientProductName = query.value(4).toString();
+            prod_t.clientDrawingID = query.value(5).toString();
+            prod_t.productState = query.value(6).toString();
+            prod_t.clientVersion = query.value(16).toString();
+            prod_t.ourDrawingID = query.value(17).toString();
+            my_socket->sendmessage(48,(void *)&prod_t);
+    }
+
+
+
+
+    QString q = "select * from plantab where left(PlanID,6)=" + s + " and PlanState = " +"'" + flag + "'";
+    if (!query.exec(q)) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
+    plantab planTab;
+    plantab_size = query.size();
+    my_socket->sendmessage(51,(void *)&plantab_size);
+    qDebug()<<q<<query.size();
+    while(query.next()) {
+        planTab.PlanID = query.value(0).toString();
+        planTab.CreateTime = query.value(1).toString();
+        planTab.CreateUser = query.value(2).toString();
+        planTab.PlanEndDate = query.value(3).toString();
+        planTab.ElseInf = query.value(4).toString();
+        planTab.PlanCount = query.value(5).toString();
+        planTab.EndCount = query.value(6).toString();
+        planTab.PlanState = query.value(8).toString();
+        planTab.IsRework = query.value(22).toString();
+        planTab.cCappName = query.value(9).toString();
+        qDebug()<< planTab.PlanID ;
+        rec_plantab.push_back(planTab);
+        my_socket->sendmessage(50,(void *)&planTab);
+    }
+    update_step();
+}
+void database_server::read_producttab(const QString &s) {
+    QString q =  "select * from producttab where productID = " + s;
+    if (!query.exec()) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
+    while(query.next()) {
+
+    }
+}
+void database_server::update_step() {
+    QString temp_S = "select * from plansteptab where left(PlanStepID,18) = '" + rec_plantab[plantab_now].PlanID + "'" ;
+    if (!query.exec(temp_S)) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
+     qDebug()<<temp_S<<" "<<query.size();
+    planstep_size = query.size();
+    plansteptab plan_step_tab;
+    int size_t = query.size();
+    my_socket->sendmessage(53,(void *)&size_t);
+    while (query.next()) {
+        plan_step_tab.PlanStepID = query.value(0).toString();
+        plan_step_tab.cProcessIndex = query.value(2).toString();
+        plan_step_tab.cProcessName = query.value(3).toString();
+        plan_step_tab.cProcessDetail = query.value(4).toString();
+        plan_step_tab.cWorkShop = query.value(5).toString();
+        plan_step_tab.cWorkSection = query.value(6).toString();
+        plan_step_tab.cDevice = query.value(7).toString();
+        plan_step_tab.cProcessEquip = query.value(8).toString();
+        plan_step_tab.cWorkHour = query.value(9).toString();
+        plan_step_tab.cMustQC = query.value(12).toString();
+        plan_step_tab.cStdCount = query.value(13).toString();
+        plan_step_tab.cCountRatio = query.value(15).toString();
+        my_socket->sendmessage(52,(void *)&plan_step_tab);
+    }
+}
+void database_server::add_tab() {//plantab下add
+    if (plantab_now < plantab_size) {
+        plantab_now++;
+        int act = 0;
+        my_socket->sendmessage(49,(void *)&act);
+        update_step();
+    }
+    qDebug()<<plantab_now;
+}
+void database_server::reducetab() {
+    if (plantab_now > 0) {
+        plantab_now--;
+        int act = 1;
+        my_socket->sendmessage(49,(void *)&act);
+        update_step();
+    }
+    qDebug()<<plantab_now;
 }

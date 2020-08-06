@@ -27,7 +27,8 @@ SOURCES += \
     mainwindow.cpp \
     process_bar.cpp \
     tab.cpp \
-    socket.cpp
+    socket.cpp \
+    program2.cpp
 
 HEADERS += \
     database.h \
@@ -35,12 +36,15 @@ HEADERS += \
     mainwindow.h \
     process_bar.h \
     tab.h \
-    socket.h
+    socket.h \
+    base_program.h \
+    program2.h
 
 FORMS += \
     dialog.ui \
     form.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    program2.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

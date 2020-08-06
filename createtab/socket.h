@@ -2,8 +2,9 @@
 #define SOCKET_H
 #include"tab.h"
 #include<QtNetwork>
-#include"mainwindow.h"
+//#include<dialog.h>
 #include<QSemaphore>
+#include<database.h>
 class QLocalServer;
 class QTcpServer;
 class socket:public QObject
@@ -12,6 +13,7 @@ class socket:public QObject
 public:
     ~socket();
     socket();
+    bool status() {return server->isListening();}
     //sendmessage有待改善，做成template
     void sendmessage(int flag,void *content = NULL,const int num = 0,int column = 0,int user_ide = 0,const QString y = "",const QString x = "")const;
     infomation *info;
@@ -20,6 +22,7 @@ public:
     //QLocalSocket *clientConnection = NULL;
     QTcpSocket *clientConnection = NULL;
     work_info workInfo = {"YG,2294","SB,001073","ZL,20016101180122000101,171216",""};
+    bool bind();
 signals:
     void start_work();
     void check_identity();
@@ -33,6 +36,8 @@ private:
     QTcpServer *server;
     //QLocalServer *server;
     int blocksize = 0;
+    //QMap<QString,QTcpSocket*>client_C;
+    QString ip;
 private slots:
     void read_message();
 };

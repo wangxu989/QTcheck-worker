@@ -1,101 +1,68 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include<QDebug>
-#include<QThread>
 #include <QMainWindow>
-#include "database.h"
-#include<QProcess>
-#include"tab.h"
-#include"socket.h"
-#include<process_bar.h>
-#include<QProgressBar>
-#include<QMessageBox>
+#include<QPair>
+#include <QDialog>
+#include<QPushButton>
 #include<QHBoxLayout>
-#include<QVBoxLayout>
-#include<QHeaderView>
-#include"dialog.h"
 #include<QMap>
-#include<QScrollBar>
+#include<QVBoxLayout>
+#include<base_program.h>
+#include<dialog.h>
+#include<program2.h>
+#include<database.h>
 //#include<qpa
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+class my_button : public QPushButton {
+    Q_OBJECT
+public:
+    static int num;
+    static void init_num() {
+        static int num = 0;
+    }
+private:
+signals:
+    //void clicked(int num);
+};
 
+typedef  struct serialport{
+    QString portName;
+    QString baudRate;
+    QString dataBits;
+    QString stopBits;
+    QString parity;
+    QString writeBufferSize;
+    QString readBufferSize;
+}serialport_info;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
+signals:
+//    void app1();
+//    void app2();
+//    void app3();
+//    void app4();
+    void ctl(int);
 public:
-    //friend class socket;改用信号
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    int tabnum = 0;
-   process_bar *pro_bar;
-   mytab tab1;
-public slots:
-    void onClicked(int row,int column);
-    void pushButton_exit();
-    void pushButtonclickedej();
-    void pushButton_finish();
-    void ejClicked(int row,int column);
-    void pushform_button();
-    void start_after();
 private slots:
-    //void on_pushButton_2_clicked();
-    void tabchanged(int i);
-    void login();
-    void flash();
-    void prePage();
-    void nextPage();
-    void check_info(int flag);
-    void plot_enlarge();
-    void plot_narrow();
-    void in_keyboard(const int& row,const int& column);
-    void gauge_add();
+
 private:
-    Dialog *dialog;
-    QMessageBox *messageBox;
     Ui::MainWindow *ui;
-    QProcess my_process;
-    QPushButton *button_quit;//退出
-    QPushButton *button_ret;//返回
-    QPushButton *buttonej;//返回
-    QWidget *tempw;
-    QHBoxLayout *templayout;
-    QWidget *widget;
-    //QTabWidget *tabwidget;
-    QHBoxLayout *layout;
-    QVBoxLayout *v_layout;
-    QVBoxLayout *v_button_layout;
-    QProgressBar *progress_bar;
-    //QPushButton *pre_page;
-    //QPushButton *next_page;
-   // QHBoxLayout *page_layout;
-    //Ui::MainWindow *ui;
-     void tabadd(QString name);
-     database *data_server;//数据库类
-     database *data_local;
-     int insertvalue(int row,int i,double valuel2,int column);
-     void first_tablogic(int &row,int &column);
-     void start_work();
-     void check_identity();
-     int result;
-     int time_check(int column,int flag);
-     //int mode;//0本地，1网络
-     void draw_init();
-     int pagevalue = 8;
-     int ret_checkout[3] = {0};
-     int start_flag = 0;
-     //缩放
-     QPushButton *narrow;
-     QPushButton *enlarge;
-     //数字键盘交互
-     QWidget *keyboard;
-     QLabel *display;
-     my_tablewidget *figure;
-     QVBoxLayout *fig_key;
-     QPushButton *gauge;//检具
-
-
+    int read_generalxml();
+    int application_nums;
+    void draw_init();
+    QVBoxLayout *V_layout1;
+    QVBoxLayout *V_layout2;
+    QHBoxLayout *H_layout;
+    QVector<my_button*>app_button;
+    baseP mainP;
+    QWidget *main_widget;
+    Dialog* P1;
+    QSharedPointer<Program2>P2;
+    void change_widget(int);
 };
 #endif // MAINWINDOW_H

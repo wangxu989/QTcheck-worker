@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    //this->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint); // 去掉标题栏,去掉任务栏显示，窗口置顶
     ui->setupUi(this);
     my_client = new socketclient();
     pCustomPlot = my_client->pCustomPlot;
@@ -39,7 +40,7 @@ void MainWindow::insert_data_to_table(int flag) {
 //        table_worker->setCellWidget(1,2,label1);
         table_worker->item(1,0)->setText("姓名");
         table_worker->item(1,1)->setText(my_client->messageWorkerEnv.workerInfo.name);
-        table_worker->item(2,0)->setText("角色");
+        table_worker->item(2,0)->setText("工号");
         QString temp = my_client->messageWorkerEnv.workerInfo.role == 0?"操作员":"核验员";
         qDebug()<<workInfo.worker_id;
         table_worker->item(2,1)->setText(workInfo.worker_id.split(",")[1]);
@@ -49,13 +50,13 @@ void MainWindow::insert_data_to_table(int flag) {
         table_work->item(1,0)->setText("过程");
         table_work->item(2,0)->setText("工序号");
         table_work->item(3,0)->setText("产品");
-        table_work->item(4,0)->setText("工位");
+        //table_work->item(4,0)->setText("工位");
 
 
         table_work->item(1,1)->setText(my_client->messageWorkerEnv.localEnv.process);
         table_work->item(2,1)->setText(workInfo.instruction_id.split(",")[1].mid(6,2));
         table_work->item(3,1)->setText(workInfo.instruction_id.split(",")[1].mid(0,6));
-        table_work->item(4,1)->setText(my_client->messageWorkerEnv.localEnv.workstation);
+        //table_work->item(4,1)->setText(my_client->messageWorkerEnv.localEnv.workstation);
     }
     else if (flag == 3) {
                 qDebug()<<"product info";
@@ -108,7 +109,7 @@ void MainWindow::my_init() {
     Hlayout = new QHBoxLayout();//总表
     H_plot_layout = new QHBoxLayout();//存放图表和按钮
     V_button = new QVBoxLayout();
-    table_work = new my_tablewidget(5,2,"工作信息");
+    table_work = new my_tablewidget(4,2,"工作信息");
     table_worker = new my_tablewidget(3,2,"员工信息");
     table_product = new my_tablewidget(3,2,"设备信息");
     local_gauge = new my_tablewidget(1,2);

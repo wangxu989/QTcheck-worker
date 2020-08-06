@@ -1,6 +1,7 @@
 #include "socketclient.h"
 #include<QMessageBox>
 #include<QFile>
+const int N = 5;//每个任务的线条数
 QDataStream& operator >> (QDataStream &os,Equip &equip){
     os>>equip.test_place;
     os>>equip.equip;
@@ -57,6 +58,9 @@ QDataStream& operator>>(QDataStream &os,tabinfo &a) {
 }
 socketclient::socketclient()
 {
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QString s = dateTime.toString().split(" ")[0] + " " + dateTime.toString().split(" ")[1] + " " + dateTime.toString().split(" ")[2] + " " + "08:30:00" + " " + dateTime.toString().split(" ")[4];
+    time = QDateTime::fromString(s);
     t = 0;
     stop = false;
     start();
@@ -89,6 +93,30 @@ socketclient::socketclient()
     pCustomPlot->setAutoAddPlottableToLegend(false);
 
 
+    //初始化plot
+    double start = time.toTime_t();
+    int showtime = 60*60*24;
+    //pCustomPlot->yAxis->setRange(min,max);//y轴范围
+    QSharedPointer<QCPAxisTickerDateTime>timer(new QCPAxisTickerDateTime);
+    timer->setDateTimeFormat("hh:mm\nMMMM.dd\nyyyy");
+    //timer->setDateTimeFormat("hh:mm");//yyyy.MM.dd-
+    //设置刻度
+
+
+    //timer->setTickCount(info.disp_element_cnt.toInt());
+
+
+    pCustomPlot->xAxis2->setTicks(false);
+    pCustomPlot->yAxis2->setTicks(false);
+    //pCustomPlot->xAxis->setTickLabelRotation(35);
+    //pCustomPlot->yAxis->setNumberFormat("gbc");
+    //pCustomPlot->yAxis->setNumberPrecision(0.01);
+    timer->setTickStepStrategy(QCPAxisTicker::tssMeetTickCount);
+    pCustomPlot->xAxis->setTicker(timer);
+    pCustomPlot->xAxis->setRange(start,start + showtime);//x轴范围
+    pCustomPlot->axisRect()->setupFullAxesBox();
+    pCustomPlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom|QCP::iSelectPlottables|QCP::iMultiSelect);
+
 }
 void socketclient::readmessage(){
     if (blockSize == 0) {
@@ -118,16 +146,30 @@ void socketclient::readmessage(){
         x.resize(size*2);
         y.resize(size*2);
         x_range.resize(size);
-        for (i =0;i < size;i++) {
+        warn_y.resize(size*3);
+        warn_x.resize(size);
+        for (i = 0;i < size;i++) {
             x[i*2].resize(info.disp_element_cnt.toInt());
             y[i*2].resize(info.disp_element_cnt.toInt());
             x[i*2+1].resize(info.disp_element_cnt.toInt());
             y[i*2+1].resize(info.disp_element_cnt.toInt());
             x_range[i] = temp_xr(time.toTime_t(),time.toTime_t() + 3600*24,0);
             in>>createinfo[i];
-            initpcustomplot(i*2);
-            initpcustomplot(i*2+1);
+            initpcustomplot(i*N);
+            initpcustomplot(i*N+1);
+            warn_line(i);
         }
+        for (j = 0;j < pCustomPlot->graphCount();j++) {//只展示当前graph和3条预警线，其他隐藏
+            if (j < N) {
+                qDebug()<<j;
+                pCustomPlot->graph(j)->setVisible(true);
+            }
+            else {
+                pCustomPlot->graph(j)->setVisible(false);
+            }
+        }
+        add_fun();
+        pCustomPlot->xAxis->setRange(x_range[0].start,x_range[0].end);
         pCustomPlot->yAxis->setRange(createinfo[0].normvalue + createinfo[0].fgc - createinfo[0].jddw,createinfo[0].normvalue + createinfo[0].zgc + createinfo[0].jddw);//y轴范围
         pCustomPlot->yAxis->ticker()->setTickCount((createinfo[0].zgc - createinfo[0].fgc)/createinfo[0].jddw + 1 + 1);
         emit gauge_no(&createinfo[0].gauge);
@@ -139,8 +181,11 @@ void socketclient::readmessage(){
         tabnum = i;
         //qDebug()<<i;
         emit gauge_no(&createinfo[tabnum].gauge);
-        for (j = 0;j < pCustomPlot->graphCount();j++) {//只展示当前graph，其他隐藏
-            if (j == i*2 || j == i*2 + 1) {
+        qDebug()<<pCustomPlot->graphCount()<<" graph count";
+        qDebug()<<warn_y[i*3][0]<<warn_y[i*3][1];
+        for (j = 0;j < pCustomPlot->graphCount();j++) {//只展示当前graph和3条预警线，其他隐藏
+            if (j >= i*N && j < (i + 1)*N) {
+                qDebug()<<j;
                 pCustomPlot->graph(j)->setVisible(true);
             }
             else {
@@ -160,7 +205,6 @@ void socketclient::readmessage(){
         pCustomPlot->yAxis->ticker()->setTickCount((createinfo[i].zgc - createinfo[i].fgc)/createinfo[i].jddw + 1 + 1);
         //pCustomPlot->yAxis->
         pCustomPlot->replot(QCustomPlot::rpQueuedReplot);//刷新图表
-        //qDebug()<<createinfo[i].normvalue;
         break;
     case 2://接收点坐标
         in>>i;
@@ -174,8 +218,8 @@ void socketclient::readmessage(){
             x[tabnum*2][column] = QDateTime::currentDateTime().toTime_t();
             y[tabnum*2][column] = y1.toDouble();
             //temp.push_back({x1.toDouble(),y1.toDouble(),tabnum*2});
-            pCustomPlot->graph(tabnum*2)->addData(QDateTime::currentDateTime().toTime_t(),y1.toDouble());
-            qDebug()<<x1<<" "<<y1<<" "<<user_ide;
+            pCustomPlot->graph(tabnum*N)->addData(QDateTime::currentDateTime().toTime_t(),y1.toDouble());
+            qDebug()<<x1<<" "<<y1<<" "<<user_ide<<" "<<tabnum*N;
             qDebug()<<QDateTime::currentDateTime().toTime_t();
         }
         else if(user_ide == 2){
@@ -183,7 +227,7 @@ void socketclient::readmessage(){
             x[tabnum*2 + 1][column] = QDateTime::currentDateTime().toTime_t();
             y[tabnum*2 + 1][column] = y1.toDouble();
             //temp.push_back({x1.toDouble(),y1.toDouble(),tabnum*2 + 1});
-            pCustomPlot->graph(tabnum*2 + 1)->addData(QDateTime::currentDateTime().toTime_t(),y1.toDouble());
+            pCustomPlot->graph(tabnum*N + 1)->addData(QDateTime::currentDateTime().toTime_t(),y1.toDouble());
             //pCustomPlot->graph(tabnum*2 + 1)->addData(x1.toDouble(),y1.toDouble());
             qDebug()<<x1<<" "<<y1<<" "<<user_ide;
         }
@@ -196,10 +240,10 @@ void socketclient::readmessage(){
         in>>user_ide;
         qDebug()<<column<<tabnum;
         if (user_ide == 1) {
-            pCustomPlot->graph(tabnum*2)->data()->remove(x[tabnum*2][column]);
+            pCustomPlot->graph(tabnum*N)->data()->remove(x[tabnum*2][column]);
         }
         else if (user_ide == 2) {
-            pCustomPlot->graph(tabnum*2 + 1)->data()->remove(x[tabnum*2 + 1][column]);
+            pCustomPlot->graph(tabnum*N + 1)->data()->remove(x[tabnum*2 + 1][column]);
         }
         pCustomPlot->replot(QCustomPlot::rpQueuedReplot);
         break;
@@ -275,59 +319,78 @@ socketclient::~socketclient(){
     delete  socket;
     wait();
 }
+void socketclient::warn_line(int n) {
+    //每个图1个x三个y
+    //蓝线
+    QCPGraph *pGraph =  pCustomPlot->addGraph();
+    QVector<double>y_t(2,0),y0_t(2,0),y1_t(2,0),x_t(2,0);
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QString s = dateTime.toString().split(" ")[0] + " " + dateTime.toString().split(" ")[1] + " " + dateTime.toString().split(" ")[2] + " " + "08:30:00" + " " + dateTime.toString().split(" ")[4];
+    time = QDateTime::fromString(s);
+    double start = time.toTime_t();
+    x_t[0] = start - 60*60*24*365;
+    x_t[1] = start + 60*60*24;
+    y_t[0] = createinfo[n].normvalue;
+    y_t[1] = createinfo[n].normvalue;
+    warn_y[n*3] = y_t;
+    warn_x[n] = x_t;
+    warn_x[n] = x_t;
+    pCustomPlot->graph(n*N + 2)->setPen(QPen(Qt::blue));
+    pCustomPlot->graph(n*N + 2)->setData(warn_x[n],warn_y[n*3]);
+
+    //红线1
+    y0_t[0] = createinfo[n].normvalue + createinfo[n].fgc;
+    y0_t[1] = createinfo[n].normvalue + createinfo[n].fgc;
+    warn_y[n*3 + 1] = y0_t;
+    QCPGraph *pGraph0 =  pCustomPlot->addGraph();
+    pCustomPlot->graph(n*N + 3)->setPen(QPen(Qt::red));
+    pCustomPlot->graph(n*N + 3)->setData(warn_x[n],warn_y[n*3 + 1]);
+    //红线2
+    y1_t[0] = createinfo[n].normvalue + createinfo[n].zgc;
+    y1_t[1] = createinfo[n].normvalue + createinfo[n].zgc;
+    warn_y[n*3 + 2] = y1_t;
+    QCPGraph *pGraph1 =  pCustomPlot->addGraph();
+    pCustomPlot->graph(n*N + 4)->setPen(QPen(Qt::red));
+    pCustomPlot->graph(n*N + 4)->setData(warn_x[n],warn_y[n*3 + 2]);
+
+
+}
 void socketclient::initpcustomplot(int num){//初始化plot
     QCPGraph *pGraph = pCustomPlot->addGraph();
     if (num > 1) {
         pCustomPlot->legend->removeItem(num);
     }
-    pCustomPlot->xAxis->setLabel("时间轴    " + QDateTime::currentDateTime().toString("yyyy年MM月dd日 hh:mm:ss"));
-    pCustomPlot->yAxis->setLabel("误差");
-    QDateTime dateTime = QDateTime::currentDateTime();
-    QString s = dateTime.toString().split(" ")[0] + " " + dateTime.toString().split(" ")[1] + " " + dateTime.toString().split(" ")[2] + " " + "08:30:00" + " " + dateTime.toString().split(" ")[4];
-    time = QDateTime::fromString(s);
-    double start = time.toTime_t();
-    int showtime = 60*60*24;
-    //pCustomPlot->yAxis->setRange(min,max);//y轴范围
-    QSharedPointer<QCPAxisTickerDateTime>timer(new QCPAxisTickerDateTime);
-    timer->setDateTimeFormat("hh:mm\nMMMM.dd\nyyyy");
-    //timer->setDateTimeFormat("hh:mm");//yyyy.MM.dd-
-    //设置刻度
-
-
-    timer->setTickCount(info.disp_element_cnt.toInt());
-
-
-    pCustomPlot->xAxis2->setTicks(false);
-    pCustomPlot->yAxis2->setTicks(false);
-    //pCustomPlot->xAxis->setTickLabelRotation(35);
-    //pCustomPlot->yAxis->setNumberFormat("gbc");
-    //pCustomPlot->yAxis->setNumberPrecision(0.01);
-    timer->setTickStepStrategy(QCPAxisTicker::tssMeetTickCount);
-    pCustomPlot->xAxis->setTicker(timer);
-    pCustomPlot->xAxis->setRange(start,start + showtime);//x轴范围
-    pCustomPlot->axisRect()->setupFullAxesBox();
     //pCustomPlot->graph(num)->setSelectable(QCP::stDataRange);
     //pCustomPlot->setMultiSelectModifier(Qt::KeyboardModifier::ControlModifier);
     pCustomPlot->graph(num)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc,8));//实心点
-    if (num%2) {
+    if (num%5) {
         pCustomPlot->graph(num)->setLineStyle(QCPGraph::lsNone);
-        pCustomPlot->graph(num)->setPen(QPen(Qt::blue));
+        pCustomPlot->graph(num)->setPen(QPen(Qt::blue));//蓝色
+        //pCustomPlot->graph(num)->setBrush();
         if (num <= 1) {
-            pCustomPlot->graph(num)->setName("核验员");
+            pCustomPlot->graph(num)->setName("巡检员");
             pCustomPlot->graph(num)->addToLegend();
         }
     }
     else {
         pCustomPlot->graph(num)->setLineStyle(QCPGraph::lsLine);
-        pCustomPlot->graph(num)->setPen(QPen(Qt::green));
+        pCustomPlot->graph(num)->setPen(QPen(Qt::green));//绿色
         if (num <= 1) {
             pCustomPlot->graph(num)->setName("操作员");
              pCustomPlot->graph(num)->addToLegend();
 
         }
     }
-        pCustomPlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom|QCP::iSelectPlottables|QCP::iMultiSelect);
 }
+void socketclient::add_fun() {
+    QCPGraph *pGraph = pCustomPlot->addGraph();
+    pGraph->setName("CPK");
+    pGraph->addToLegend();
+    QCPGraph *pGraph0 = pCustomPlot->addGraph();
+    pGraph0->setName("CK");
+    pGraph0->addToLegend();
+}
+
 void socketclient::displayError(QLocalSocket::LocalSocketError socketError) {
 
     switch (socketError) {

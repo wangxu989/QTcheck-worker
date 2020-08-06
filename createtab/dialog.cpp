@@ -1,145 +1,880 @@
-#include "dialog.h"
+#include<mainwindow.h>
+#include<dialog.h>
 #include "ui_dialog.h"
-#include<QPixmap>
-#include<QImage>
-#include<QtXml/QDomDocument>
-#include<QFile>
-#include<QMessageBox>
-#include<QDebug>
+#include<QTime>
 #include<QPushButton>
-//登录界面
-Dialog::Dialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::Dialog)
-{
-    ui->setupUi(this);
-    this->setStyleSheet("QWidget#Dialog{border-image: url(:/new/prefix1/img/bj.jpg);}");
-    mode = read_generalxml();
-    V_layout1 = new QVBoxLayout();
-    V_layout2 = new QVBoxLayout();
-    H_layout = new QHBoxLayout(this);
-    my_button::init_num();//初始化按钮个数
-    draw_init();
+#include<QPixmap>
+#include"socket.h"
+const double eps = 1e-10;//double 比较精度
+//全局double比较
+bool cmp_eq(const double& a,const double& b) {
+    return a - b >= -eps && b - a >= -eps;
 }
 
+bool cmp_eg (const double& a,const double& b) {
+    return a - b >= -eps;
+}
+extern int mode;
+extern database_plugin net_plugin;
+extern database_server *data_server;//数据库类
+extern database_local *data_local;
+extern socket *my_socket;
+static double valuel2 = 0;
+static volatile int myrow = 0,mycolumn = 0;//记录一级表格的点击位置
+static int people_flag = 1;
+static int modify = 0;
+//static int mode;
+static int keyboard_flag = 0;
 Dialog::~Dialog()
 {
+    my_process.close();
+    delete pro_bar;
+    delete progress_bar;
+    delete button_ret;
+    delete narrow;
+    delete enlarge;
+    delete gauge;
+    delete messageBox;
     delete ui;
-    delete V_layout1;
-    delete V_layout2;
-    delete H_layout;
-    for (auto& a:app_button) {
-        delete a;
+    delete temp;
+    delete templayout;
+    delete tempw;
+    delete v_layout;
+    delete v_button_layout;
+    delete layout;
+    //    delete widget;//由于线程不会立马被结束，需要赞留界面。用智能指针
+
+    //    delete data_local;
+    //    delete data_server;
+}
+Dialog::Dialog(const QString& name,QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::Dialog)
+{
+    ui->setupUi(this);
+    add_p(name,this);
+    //qRegisterMetaType<my_tablewidget>("my_tablewidget");
+    //登录界面
+    messageBox = new QMessageBox(QMessageBox::NoIcon,"title","重新录入请【返回】,巡检员需扫【员工码】",QMessageBox::No,NULL);
+    messageBox->button(QMessageBox::No)->setText("返回");
+    messageBox->setStyleSheet("QLabel{min-width:400 px; font-size: 18px;} QPushButton{ width:80px; font-size: 24px; }");
+    //超差键盘,有待改进，键盘封装为一个类
+    keyboard = new keyboard_widget("Enter");
+
+    connect(keyboard->figure,&QTableWidget::cellClicked,this,&Dialog::in_keyboard);
+}
+bool Dialog::start_P() {
+    qDebug()<<"start P1";
+    return listen();
+}
+void Dialog::finish_P() {
+    //    my_process.close();
+    //    delete pro_bar;
+    //    delete progress_bar;
+    //    delete button_quit;
+    //    delete button_ret;
+    //    delete narrow;
+    //    delete enlarge;
+    //    delete gauge;
+    //    delete messageBox;
+    //    delete temp;
+    //    delete templayout;
+    //    delete tempw;
+    //    delete v_layout;
+    //    delete v_button_layout;
+    //    delete layout;
+    //    delete widget;//由于线程不会立马被结束，需要赞留界面。用智能指针
+    //    delete my_socket;
+    //    start_flag = 0;
+    //    ret_checkout[0] = 0;
+    //    ret_checkout[1] = 0;
+    //    ret_checkout[2] = 0;
+}
+
+void Dialog::check_identity() {//接收核验成功的信号
+    //qDebug()<<"check identity";
+    result = QMessageBox::Yes;
+    messageBox->close();
+}
+bool Dialog::listen() {
+    //my_socket = new socket();//开启监听
+    if (my_socket->status()) {
+        login();
+        return true;
     }
+    else {
+        bool ret = my_socket->bind();
+        if (ret == true) {login();}
+        return ret;
+    }
+}
+void Dialog::login() {
+    connect(my_socket,&socket::start_work,this,&Dialog::start_work);
+    connect(my_socket,&socket::check_identity,this,&Dialog::check_identity);
+    connect(my_socket,SIGNAL(check_info(int)),this,SLOT(check_info(int)));
+    //开启图表进程
+    //QStringList argument;
+    my_process.start("./plugin/1.sh");
+//    {
+//        qDebug() << "success";
+
+//    }
+//    else
+//    {
+
+//        qDebug() << "fail";
+
+//    }
+
+    //argument<<dialog->app_name[0].second.split(" ")[1];
+    //my_process.start("./plugin/mainwindow",argument);
+    //qDebug()<<"start plot progress"<<" "<<dialog->app_name[0].second.split(" ")[1];
 }
 void Dialog::draw_init() {
-    int i = 0;
-    for (;i < app_button.size()/2;i++) {
-        app_button[i]->setText(app_name[i].second.split(" ")[0]);
-        app_button[i]->setFixedSize(160,160);
-        V_layout1->addWidget(app_button[i]);
-        app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
-        QPushButton{background-color:rgb(170,200,50)}\
-        QPushButton:hover{background-color:rgb(50, 170, 200)}");
-        connect(app_button[i],&my_button::clicked,this,[=]()mutable{emit ctl(i);});
+    //buttonej = new QPushButton("返回");
+    tempw = new QWidget();//二级表格父widget
+    templayout = new QHBoxLayout();//二级表格布局
+    temp = new QTableWidget();//二级表格
+    connect(temp,SIGNAL(cellClicked(int,int)),this,SLOT(ejClicked(int,int)));
+    templayout->addWidget(temp);
+    //templayout->addWidget(buttonej);
+    //connect(buttonej,SIGNAL(clicked()),this,SLOT(pushButtonclickedej()));
+    tempw->setLayout(templayout);
+
+
+
+
+    button_ret = new QPushButton();
+    button_ret->setIcon(QIcon(":/new/prefix1/img/exit.png"));
+    button_ret->setFixedSize(50,50);
+    button_ret->setIconSize(QSize(50,50));
+
+    narrow = new QPushButton();
+    enlarge = new QPushButton();
+    gauge = new QPushButton("检具");
+    gauge->setFixedSize(50,50);
+    enlarge->setIcon(QIcon(":/new/prefix1/img/-.png"));
+    narrow->setIcon(QIcon(":/new/prefix1/img/+.png"));
+    narrow->setIconSize(QSize(50,50));
+    narrow->setFixedSize(50,50);
+    enlarge->setIconSize(QSize(50,50));
+    enlarge->setFixedSize(50,50);
+    //connect(gauge,SIGNAL(clicked(),this,SLOT());
+    connect(narrow,SIGNAL(clicked()),this,SLOT(plot_narrow()));
+    connect(enlarge,SIGNAL(clicked()),this,SLOT(plot_enlarge()));
+    connect(gauge,SIGNAL(clicked()),this,SLOT(gauge_add()));
+
+    connect(button_ret,&QAbstractButton::clicked,this,&Dialog::pushButton_finish);
+    ///connect(button_quit,&QAbstractButton::clicked,this,&Dialog::pushButton_exit);
+    widget = new QWidget();
+
+    progress_bar = new QProgressBar();//进度条
+    v_layout = new QVBoxLayout();//布局进度条和tab
+    v_button_layout = new QVBoxLayout();//布局按钮
+    v_layout->addWidget(progress_bar);
+    v_layout->addWidget(&tab1);
+    //v_button_layout->addWidget(button_quit);
+    v_button_layout->addWidget(button_ret);
+    v_button_layout->addWidget(enlarge);
+    v_button_layout->addWidget(narrow);
+    v_button_layout->addWidget(gauge);
+    //    pre_page = new QPushButton();
+    //    pre_page->setText("上一页");
+    //    connect(pre_page,SIGNAL(clicked()),this,SLOT(prePage()));
+    //    next_page = new QPushButton();
+    //    next_page->setText("下一页");
+    //    connect(next_page,SIGNAL(clicked()),this,SLOT(nextPage()));
+    // page_layout = new QHBoxLayout();
+    //    page_layout->addWidget(pre_page);
+    //    page_layout->addWidget(next_page);
+    //v_layout->addLayout(page_layout);
+    //
+    layout = new QHBoxLayout();//布局v_layout和button_layout
+    layout->addLayout(v_layout);
+    layout->addLayout(v_button_layout);
+    layout->setStretchFactor(v_layout,10);
+    layout->setStretchFactor(v_button_layout,1);
+    widget->setLayout(layout);
+}
+void Dialog::gauge_add() {
+    keyboard_flag = 2;
+    emit change_widget(3);
+    keyboard->setText("");
+}
+
+void Dialog::prePage() {
+    int maxValue = tab1.table[tabnum]->horizontalScrollBar()->maximum();
+    int nCurScroller = tab1.table[tabnum]->horizontalScrollBar()->value();
+    if (nCurScroller > 0) {
+        tab1.table[tabnum]->horizontalScrollBar()->setSliderPosition(nCurScroller - pagevalue);
+
     }
-    for (;i < app_button.size();i++) {
-        app_button[i]->setText(app_name[i].second.split(" ")[0]);
-        app_button[i]->setFixedSize(160,160);
-        V_layout2->addWidget(app_button[i]);
-        app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
-        QPushButton{background-color:rgb(170,200,50)}\ QPushButton:hover{background-color:rgb(50, 170, 200)}");
-                                      connect(app_button[i],&my_button::clicked,this,[=]()mutable{emit ctl(i);});
+    else {
+        tab1.table[tabnum]->horizontalScrollBar()->setSliderPosition(maxValue);
     }
-    H_layout->addLayout(V_layout1);
-    H_layout->addLayout(V_layout2);
-    connect(this,&Dialog::ctl,this,[&](int i)->void{
-        qDebug()<<i;
-        switch(i) {
-            case 0:
-            emit app1();
-            break;
-        case 1:
-            emit app2();
-            break;
-        case 2:
-            emit app3();
-            break;
-        case 3:
-            emit app4();
-            break;
+}
+void Dialog::nextPage() {
+    int maxValue = tab1.table[tabnum]->horizontalScrollBar()->maximum();
+    int nCurScroller = tab1.table[tabnum]->horizontalScrollBar()->value();
+    if (nCurScroller < maxValue) {
+        tab1.table[tabnum]->horizontalScrollBar()->setSliderPosition(nCurScroller + pagevalue);
+
+    }
+    else {
+        tab1.table[tabnum]->horizontalScrollBar()->setSliderPosition(0);
+    }
+}
+void Dialog::start_work(){
+    //    tabwidget = new QTabWidget();//一级表格
+    tab1.setDocumentMode(true);//隐藏边框
+    //tab1.tabWidget = tabwidget;//构造工作页面使用
+    //单机版还是网络版
+    qDebug()<<my_socket->workInfo.product_id<<"product_id";
+    qDebug()<<my_socket->workInfo.worker_id<<"worker_id";
+    qDebug()<<my_socket->workInfo.instruction_id<<"instruction_id";
+
+    switch(mode) {
+    case 0://单机版
+        qDebug()<<"单机版";
+        if (tab1.readxml(my_socket->workInfo) < 0) {//人员信息不匹配
+            return;
         }
-    });
+        break;
+
+    case 1:
+        data_server->tab = &tab1;
+        data_server->workInfo = &my_socket->workInfo;
+        data_server->read_data();//首先读取client_cfg配置文件
+        break;
+    }
+    data_local->tab = &tab1;
+    data_local->workInfo = &my_socket->workInfo;
+    data_local->insert_record();
+    //读取检具信息
+    tab1.read_gauge(my_socket->workInfo);
+    draw_init();
+    qDebug()<<tab1.messageWorkerEvn.workerInfo.name;
+    qDebug()<<tab1.messageWorkerEvn.localEnv.process_id<<"process_id";
+//    data_local = new database(my_socket->workInfo,tab1);//保留本地工作信息
+    my_socket->info = &tab1.info;
+    my_socket->createinfo = &tab1.createinfo;
+
+    if(my_socket->clientConnection) {
+        my_socket->sendmessage(0);//图表信息
+        qDebug()<<"send";
+    }
+    else {
+        qDebug()<<"send failed!";
+    }
+    //表格配置已配置
+    pro_bar = new process_bar(this);
+    connect(pro_bar,&process_bar::flash_progressBar,this,&Dialog::flash);
+
+    progress_bar->setRange(0,100);
+    pro_bar->start();
+    tab1.my.x.resize(tab1.table.size());
+    tab1.my.y.resize(tab1.table.size());
+    for (int i = 0;i < tab1.table.size();i++) {
+        connect(tab1.table[i],SIGNAL(cellClicked(int,int)),this,SLOT(onClicked(int,int)));
+        tab1.my.x[i].resize(tab1.table[i]->columnCount());
+        tab1.my.y[i].resize(tab1.table[i]->columnCount());
+    }
+    connect(&tab1,&QTabWidget::currentChanged,this, &Dialog::tabchanged);
+    emit change_widget(1);
+    qDebug()<<"start_work";
+}
+void Dialog::in_keyboard(const int &row,const int &column) {
+    if (row == 0 && column == 3) {//delete
+        keyboard->removeText();
+    }
+    else if (row == 2 && column == 3) {//enter
+
+        if (keyboard_flag == 1) {
+            valuel2  = keyboard->getVal().toDouble();
+            QString temp = tab1.table[tab1.currentIndex()]->verticalHeaderItem(myrow)->text();
+            double cmp;
+            if (myrow == 0) {
+                cmp = temp.split("<")[0].toDouble();
+                if (cmp_eg(cmp , valuel2)) {//最大
+                    QMessageBox box(QMessageBox::NoIcon,"keyboard","非法输入",NULL,NULL);
+                    box.exec();
+                }
+                else {
+                    insertvalue(myrow,tab1.currentIndex(),valuel2,mycolumn);
+                }
+            }
+            else {
+                cmp = temp.split("<")[1].toDouble();
+                if (cmp_eg(valuel2 , cmp)){//最小
+                    QMessageBox box(QMessageBox::NoIcon,"keyboard","非法输入",NULL,NULL);
+                    box.exec();
+
+                }
+                else {
+                    insertvalue(myrow,tab1.currentIndex(),valuel2,mycolumn);
+                }
+            }
+        }
+        else if (keyboard_flag == 2){
+            qDebug()<<"检具录入";
+            tab1.createinfo[tab1.currentIndex()].gauge = keyboard->getVal();
+            my_socket->sendmessage(13,NULL,tab1.currentIndex());
+            tab1.modify_gauge(my_socket->workInfo,tab1.currentIndex());
+        }
+        else if (keyboard_flag == 2){
+            qDebug()<<"检具录入";
+            tab1.createinfo[tab1.currentIndex()].gauge = keyboard->getVal();
+            my_socket->sendmessage(13,NULL,tab1.currentIndex());
+            tab1.modify_gauge(my_socket->workInfo,tab1.currentIndex());
+        }
+        emit change_widget(1);
+    }
+    else {
+        keyboard->addText(row,column);
+    }
 
 }
-int Dialog::read_generalxml(){
-    QFile file("./data/GeneralConfig.xml");
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox messageBox;
-        messageBox.setText("open ./GeneralConfig.xml failed !");
-        messageBox.exec();
-        return -1;
-    }
-    QDomDocument doc;
-    if (!doc.setContent(&file)) {
-        file.close();
-        QMessageBox messageBox;
-        messageBox.setText("read GeneralConfig.xml failed !");
-        messageBox.exec();
-        return -1;
-    }
-    file.close();
-    QDomElement domele = doc.documentElement();
-    QDomNode n = domele.firstChild();
-    while (!n.isNull()) {
-        if (n.isElement()) {
-            QDomElement e = n.toElement();
-            if (e.tagName() == "WorkMode") {
-                net_plugin.status = e.attribute("mode");
-            }
-            else if (e.tagName() == "DatabaseConnect") {
-                QDomNodeList list = e.childNodes();
-                qDebug()<<list.count()<<"databaseconnect";
-                for (int i = 0;i < list.count();i++) {
-                    if (list.at(i).toElement().tagName() == "RemoteDatabase") {
-                        net_plugin.hostname = list.at(i).toElement().attribute("hostName");
-                        net_plugin.port = list.at(i).toElement().attribute("port");
-                        net_plugin.databaseName = list.at(i).toElement().attribute("databaseName");
-                        net_plugin.userName =list.at(i).toElement().attribute("userName");
-                        net_plugin.passwd = list.at(i).toElement().attribute("password");
-                        qDebug()<<net_plugin.status<<" "<<net_plugin.hostname<<" "<<net_plugin.port;
-                    }
-                }
-            }
-            else if (e.tagName() == "SerialPorts") {
-                QDomNodeList list = e.childNodes();
-                //qDebug()<<list.count()<<"serialPorts";
-                for (int i = 0;i < list.count();i++) {
-                    QDomElement temp = list.at(i).toElement();
-                    qDebug()<<temp.tagName();
-                    if (temp.tagName() == "SerialPort") {
-                        Serial_port[temp.attribute("device")] = {temp.attribute("portName"),
-                                temp.attribute("baudRate"),temp.attribute("dataBits"),temp.attribute("stopBits"),
-                                temp.attribute("parity"),temp.attribute("writeBufferSize"),
-                                temp.attribute("readBufferSize")};
+void Dialog::pushform_button() {
+    show();
+}
 
-                    }
+void Dialog::pushButtonclickedej(){//返回
+    //    qDebug()<<"返回";
+    //    emit change_widget(1);
+}
+void Dialog::pushButton_exit()//退出登录
+{
+    my_process.close();
+    qDebug()<<"退出";
+    emit change_widget(0);
+}
+void Dialog::pushButton_finish() {//完工
+    emit change_widget(0);
+}
+void Dialog::start_after() {
+    //    takeCentralWidget();
+    //    setCentralWidget(widget);
+    emit change_widget(1);
+}
+void Dialog::onClicked(int row,int column) {//一级表格的槽函数（检测身份）
+    myrow = row;
+    mycolumn = column;
+    tab1.table[tabnum]->setCurrentItem(NULL);//取消选中
+    if (!time_check(column,0)) {
+        return;
+    }
+    int i = tabnum;
+    valuel2 = 0;
+    //int flag;
+    if (tab1.table[i]->flag[column].flag >= 1) {//此时为核验/修改
+        //此处代码为二次赋值此时要判断身份
+        messageBox->exec();
+        result = result == QMessageBox::Yes?QMessageBox::Yes:messageBox->result();
+        if (result == QMessageBox::Yes) {//审核员事件
+            if (tab1.table[i]->flag[column].flag < 1) {
+                return;
+            }
+            if (tab1.table[tabnum]->flag[column].checker_row_flag != -1) {
+                modify = 1;
+            }
+            people_flag = 2;
+        }
+        else {//工人事件
+            if (!time_check(column,1) || tab1.table[i]->flag[column].flag >= 2) {
+                return;
+            }
+            people_flag = 1;
+            modify = 1;
+        }
+
+    }
+    else {
+        modify = 0;
+        people_flag = 1;
+    }
+    first_tablogic(row,column);
+    result = QMessageBox::No;
+}
+void Dialog::first_tablogic(int &row,int &column) {//一级表格的逻辑部分
+    int i = tabnum;
+    if (row == 0 || row == tab1.table[i]->rowCount() - 1) {//警告值无二级精度
+        if ((int)tab1.createinfo[tab1.currentIndex()].normvalue == 0) {//OK/NG
+            insertvalue(myrow,tab1.currentIndex(),valuel2,mycolumn);
+        }
+        else {
+            keyboard_flag = 1;
+            keyboard->setText("");
+            emit change_widget(3);
+        }
+        //return;
+    }
+    else if (tab1.createinfo[i].ejjddw != 0) {//绘制二级表格
+        double flag;//获取当前单元格对应的误差值
+        if (row != tab1.table[i]->rowCount() - 2) {
+            flag = tab1.table[i]->verticalHeaderItem(row)->text().split("<")[0].toDouble();
+        }
+        else {
+            flag = tab1.table[i]->verticalHeaderItem(row)->text().split("≤")[0].toDouble();
+        }
+        qDebug()<<flag;
+        if (flag  <= tab1.createinfo[i].normvalue + tab1.createinfo[i].zgc){
+            int sum = 0;
+            qDebug()<<flag<<"flag"<<" "<<tab1.createinfo[i].normvalue + tab1.createinfo[i].zgc - tab1.createinfo[i].jddw;
+            double cmp_0 = 0;
+            if (cmp_eg(tab1.createinfo[i].normvalue + tab1.createinfo[i].zgc , flag + tab1.createinfo[i].jddw) ) {//当前误差值与最大公差间还有一级精度差
+                sum = static_cast<int>(tab1.createinfo[i].jddw/tab1.createinfo[i].ejjddw);
+            }
+            else {
+                sum =  static_cast<int>((tab1.createinfo[i].normvalue + tab1.createinfo[i].zgc - flag)/tab1.createinfo[i].ejjddw - 1);
+            }
+            qDebug()<<"sum"<<sum;
+            int column_count = sum/10 > 0?10:sum%10;
+            if (row == tab1.table[i]->rowCount() - 2) {
+                column_count++;
+            }
+            temp->setColumnCount(column_count);
+            temp->setRowCount(sum/10>0?sum/10:1);
+            QStringList tlistv,tlisth;
+            int j;
+            if (row == tab1.table[i]->rowCount() - 2) {
+                j = 0;
+            }
+            else {
+                j = 1;
+            }
+            for (;j <= column_count;j++) {//水平表头
+                double temp_value = j*tab1.createinfo[i].ejjddw;
+                tlisth.append(tab1.auto_zero(tab1.createinfo[i].ejjddw,temp_value));
+            }
+            for (j = 0;j < temp->columnCount();j++) {//纵表头
+                tlistv.append( tab1.auto_zero(tab1.createinfo[i].ejjddw,flag + 10*j*tab1.createinfo[i].ejjddw));//10*j*tab1.createinfo[i].ejjddw + tab1.createinfo[i].normvalue +  tab1.createinfo[i].fgc
+            }
+            temp->setVerticalHeaderLabels(tlistv);//纵表头
+            temp->setHorizontalHeaderLabels(tlisth);//水平表头
+            temp->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            //            this->takeCentralWidget();
+            //            this->setCentralWidget(tempw);
+            emit change_widget(2);
+        }
+    }
+    else {
+        insertvalue(row,i,valuel2,column);
+    }
+}
+void Dialog::tabchanged(int i){//tab标签页切换
+    tabnum = i;
+    //QTime current_time = QTime::currentTime();
+    //flash(current_time);
+    if (my_socket->clientConnection){//已建立链接
+        my_socket->sendmessage(1,nullptr,i);
+    }
+}
+void Dialog::ejClicked(int row,int column) {//二级表格点击信号槽函数
+    if (myrow == tab1.table[tabnum]->rowCount() -2) {
+        valuel2 = (row*10+column)*tab1.createinfo[tabnum].ejjddw;
+    }
+    else {
+        valuel2 = (row*10+column + 1)*tab1.createinfo[tabnum].ejjddw;
+    }
+    insertvalue(myrow,tabnum,valuel2,mycolumn);
+    emit change_widget(1);
+}
+int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写入值
+    if (!time_check(mycolumn,0)) {
+        return 0;
+    }
+    qDebug()<<QDateTime::currentDateTime().toString();
+    //qDebug()tab1.createinfo[i].chk_warn_thr
+    if (people_flag == 1) {//员工标识
+        int flag = tab1.table[i]->flag[column].worker_row_flag;
+        if (flag != -1) {
+            qDebug()<<"操作员修改";
+            tab1.table[i]->item(flag,mycolumn)->setText("");
+            tab1.table[i]->item(flag,mycolumn)->setBackground(tab1.table[i]->flag[mycolumn].flash_flag == 1?tab1.color_scheme[5]:tab1.color_scheme[6]);
+        }
+        tab1.table[tabnum]->flag[mycolumn].flag = people_flag;
+        tab1.table[tabnum]->flag[mycolumn].worker_row_flag  = myrow;//置该tab该row标志
+    }
+    else if (people_flag == 2){//审核员标识
+        int flag = tab1.table[i]->flag[column].checker_row_flag;
+        if (flag != -1) {
+            qDebug()<<"核验员修改";
+            if (flag == tab1.table[i]->flag[column].worker_row_flag) {//此时要保留操作员信息
+                tab1.table[i]->item(flag,mycolumn)->setBackground(QBrush(tab1.table[i]->flag[column].temp_worker_color));
+            }
+            else {
+                tab1.table[i]->item(flag,mycolumn)->setText("");
+                tab1.table[i]->item(flag,mycolumn)->setBackground(tab1.table[i]->flag[mycolumn].flash_flag == 1?tab1.color_scheme[5]:tab1.color_scheme[6]);
+            }
+        }
+        tab1.table[tabnum]->flag[mycolumn].flag = people_flag;
+        tab1.table[tabnum]->flag[mycolumn].checker_row_flag = myrow;//置该tab该row标志
+    }
+    if (modify == 1) {//修改操作中的删除操作
+        if (my_socket->clientConnection) {
+            my_socket->sendmessage(3,nullptr,tabnum,mycolumn,people_flag);
+        }
+    }
+    //获取当前点击行对应的一级值
+    QString temp = tab1.table[i]->verticalHeaderItem(row)->text();
+     qDebug()<<temp<<"        temp";
+    //qDebug()<<valuel2;
+    if (cmp_eq(tab1.createinfo[tab1.currentIndex()].normvalue, 0)) {//OK/NG
+        if (temp == "OK") {
+            temp = "1";
+        }
+        else {
+            temp = "-1";
+        }
+    }
+    else {//其他
+        if (cmp_eq(tab1.createinfo[tab1.currentIndex()].ejjddw,0)) {//无二级表格
+            if (row == 0 || row == tab1.table[i]->rowCount() - 1) {
+                temp = "0";
+            }
+            else {
+                temp = temp.split("≤")[1];
+            }
+            //qDebug()<<temp;
+        }
+        else {
+            if (row == 0 || row == tab1.table[i]->rowCount() - 1) {
+                temp = "0";
+            }
+            else if (row == tab1.table[i]->rowCount() - 2) {
+                temp = temp.split("≤")[0];
+            }
+            else {
+                temp = temp.split("<")[0];
+            }
+        }
+    }
+    tab1.my.tabnum = i;
+    double insy = temp.toDouble() + valuel2;//测量总值
+
+    if (my_socket->clientConnection){//增加点
+        //qDebug()<<insy<<" "<<time1.toTime_t();
+        my_socket->sendmessage(2,nullptr,tabnum,mycolumn,people_flag,QString::number(insy),QString::number(QDateTime::currentDateTime().toTime_t()));//坐标值发给图表进程
+    }
+    else {
+        qDebug()<<"send failed!";
+    }
+    if ((int)tab1.createinfo[tab1.currentIndex()].normvalue == 0) {
+         tab1.table[tabnum]->item(row,column)->setText(insy == 1 ?"OK":"NG");//插入表格
+    }
+    else {
+        tab1.table[tabnum]->item(row,column)->setText(QString::number(insy));//插入表格
+    }
+    int flag_rlt = 0;
+    if (people_flag == 1) {//操作员操作
+        if (mode && modify == 1) {//修改操作，需要删除远程数据库的上一条数据：保证所有操作都被记录
+            data_server->remove_t();
+        }
+        if (row == 0 || row == tab1.table[i]->rowCount() - 1) {
+            if ((int)tab1.createinfo[tab1.currentIndex()].normvalue == 0) {
+                if (tab1.table[i]->rowCount() - 1 == row) {
+                     tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[2]));
+                     if (mode&&data_server) {
+                         data_server->spc_event("1000");//超差
+                     }
+                }
+                else {
+                     tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[0]));
                 }
             }
-            else if (e.tagName() == "Applications") {
-                application_nums = e.attribute("number").toInt();
-                QDomNodeList list = e.childNodes();
-                for (int i = 0;i < list.size();i++) {
-                    QDomElement temp = list.at(i).toElement();
-                    if (temp.tagName() == "Application") {
-                        app_name.push_back( {temp.attribute("logo"),temp.attribute("startup_args")});
-                        qDebug()<<temp.attribute("startup_args");
-                        app_button.push_back(new my_button());
-                    }
+            else {
+                tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[2]));
+                if (mode&&data_server) {
+                    data_server->spc_event("1000");//超差
+                }
+            }
+            flag_rlt = 2;
+        }
+        else if (row - 0 <= tab1.info.warn_thr.toInt() || tab1.table[i]->rowCount() - 1 - row <= tab1.info.warn_thr.toInt()){
+            tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[1]));
+            if (mode&&data_server) {
+                data_server->spc_event("1001");//预警
+            }
+            flag_rlt = 1;
+        }
+        else {
+            flag_rlt = 0;//正常值
+            tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[0]));
+        }
+        if (modify == 0) {
+            data_local->insert_data(insy,flag_rlt,0);//正常插入本地数据库
+        }
+        else {
+            data_local->insert_data(insy,flag_rlt,1);//修改本地数据库数据
+        }
+        //存储当前操作的时间
+        QTime t1  = QTime::currentTime();
+        tab1.table[tabnum]->flag[mycolumn].t_time = t1.hour()*3600 + t1.minute()*60 + t1.second();
+        if (tab1.table[tabnum]->val != -1 && insy > tab1.table[tabnum]->val) {//大于上一个时间的测量值（初始值为0）
+            qDebug()<<"上个时间段值:"<<tab1.table[tabnum]->val;
+            if(tab1.table[tabnum]->trend_plus_minus != 1) {//若不是正趋势则预警值置0并改为正趋势
+                //暂存值操作
+                tab1.table[tabnum]->temp_trend_plus_minus = 1;
+                tab1.table[tabnum]->temp_trend_val = 2;
+            }
+            else {//是正趋势则++
+                tab1.table[tabnum]->temp_trend_val =  tab1.table[tabnum]->trend_val + 1;
+            }
+        }
+        else if (tab1.table[tabnum]->val != -1 && insy < tab1.table[tabnum]->val) {
+            if(tab1.table[tabnum]->trend_plus_minus != -1) {//若不是负趋势则预警值置0并改为负趋势
+                tab1.table[tabnum]->temp_trend_val = -2;
+                tab1.table[tabnum]->temp_trend_plus_minus = -1;
+            }
+            else {//是负趋势则--
+                tab1.table[tabnum]->temp_trend_val = tab1.table[tabnum]->trend_val - 1;
+            }
+        }
+        else {//和上次相同也算
+            if(tab1.table[tabnum]->trend_plus_minus == 1) {//正趋势
+                tab1.table[tabnum]->temp_trend_val =  tab1.table[tabnum]->trend_val + 1;
+            }
+            else {//是负趋势
+                tab1.table[tabnum]->temp_trend_val =  tab1.table[tabnum]->trend_val - 1;
+            }
+
+        }
+        if (tab1.table[tabnum]->temp_trend_val >= tab1.info.trend_warn_win.toInt() || tab1.table[tabnum]->temp_trend_val <= tab1.info.trend_warn_win.toInt()*(-1) ) {
+            qDebug()<<tab1.table[tabnum]->temp_trend_val<<"temp  趋势预警 real"<<tab1.table[tabnum]->trend_val;
+            //预警
+            QMessageBox box(QMessageBox::NoIcon,"trend_warn_win","趋势预警",NULL,NULL);
+            QPalette pa;
+            pa.setColor(QPalette::WindowText,Qt::red);
+            box.setPalette(pa);
+            box.setStyleSheet("QLabel{min-width:150 px; font-size: 30px;} QPushButton{ width:80px; font-size: 24px; }");
+            box.exec();
+            if (mode&&data_server) {
+                data_server->spc_event("1003");
+            }
+        }
+        tab1.table[tabnum]->temp_val = insy;
+    }
+    else if (people_flag == 2){//核验员
+        if (tab1.table[i]->flag[mycolumn].worker_row_flag == myrow) {
+            //核验与操作员数据一样
+            tab1.table[i]->flag[column].temp_worker_color =  tab1.table[i]->item(row,column)->background().color();
+            tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[7]));
+        }
+        else if (tab1.table[i]->flag[mycolumn].worker_row_flag - myrow < tab1.info.chk_warn_thr.toInt() &&  myrow - tab1.table[i]->flag[mycolumn].worker_row_flag < tab1.info.chk_warn_thr.toInt()) {
+            //在预警值内
+            qDebug()<<"核验预警值内";
+            qDebug()<<tab1.info.chk_warn_thr;
+            qDebug()<<tab1.info.chk_warn_thr<<"相减："<<tab1.table[i]->flag[mycolumn].worker_row_flag - myrow ;
+            qDebug()<<tab1.info.chk_warn_thr<<"相减："<<-tab1.table[i]->flag[mycolumn].worker_row_flag + myrow ;
+            tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[3]));
+            if (mode&&data_server) {
+                data_server->spc_event("1002");//巡检预警
+            }
+        }
+        else {
+            //超出预警值
+            tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[4]));
+            flag_rlt = 1;
+            if (mode&&data_server) {
+                data_server->spc_event("1003");//巡检超差
+            }
+        }
+        data_local->insert_data(insy,flag_rlt,2);//存入核验员值（修改和写入一样）
+    }
+    modify = 0;//人员信息恢复
+    people_flag = 1;//等级标志恢复
+    return 0;
+}
+int Dialog::time_check(int column,int flag) {//检查当前点击时间段是否有效,0无效1有效
+    int i = tabnum;
+    QTime currenttime = QTime::currentTime();
+    QString time = tab1.table[i]->horizontalHeaderItem(column)->text();
+    int table_time = time.split(":")[0].toInt()*3600 + time.split(":")[1].toInt()*60;
+    if(time.split(":").size() > 2) {
+        table_time += time.split(":")[2].toInt();
+    }
+    //qDebug()<<time<<" "<<currenttime;
+    uint now = currenttime.hour()*3600 + currenttime.minute()*60 + currenttime.second();
+    if (flag == 0 && (now  - table_time >= tab1.table[i]->gap || now < table_time)) {
+        qDebug()<<"gap unvalid";
+        return 0;
+    }
+    if (flag == 1 && (tab1.table[tabnum]->flag[mycolumn].t_time && now - tab1.table[tabnum]->flag[mycolumn].t_time > tab1.info.lock_time.toDouble()*60)) {
+        //tab1.table[i]->trend_val = tab1.table[i]->temp_trend_val;//将真实趋势值写入
+        qDebug()<<tab1.table[tabnum]->flag[mycolumn].t_time<<" "<<now<<"column: "<<mycolumn;
+        return 0;
+    }
+    return 1;
+}
+void Dialog::flash() {//刷新进度条+工作表
+
+    QTime current_time = QTime::currentTime();
+    int i = tabnum;
+    int hour = current_time.hour();
+    int minute = current_time.minute();
+    int now = hour*3600 + minute*60 + current_time.second();
+    int j = (now - tab1.start_time > 0 ? now - tab1.start_time:now - tab1.start_time + 3600*24)/tab1.table[i]->gap;
+    //    if (j == tab1.info.disp_element_cnt. - 1) {//最后一列需要翻页了
+
+    //    }
+    if (j >= tab1.info.disp_element_cnt.toInt()) {//最后一列需要翻页了
+        qDebug()<<"翻页";
+        tab1.start_time = (tab1.start_time + j*tab1.table[i]->gap)%(24*3600);
+        tab1.flash_table(tab1.start_time);//
+        j = (now - tab1.start_time)/tab1.table[i]->gap;
+        //        for (int k = 0;k < tab1.table[i]->rowCount();k++) {
+        //            tab1.table[i]->item(k,tab1.info.disp_element_cnt.toInt() - 1)->setBackground(QBrush(tab1.color_scheme[5]));//灰色
+        //        }
+    }
+    //qDebug()<<j<<"now j";
+    //int temp_j = j - 1;
+    int temp_j = (j == 0? tab1.info.disp_element_cnt.toInt() - 1:j-1);
+    if (tab1.table[i]->flag[temp_j].flash_flag == 0) {//刷新上个时间段
+        qDebug()<<"真实值写入";
+        for (int f = 0; f < tab1.table.size();f++) {
+            for (int k = 0;k < tab1.table[f]->rowCount();k++) {
+                if (tab1.table[f]->item(k,temp_j)->background() == QBrush(tab1.color_scheme[6])) {//白色
+                    tab1.table[f]->item(k,temp_j)->setBackground(QBrush(tab1.color_scheme[5]));//灰色
+                }
+            }
+            tab1.table[f]->val = tab1.table[f]->temp_val;//将上个时间段的真实值写入
+            tab1.table[f]->trend_val = tab1.table[f]->temp_trend_val;//将上个时间段的真实趋势值写入
+            tab1.table[f]->trend_plus_minus = tab1.table[f]->temp_trend_plus_minus;//将上个时间段的真实趋势标识写入
+            if (temp_j == j - 1) {
+                tab1.table[f]->flag[temp_j].flash_flag = 1;
+            }
+            else {
+                tab1.table[f]->flag[temp_j].flash_flag  = -1;
+            }
+        }
+    }
+    if (tab1.table[i]->flag[j].recover_flag == 0) {//将本时间段恢复可编辑色
+        qDebug()<<"recover flag"<<tab1.table[i]->flag[j].recover_flag;
+        for (int f = 0;f < tab1.table.size();f++) {
+            for (int k = 0;k < tab1.table[f]->rowCount();k++) {
+                tab1.table[f]->item(k,j)->setBackground(QBrush(tab1.color_scheme[6]));//白色
+            }
+
+            tab1.table[f]->flag[j].recover_flag  = 1;
+        }
+        qDebug()<<"recover flag"<<tab1.table[i]->flag[j].recover_flag;
+    }
+    int table_time = tab1.table[i]->horizontalHeaderItem(j)->text().split(":")[0].toInt()*3600 + tab1.table[i]->horizontalHeaderItem(j)->text().split(":")[1].toInt()*60;
+    if (tab1.table[i]->horizontalHeaderItem(j)->text().split(":").size() > 2) {
+        table_time += tab1.table[i]->horizontalHeaderItem(j)->text().split(":")[2].toInt();
+    }
+    //if (now - table_time >=0 && now - table_time < tab1.table[i]->gap) {
+    progress_bar->setValue((double)(now - table_time)/(double)tab1.table[i]->gap*100);
+    //qDebug()<<progress_bar->value()<<" "<<(double)(now - table_time)/(double)tab1.table[i]->gap;
+    //pro_bar.setStyleSheet("{ border:2px solid grey;border-radius:5px;text-align:center;}");
+    if (progress_bar->value() >= 80) {
+        progress_bar->setStyleSheet("QProgressBar {   border: 2px solid grey;   border-radius: 5px;   background-color: #FFFFFF;}QProgressBar::chunk {   background-color: #FF0000;   width: 20px;}QProgressBar {   border: 2px solid grey;   border-radius: 5px;   text-align: center;}");//red
+    }
+    else if (progress_bar->value() >= 50) {
+        progress_bar->setStyleSheet("QProgressBar {   border: 2px solid grey;   border-radius: 5px;   background-color: #FFFFFF;}QProgressBar::chunk {   background-color: #FFFF00;   width: 20px;}QProgressBar {   border: 2px solid grey;   border-radius: 5px;   text-align: center;}");//yellow
+    }
+    else {
+        progress_bar->setStyleSheet("QProgressBar {   border: 2px solid grey;   border-radius: 5px;   background-color: #FFFFFF;}QProgressBar::chunk {   background-color: #05B8CC;   width: 20px;}QProgressBar {   border: 2px solid grey;   border-radius: 5px;   text-align: center;}");//blue
+    }
+    if (tab1.table[i]->item(0,j)->background() == QBrush(QColor(Qt::gray))) {
+        for (int k = 0;k < tab1.table[i]->rowCount();k++) {
+            tab1.table[i]->item(k,j)->setBackground(QBrush(QColor(Qt::white)));
+        }
+    }
+    //下面的翻页非当前版本刷新策略，可以忽略
+    //        if (i >= tab1.table[i]->horizontalScrollBar()->value() + pagevalue) {//每一个新的工作时间到来需要判断是否翻页
+    //            nextPage();
+    //        }
+    progress_bar->update();
+    //}
+    //else {
+    //}
+    //}
+    //sem.release();
+
+}
+void Dialog::check_info(int flag) {
+    qDebug()<<"check_info"<<flag<<"mode :"<<mode;
+    if (start_flag != 0) {
+        return;
+    }
+    switch (flag) {
+    case 1:
+        //if (mode == 0) {
+        if (tab1.read_local_authuser(my_socket->workInfo) == 0) {
+            ret_checkout[0] = 1;
+            if(my_socket->clientConnection) {
+                my_socket->sendmessage(5,(void *)&tab1.messageWorkerEvn.workerInfo);
+                qDebug()<<"send workerinfo!";
+            }
+            else {
+                qDebug()<<"send failed!";
+            }
+        }
+        else {
+            my_socket->sendmessage(8);
+        }
+        //}
+        // else if (mode == 1) {
+
+
+        // }
+        qDebug()<<tab1.messageWorkerEvn.workerInfo.name;
+        break;
+    case 2:
+        //if (mode == 0) {
+        if (tab1.readxml(my_socket->workInfo,1) == 0) {
+            ret_checkout[1] = 1;
+            if (tab1.read_local_env(my_socket->workInfo,0)==0) {
+
+                if(my_socket->clientConnection) {
+                    my_socket->sendmessage(6,(void *)&tab1.messageWorkerEvn.localEnv);//图表信息
+                    qDebug()<<"send workinfo!";
+                }
+                else {
+                    qDebug()<<"send failed!";
                 }
             }
         }
-        n = n.nextSibling();
+        else {
+            my_socket->sendmessage(9);
+        }
+        //}
+        //else if (mode == 1) {
+
+        //}
+
+        break;
+    case 3:
+        //if (mode == 0) {
+        if (tab1.read_local_env(my_socket->workInfo,1)==0) {
+            if(my_socket->clientConnection) {
+                my_socket->sendmessage(7,(void *)&tab1.messageWorkerEvn.equip);
+                qDebug()<<"send equipinfo!";
+            }
+            else {
+                qDebug()<<"send failed!";
+            }
+            ret_checkout[2] = 1;
+        }
+        else {
+            my_socket->sendmessage(10);
+        }
+        //}
+        //else if (mode == 1) {
+
+        //}
+        break;
     }
-    return net_plugin.status.toInt();
+    if (start_flag == 0&& ret_checkout[0] == 1 && ret_checkout[1] == 1 && ret_checkout[2] == 1) {
+        start_work();
+        qDebug()<<"start";
+        start_flag = 1;
+    }
+}
+void Dialog::plot_enlarge() {
+    my_socket->sendmessage(11);
+}
+void Dialog::plot_narrow() {
+    my_socket->sendmessage(12);
 }

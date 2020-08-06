@@ -109,25 +109,7 @@ public:
         QByteArray data;
         QDataStream out(&data, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_6);
-        switch (flag) {
-        //    case 0:
-        //        out<<quint32(sizeof(flag) + sizeof(info))<<flag<<info;
-        //        break;
-        case 1:
-            out<<quint32(sizeof(flag) + sizeof(T))<<flag<<info;//审核员
-            break;
-        case 2:
-            out<<quint32(sizeof(flag) + sizeof(T))<<flag<<info;//员工
-            qDebug()<<info;
-            break;
-        case 3:
-            out<<quint32(sizeof(flag)+sizeof(T))<<flag<<info;//指令
-            qDebug()<<info;
-            break;
-        case 4:
-            out<<quint32(sizeof(flag)+sizeof(T))<<flag<<info;//设备
-            break;
-        }
+        out<<quint32(sizeof(flag) + sizeof(T))<<flag<<info;
         socket->write(data);
         socket->waitForBytesWritten();
     }
@@ -157,6 +139,9 @@ private:
     double t;
     QSemaphore sem;
     int user_ide;
+    void warn_line(int n);
+    QVector<QVector<double>>warn_y,warn_x;
+    void add_fun();
 };
 
 #endif // SOCKETCLIENT_H

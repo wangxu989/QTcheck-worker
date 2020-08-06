@@ -20,4 +20,5 @@ void process_bar::run() {
 process_bar::~process_bar() {
     stopped = true;
     wait();
+    //terminate();
 }

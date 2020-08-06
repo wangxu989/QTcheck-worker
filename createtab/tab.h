@@ -112,6 +112,7 @@ public:
     my_tablewidget(){
 //        this->setStyleSheet("QTableView QTableCornerButton::section{padding:12px 0 0 10px"
 //                            "background-position:center;");
+        //this->setFocusPolicy(Qt::NoFocus);
          QAbstractButton *btn = this->findChild<QAbstractButton *>();
         if (btn) {
             btn->setText(QStringLiteral("范围/时间"));
@@ -125,6 +126,7 @@ public:
                 //t->verticalHeader()->setMinimumSize(btn->size());
             }
         }
+        //去掉横竖scrollbar
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
@@ -136,8 +138,8 @@ public:
         this->setEditTriggers(QAbstractItemView::NoEditTriggers);
         this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         this->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-        for (int i = 0;i < 4;i++) {
-            for (int j = 0;j < 4;j++) {
+        for (int i = 0;i < row;i++) {
+            for (int j = 0;j < row;j++) {
                 if (!(this->item(i,j))) {
                     this->setItem(i,j,new QTableWidgetItem());
                     this->item(i,j)->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);

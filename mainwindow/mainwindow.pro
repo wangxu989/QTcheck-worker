@@ -22,7 +22,8 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     my_port.h \
     qcustomplot.h \
-    socketclient.h
+    socketclient.h \
+    base_pragram.h
 
 FORMS    += mainwindow.ui
 

@@ -19,8 +19,9 @@
 		<!--pre_unit：    一级表格精度单位： 参考计算公式（正公差-负公差）*10%-->
 		<!--snd_pre_unit：二级表格（展开表格）精度单位： 为0则不展开-->
         <Item char_no="1" char_desc="长" spec_val="20" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.03"  snd_pre_unit="0.01" />
-		<Item char_no="2" char_desc="内径" spec_val="40" tolerance="0.1"  n_tolerance="-0.1" pre_unit="0.01"  snd_pre_unit="0.001"/>
+		<Item char_no="2" char_desc="内径" spec_val="40" tolerance="0.1"  n_tolerance="-0.1" pre_unit="0.01"  snd_pre_unit="0"/>
 		<Item char_no="3" char_desc="宽" spec_val="10" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.004"  snd_pre_unit="0.001"/>
+        <Item char_no="6" char_desc="外形3"  spec_val="0" tolerance="1"  n_tolerance="-1" pre_unit="1" snd_pre_unit="0"/>
     </Scheme>
 	 <Scheme product_no="207803" active="1" warn_thr="1" chk_warn_thr="2" detect_mode="0" time_interval="30" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" trend_warn_win="7" lock_time="5" >
 		<!--char_no：产品特性号，特性的唯一标识-->

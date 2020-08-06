@@ -1,6 +1,7 @@
 #include "socket.h"
 #include<QAbstractSocket>
 #include<QFile>
+#include<QMessageBox>
 QDataStream& operator<<(QDataStream &os,infomation &a) {
     os<<a.product_no;
     os<<a.warn_thr;
@@ -28,21 +29,38 @@ QDataStream& operator<<(QDataStream &os,tabinfo &a) {
     return os;
 }
 socket::~socket(){
-    //clientConnection->disconnectFromServer();
-    clientConnection->disconnectFromHost();
+    server->close();
+    delete server;
 }
+bool socket::bind() {
+    if (!server->listen(QHostAddress(ip),6666)) {
+        QMessageBox box;
+        box.setText("server listen failed!" + server->errorString());
+        box.exec();
+        return false;
+    }
+    else {
+        qDebug()<<"listen successed!";
+    }
+    connect(server,&QTcpServer::newConnection,this,&socket::my_connection);//通过信号链接
+    return true;
+}
+
 socket::socket()
 {
     server = new QTcpServer(this);
     QFile file("./data/ip");
     file.open(QIODevice::ReadOnly);
-    QString ip = file.read(15);
+    ip = file.read(15);
     qDebug()<<ip;
     if (!server->listen(QHostAddress(ip),6666)) {
         QMessageBox box;
         box.setText("server listen failed!" + server->errorString());
         box.exec();
         return;
+    }
+    else {
+        qDebug()<<"listen successed!";
     }
     connect(server,&QTcpServer::newConnection,this,&socket::my_connection);//通过信号链接
     //server = new QLocalServer(this);
@@ -193,6 +211,38 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
         out<<(*createinfo)[num].gauge;
         qDebug()<<(*createinfo)[num].gauge;
         break;
+        //预留
+
+
+
+        //P2:
+     case 48:
+        out<<quint32(sizeof(flag) + sizeof(producttab));
+        out<<flag<<*(producttab *)content;
+        break;
+     case 49://切换两个表格current_item
+        out<<quint32(sizeof(flag) + sizeof(int));
+        qDebug()<<flag<<"flag";
+        out<<flag<<*(int*)content;
+        break;
+     case 50://生产计划
+        out<<quint32(sizeof(flag) + sizeof(plantab));
+        out<<flag<<*(plantab *)content;
+        break;
+     case 51:
+        out<<quint32(sizeof(flag) + sizeof(int));
+        qDebug()<<flag<<"flag";
+        out<<flag<<*(int*)content;
+        break;
+    case 52://生产令号
+        out<<quint32(sizeof(flag) + sizeof(plansteptab));
+        out<<flag<<*(plansteptab *)content;
+        break;
+    case 53:
+        out<<quint32(sizeof(flag) + sizeof(int));
+        out<<flag<<*(int*)content;
+        break;
+
     }
     //    data.resize(sizeof(*info));
     //    memcpy(data.data(),info,sizeof(*info));
