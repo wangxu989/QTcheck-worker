@@ -6,6 +6,10 @@
 #include<QVector>
 #include<QMessageBox>
 #include<QScrollBar>
+extern const double eps = 1e-10;//double 比较精度
+extern bool cmp_eq(const double& a,const double& b);
+
+extern bool cmp_eg (const double& a,const double& b);
 QDataStream& operator << (QDataStream &os,worker_info &workInfo) {
     os<<workInfo.name;
     os<<workInfo.role;
@@ -62,7 +66,7 @@ void mytab::showEvent(QShowEvent *) {
 
     int e_width = width/tabcnt;
     this->setStyleSheet("QTabBar::scroller {width:0}");
-    this->setStyleSheet(QString("QTabBar::tab{width:%1px;}").arg(e_width));
+    this->setStyleSheet(QString("QTabBar::tab{min-width:%1px;}").arg(e_width));
 }
 
 bool mytab::eventFilter(QObject *o, QEvent *e) {
@@ -121,7 +125,7 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
         box.exec();
         exit(-1);
     }
-    int numrow = (int)createinfo.normvalue == 0?2: (int)((createinfo.zgc - createinfo.fgc)/createinfo.jddw) + 1 + 1;//行数
+    int numrow = cmp_eq(createinfo.normvalue,0)?2: (int)((createinfo.zgc - createinfo.fgc)/createinfo.jddw) + 1 + 1;//行数
     //OK,NG和普通版本
 
 
@@ -177,7 +181,7 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     t->setHorizontalHeaderLabels(verticalhead);//水平表头
     //纵表头
     QStringList verti;
-    if ((int)createinfo.normvalue == 0) {
+    if (cmp_eq(createinfo.normvalue,0)) {
         verti<<"OK"<<"NG";
         t->setVerticalHeaderLabels(verti);
     }
@@ -539,6 +543,12 @@ int  mytab::nekwork_or_local() {//0为网络版1为本地版
 QString mytab::auto_zero(double from, double to) {
     QString tos = QString::number(to);
     QString froms = QString::number(from);
+    if (cmp_eq(from,0)) {
+        froms = "0";
+    }
+    if (cmp_eq(to,0)) {
+        tos = "0";
+    }
     if (froms.contains(".")) {
         if (tos.contains(".")) {
             int zero_size = froms.split(".")[1].size() - tos.split(".")[1].size();

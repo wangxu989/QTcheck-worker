@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--LocalSchemes说明:-->
+<LocalSchemes>
+	<!--product_no:产品号, 产品唯一标识，每个产品下有多个特性-->
+	<!--active：是否激活此产品的配置，此配置表可配置多个产品，“1”代表激活 “0”代表关闭-->
+	<!--warn_thr：测量误差预警区间，以精度单位度量，比如值1表示当实测值在规格值的上下限的1个公差精度范围内为预警区间（黄色）-->
+	<!--chk_warn_thr：以精度单位度量:比如值为2表示复核值与自测值相差2个精度单位需预警-->
+	<!--detect_mode：抽检方式 ,0代代表计时抽检（固定时间内抽检一次）    1代表计件抽检（单位件数中抽检一次）-->
+	<!--time_interval：抽检周期，当detect_mode为0时有效，代表具体抽检的固定时长，以分钟为单位-->
+	<!--cycle_time：单个零件加工时间，当detect_mode为1时有效，计件抽检时间间隔=cycle_time*sample_cnt-->
+	<!--sample_cnt：计件的个数，当detect_mode为1时有效，计件抽检时间间隔=cycle_time*sample_cnt-->
+	<!--disp_element_cnt：屏幕当前工作页面展示抽检零件的抽检数目-->
+    <Scheme product_no="200161" warn_thr="1" chk_warn_thr="2" detect_mode="0" time_interval="1" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" trend_warn_win="3" lock_time="0.1" >
+		<!--char_no：产品特性号，特性的唯一标识-->
+		<!--spec_val：特性规格值-->
+		<!--tolerance：正公差-->
+		<!--n_tolerance：负公差-->
+		<!--pre_unit：    一级表格精度单位： 参考计算公式（正公差-负公差）*10%-->
+		<!--snd_pre_unit：二级表格（展开表格）精度单位： 为0则不展开-->
+        <Item char_no="1" char_desc="长" spec_val="20" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.03"  snd_pre_unit="0.01" />
+		<Item char_no="2" char_desc="内径" spec_val="40" tolerance="0.1"  n_tolerance="-0.1" pre_unit="0.01"  snd_pre_unit="0"/>
+		<Item char_no="3" char_desc="宽" spec_val="10" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.004"  snd_pre_unit="0.001"/>
+        <Item char_no="6" char_desc="外形3"  spec_val="0" tolerance="1"  n_tolerance="-1" pre_unit="1" snd_pre_unit="0"/>
+    </Scheme>
+	 <Scheme product_no="207803"  warn_thr="1" chk_warn_thr="2" detect_mode="0" time_interval="30" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" trend_warn_win="7" lock_time="5" >
+		<!--char_no：产品特性号，特性的唯一标识-->
+		<!--spec_val：特性规格值-->
+		<!--tolerance：正公差-->
+		<!--n_tolerance：负公差-->
+		<!--pre_unit：    一级表格精度单位： 参考计算公式（正公差-负公差）*10%-->
+		<!--snd_pre_unit：二级表格（展开表格）精度单位： 为0则不展开-->
+        <Item char_no="1" char_desc="长" spec_val="20" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.03"  snd_pre_unit="0.01" />
+		<Item char_no="2" char_desc="内径" spec_val="20" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.03"  snd_pre_unit="0.01"/>
+		<Item char_no="3" char_desc="宽" spec_val="10" tolerance="0.02"  n_tolerance="-0.01" pre_unit="0.03"  snd_pre_unit="0.01"/>
+    </Scheme>
+	
+	<Scheme product_no="208202"  warn_thr="1" chk_warn_thr="2" detect_mode="0" time_interval="30" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" trend_warn_win="7" lock_time="5" >
+		<!--char_no：产品特性号，特性的唯一标识-->
+		<!--spec_val：特性规格值-->
+		<!--tolerance：正公差-->
+		<!--n_tolerance：负公差-->
+		<!--pre_unit：    一级表格精度单位： 参考计算公式（正公差-负公差）*10%-->
+		<!--snd_pre_unit：二级表格（展开表格）精度单位： 为0则不展开-->
+        <Item char_no="1" char_desc="外观"   spec_val="0"    tolerance="1"     n_tolerance="-1"    pre_unit="1"     snd_pre_unit="0"/>
+		<Item char_no="2" char_desc="角度"   spec_val="8"    tolerance="0.05"  n_tolerance="-0.05" pre_unit="0.01"  snd_pre_unit="0"/>
+		<Item char_no="3" char_desc="间隙"   spec_val="0.06" tolerance="0.03"  n_tolerance="-0.03" pre_unit="0.01"  snd_pre_unit="0"/>
+		<Item char_no="4" char_desc="密合度" spec_val="1.04" tolerance="0.04"  n_tolerance="-0.03" pre_unit="0.01"  snd_pre_unit="0"/>
+		<Item char_no="5" char_desc="角度"   spec_val="39"   tolerance="3"     n_tolerance="-3"    pre_unit="1"     snd_pre_unit="0"/>
+		<Item char_no="6" char_desc="角度"   spec_val="39"   tolerance="3"     n_tolerance="-3"    pre_unit="1"     snd_pre_unit="0"/>
+		<Item char_no="7" char_desc="距离"   spec_val="13.5" tolerance="0.1"   n_tolerance="-0.1"  pre_unit="0.1"   snd_pre_unit="0"/>
+		<Item char_no="8" char_desc="粗糙度" spec_val="0.4"  tolerance="0.4"   n_tolerance="-0.4"  pre_unit="0.1"   snd_pre_unit="0"/>
+		<Item char_no="9" char_desc="直径"   spec_val="48"   tolerance="0.01"  n_tolerance="-0.01" pre_unit="0.01"  snd_pre_unit="0"/>
+		<Item char_no="10" char_desc="同轴度" spec_val="0.4"  tolerance="0.4"   n_tolerance="-0.4"  pre_unit="0.1"   snd_pre_unit="0"/>
+		<Item char_no="11" char_desc="角度"   spec_val="60"   tolerance="0.1"   n_tolerance="-0.1"  pre_unit="0.1"   snd_pre_unit="0"/>
+		
+    </Scheme>
+</LocalSchemes>

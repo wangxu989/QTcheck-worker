@@ -219,7 +219,8 @@ DIST          = /opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/features/spec_pre.prf \
 		../createtab/tab.h \
 		../createtab/socket.h \
 		../createtab/base_program.h \
-		../createtab/program2.h ../createtab/database.cpp \
+		../createtab/program2.h \
+		../createtab/global_fun.h ../createtab/database.cpp \
 		../createtab/dialog.cpp \
 		../createtab/main.cpp \
 		../createtab/mainwindow.cpp \
@@ -542,7 +543,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../createtab/img.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../createtab/database.h ../createtab/dialog.h ../createtab/mainwindow.h ../createtab/process_bar.h ../createtab/tab.h ../createtab/socket.h ../createtab/base_program.h ../createtab/program2.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../createtab/database.h ../createtab/dialog.h ../createtab/mainwindow.h ../createtab/process_bar.h ../createtab/tab.h ../createtab/socket.h ../createtab/base_program.h ../createtab/program2.h ../createtab/global_fun.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../createtab/database.cpp ../createtab/dialog.cpp ../createtab/main.cpp ../createtab/mainwindow.cpp ../createtab/process_bar.cpp ../createtab/tab.cpp ../createtab/socket.cpp ../createtab/program2.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../createtab/dialog.ui ../createtab/form.ui ../createtab/mainwindow.ui ../createtab/program2.ui $(DISTDIR)/
 
@@ -757,6 +758,7 @@ moc_dialog.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDebug \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -1119,6 +1121,7 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -1558,6 +1561,7 @@ moc_tab.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QWidget \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		../createtab/tab.h
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/createtab -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSql -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../createtab/tab.h -o moc_tab.cpp
 
@@ -1723,6 +1727,7 @@ moc_socket.cpp: ../createtab/tab.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QtNetwork \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QtNetworkDepends \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QtCore \
@@ -2064,6 +2069,7 @@ moc_program2.cpp: ../createtab/dialog.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -2433,6 +2439,7 @@ database.o: ../createtab/database.cpp ../createtab/database.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -2786,6 +2793,7 @@ dialog.o: ../createtab/dialog.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -3146,6 +3154,7 @@ main.o: ../createtab/main.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -3720,6 +3729,7 @@ mainwindow.o: ../createtab/mainwindow.cpp ../createtab/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \
@@ -4168,6 +4178,7 @@ tab.o: ../createtab/tab.cpp ../createtab/tab.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHBoxLayout \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
@@ -4342,6 +4353,7 @@ socket.o: ../createtab/socket.cpp ../createtab/socket.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QtNetwork \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QtNetworkDepends \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QtCore \
@@ -4683,6 +4695,7 @@ program2.o: ../createtab/program2.cpp ../createtab/program2.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAbstractScrollArea \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QScrollBar \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qscrollbar.h \
+		../createtab/global_fun.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QNetworkInterface \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qhostaddress.h \

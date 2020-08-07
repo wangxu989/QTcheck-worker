@@ -277,7 +277,7 @@ void MainWindow::my_send2() {
 }
 
 void MainWindow::my_send3() {
-    QString temp = "ZL,20016101180122000101,17121618739,1,1800";
+    QString temp = "ZL,20820203200708000103,E12001682XA,0,1800";//"ZL,20016101180122000101,17121618739,1,1800";
     my_client->send_message(3,temp);
     my_client->check_flag[1] = 1;
 }

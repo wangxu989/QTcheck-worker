@@ -17,6 +17,7 @@ QSharedPointer<QMap<QString,baseP*>> baseP::allP = QSharedPointer<QMap<QString,b
 database_server *data_server = NULL;//数据库类
 database_local *data_local = NULL;
 socket *my_socket;
+int my_button::num = 0;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -42,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     main_widget = new QWidget();
     main_widget->setLayout(H_layout);
     this->setStyleSheet("QWidget#MainWindow{border-image: url(:/new/prefix1/img/bj.jpg);}");
-    my_button::init_num();//初始化按钮个数
+    //my_button::init_num();//初始化按钮个数
     draw_init();
     //main_widget->setStyleSheet("QWidget{border-image: url(:/new/prefix1/img/bj.jpg);}");
     this->takeCentralWidget();

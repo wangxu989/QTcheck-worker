@@ -38,7 +38,8 @@ HEADERS += \
     tab.h \
     socket.h \
     base_program.h \
-    program2.h
+    program2.h \
+    global_fun.h
 
 FORMS += \
     dialog.ui \

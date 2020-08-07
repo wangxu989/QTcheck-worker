@@ -5,8 +5,8 @@
 #include<QPushButton>
 #include<QPixmap>
 #include"socket.h"
-const double eps = 1e-10;//double 比较精度
 //全局double比较
+const double eps = 1e-10;//double 比较精度
 bool cmp_eq(const double& a,const double& b) {
     return a - b >= -eps && b - a >= -eps;
 }
@@ -14,6 +14,7 @@ bool cmp_eq(const double& a,const double& b) {
 bool cmp_eg (const double& a,const double& b) {
     return a - b >= -eps;
 }
+
 extern int mode;
 extern database_plugin net_plugin;
 extern database_server *data_server;//数据库类
@@ -398,7 +399,7 @@ void Dialog::onClicked(int row,int column) {//一级表格的槽函数（检测�
 void Dialog::first_tablogic(int &row,int &column) {//一级表格的逻辑部分
     int i = tabnum;
     if (row == 0 || row == tab1.table[i]->rowCount() - 1) {//警告值无二级精度
-        if ((int)tab1.createinfo[tab1.currentIndex()].normvalue == 0) {//OK/NG
+        if (cmp_eq(tab1.createinfo[tab1.currentIndex()].normvalue ,0)) {//OK/NG
             insertvalue(myrow,tab1.currentIndex(),valuel2,mycolumn);
         }
         else {
@@ -517,7 +518,6 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
     }
     //获取当前点击行对应的一级值
     QString temp = tab1.table[i]->verticalHeaderItem(row)->text();
-     qDebug()<<temp<<"        temp";
     //qDebug()<<valuel2;
     if (cmp_eq(tab1.createinfo[tab1.currentIndex()].normvalue, 0)) {//OK/NG
         if (temp == "OK") {
@@ -531,6 +531,9 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
         if (cmp_eq(tab1.createinfo[tab1.currentIndex()].ejjddw,0)) {//无二级表格
             if (row == 0 || row == tab1.table[i]->rowCount() - 1) {
                 temp = "0";
+            }
+            else if (row == tab1.table[i]->rowCount() - 2) {
+                temp = temp.split("≤")[2];
             }
             else {
                 temp = temp.split("≤")[1];
@@ -549,6 +552,7 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
             }
         }
     }
+    qDebug()<<temp<<"        temp";
     tab1.my.tabnum = i;
     double insy = temp.toDouble() + valuel2;//测量总值
 
@@ -559,7 +563,7 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
     else {
         qDebug()<<"send failed!";
     }
-    if ((int)tab1.createinfo[tab1.currentIndex()].normvalue == 0) {
+    if (cmp_eq(tab1.createinfo[tab1.currentIndex()].normvalue ,0)) {
          tab1.table[tabnum]->item(row,column)->setText(insy == 1 ?"OK":"NG");//插入表格
     }
     else {
@@ -571,7 +575,7 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
             data_server->remove_t();
         }
         if (row == 0 || row == tab1.table[i]->rowCount() - 1) {
-            if ((int)tab1.createinfo[tab1.currentIndex()].normvalue == 0) {
+            if (cmp_eq(tab1.createinfo[tab1.currentIndex()].normvalue,0)) {
                 if (tab1.table[i]->rowCount() - 1 == row) {
                      tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[2]));
                      if (mode&&data_server) {

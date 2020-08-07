@@ -20,7 +20,6 @@ class my_button : public QPushButton {
 public:
     static int num;
     static void init_num() {
-        static int num = 0;
     }
 private:
 signals:
