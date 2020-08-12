@@ -1,6 +1,14 @@
 #include "socketclient.h"
 #include<QMessageBox>
 #include<QFile>
+double eps = 1e10;
+bool cmp_eq(const double& a,const double& b) {
+    if (a - b >= -eps && a - b <= eps) {
+        return true;
+    }
+    return false;
+}
+
 const int N = 5;//每个任务的线条数
 QDataStream& operator >> (QDataStream &os,Equip &equip){
     os>>equip.test_place;
@@ -69,9 +77,10 @@ socketclient::socketclient()
     //connect(socket, QOverload<QLocalSocket::LocalSocketError>::of(&QLocalSocket::error),this,&socketclient::displayError);
     in.setDevice(socket);
     in.setVersion(QDataStream::Qt_5_6);
-    QFile file("./data/ip");
-    file.open(QIODevice::ReadOnly);
-    QString ip = file.read(15);
+//    QFile file("./data/ip");
+//    file.open(QIODevice::ReadOnly);
+    //QString ip = file.read(15);
+    QString ip = "127.0.0.1";
     socket->connectToHost(QHostAddress(ip),6666);
     //socket->connectToServer("f3");
     if (socket->waitForConnected()) {
@@ -99,6 +108,7 @@ socketclient::socketclient()
     //pCustomPlot->yAxis->setRange(min,max);//y轴范围
     QSharedPointer<QCPAxisTickerDateTime>timer(new QCPAxisTickerDateTime);
     timer->setDateTimeFormat("hh:mm\nMMMM.dd\nyyyy");
+
     //timer->setDateTimeFormat("hh:mm");//yyyy.MM.dd-
     //设置刻度
 
@@ -179,10 +189,16 @@ void socketclient::readmessage(){
     case 1:
         in>>i;
         tabnum = i;
+        if (cmp_eq(createinfo[i].normvalue,0)) {
+            //QSharedPointer<QCPAxisTickerDateTime>timer(new QCPAxisTickerDateTime);
+            //timer->setDateTimeFormat("hh:mm\nMMMM.dd\nyyyy");
+//            QSharedPointer<QCPAxisTickerText> text_y(new QCPAxisTickerText);
+//            pCustomPlot->yAxis->setTicker(text_y);
+        }
         //qDebug()<<i;
         emit gauge_no(&createinfo[tabnum].gauge);
         qDebug()<<pCustomPlot->graphCount()<<" graph count";
-        qDebug()<<warn_y[i*3][0]<<warn_y[i*3][1];
+        qDebug()<<warn_y[i*3][0]<<" "<<warn_y[i*3][1];
         for (j = 0;j < pCustomPlot->graphCount();j++) {//只展示当前graph和3条预警线，其他隐藏
             if (j >= i*N && j < (i + 1)*N) {
                 qDebug()<<j;
@@ -334,7 +350,7 @@ void socketclient::warn_line(int n) {
     y_t[1] = createinfo[n].normvalue;
     warn_y[n*3] = y_t;
     warn_x[n] = x_t;
-    warn_x[n] = x_t;
+    //warn_x[n] = x_t;
     pCustomPlot->graph(n*N + 2)->setPen(QPen(Qt::blue));
     pCustomPlot->graph(n*N + 2)->setData(warn_x[n],warn_y[n*3]);
 

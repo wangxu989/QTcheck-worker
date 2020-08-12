@@ -1,5 +1,7 @@
 #ifndef DIALOG_H
 #define DIALOG_H
+
+//#define MY_P
 #include<QDebug>
 #include<QThread>
 #include <database.h>

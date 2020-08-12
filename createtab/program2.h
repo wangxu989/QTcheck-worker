@@ -3,6 +3,7 @@
 #include<dialog.h>
 #include <QWidget>
 #include<QString>
+#include<qrencode.h>
 //子功能2
 namespace Ui {
 class Program2;
@@ -27,6 +28,12 @@ private slots:
     void on_pushButton_6_clicked();
 
     void on_pushButton_7_clicked();
+
+    void show_print_code(QString& s);
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_3_clicked();
 
 private:
     bool start_P()override{return true;};

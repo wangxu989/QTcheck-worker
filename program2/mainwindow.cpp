@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(my_socket.data(),&socket::insert_plansteptab,this,&MainWindow::insert_plansteptab);
     connect(my_socket.data(),&socket::act_mode,this,&MainWindow::act_mode);
     connect(my_socket.data(),&socket::insert_producttab,this,&MainWindow::insert_producttab);
+    connect(my_socket.data(),&socket::send_printString,this,&MainWindow::send_printString);
 }
 
 MainWindow::~MainWindow()
@@ -34,6 +35,7 @@ void MainWindow::insert_plantab(plantab *tab) {
 }
 void MainWindow::set_plantab_size(int num,int size) {
     if (num == 1) {
+        table2.data()->clear();
         table1.data()->setRowCount(size);
         table1.data()->now_row = 0;
         for (int i = 0;i < table1.data()->rowCount();i++) {
@@ -87,4 +89,11 @@ void MainWindow::insert_producttab(producttab *p) {
     ui->lineEdit_9->setText(p->clientDrawingID);
     ui->lineEdit_10->setText(p->ourDrawingID);
     ui->lineEdit_11->setText(p->clientVersion);
+}
+void MainWindow::send_printString() {
+    QString temp;
+    int row = table2.data()->currentRow();
+    temp += table2.data()->item(row,0)->text() + "," + table2.data()->item(row,1)->text() + "," + table2.data()->item(row,2)->text();
+    qDebug()<<"send_PrintString  "<<temp;
+    my_socket->send_message(20,temp);
 }

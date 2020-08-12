@@ -3,6 +3,7 @@
 #include<QSqlError>
 #include<QMessageBox>
 extern socket *my_socket;
+int database::last_insert_id = -1;
 QDataStream& operator<<(QDataStream& os,const producttab& p) {
     os<<p.productID;
     os<<p.productName;
@@ -309,14 +310,14 @@ void database_server::read_plantab(const QString& s,const QString& flag) {
     }
     producttab prod_t;
     while (query.next()) {
-            prod_t.productID = query.value(1).toString();
-            prod_t.productName = query.value(2).toString();
-            prod_t.clientProductName = query.value(4).toString();
-            prod_t.clientDrawingID = query.value(5).toString();
-            prod_t.productState = query.value(6).toString();
-            prod_t.clientVersion = query.value(16).toString();
-            prod_t.ourDrawingID = query.value(17).toString();
-            my_socket->sendmessage(48,(void *)&prod_t);
+        prod_t.productID = query.value(1).toString();
+        prod_t.productName = query.value(2).toString();
+        prod_t.clientProductName = query.value(4).toString();
+        prod_t.clientDrawingID = query.value(5).toString();
+        prod_t.productState = query.value(6).toString();
+        prod_t.clientVersion = query.value(16).toString();
+        prod_t.ourDrawingID = query.value(17).toString();
+        my_socket->sendmessage(48,(void *)&prod_t);
     }
 
 
@@ -332,6 +333,9 @@ void database_server::read_plantab(const QString& s,const QString& flag) {
     plantab_size = query.size();
     my_socket->sendmessage(51,(void *)&plantab_size);
     qDebug()<<q<<query.size();
+
+    rec_plantab.resize(plantab_size);
+    int cnt = 0;
     while(query.next()) {
         planTab.PlanID = query.value(0).toString();
         planTab.CreateTime = query.value(1).toString();
@@ -344,10 +348,14 @@ void database_server::read_plantab(const QString& s,const QString& flag) {
         planTab.IsRework = query.value(22).toString();
         planTab.cCappName = query.value(9).toString();
         qDebug()<< planTab.PlanID ;
-        rec_plantab.push_back(planTab);
+        rec_plantab[cnt++] = planTab;
         my_socket->sendmessage(50,(void *)&planTab);
     }
-    update_step();
+    plantab_now = 0;
+    planstep_now = 0;
+    if (plantab_size > 0) {
+        update_step();
+    }
 }
 void database_server::read_producttab(const QString &s) {
     QString q =  "select * from producttab where productID = " + s;
@@ -361,13 +369,14 @@ void database_server::read_producttab(const QString &s) {
     }
 }
 void database_server::update_step() {
+    planstep_now = 0;
     QString temp_S = "select * from plansteptab where left(PlanStepID,18) = '" + rec_plantab[plantab_now].PlanID + "'" ;
     if (!query.exec(temp_S)) {
         QSqlError error = query.lastError();
         QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
         box.exec();
     }
-     qDebug()<<temp_S<<" "<<query.size();
+    qDebug()<<temp_S<<" "<<query.size();
     planstep_size = query.size();
     plansteptab plan_step_tab;
     int size_t = query.size();
@@ -389,7 +398,7 @@ void database_server::update_step() {
     }
 }
 void database_server::add_tab() {//plantab下add
-    if (plantab_now < plantab_size) {
+    if (plantab_now < plantab_size - 1) {
         plantab_now++;
         int act = 0;
         my_socket->sendmessage(49,(void *)&act);
@@ -405,4 +414,19 @@ void database_server::reducetab() {
         update_step();
     }
     qDebug()<<plantab_now;
+}
+void database_server::add_steptab() {
+    if (planstep_now < planstep_size - 1) {
+        planstep_now++;
+        int act = 2;
+        my_socket->sendmessage(49,(void *)&act);
+    }
+}
+void database_server::reducesteptab() {
+    if (planstep_now > 0) {
+        planstep_now--;
+        int act = 3;
+        my_socket->sendmessage(49,(void *)&act);
+
+    }
 }

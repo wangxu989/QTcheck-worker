@@ -6,6 +6,7 @@
 #include<QVector>
 #include<QMessageBox>
 #include<QScrollBar>
+#include<QResizeEvent>
 extern const double eps = 1e-10;//double 比较精度
 extern bool cmp_eq(const double& a,const double& b);
 
@@ -42,6 +43,7 @@ QDataStream& operator>>(QDataStream &os,struct work_info &info) {
     return os;
 }
 mytab::mytab() {
+    //this->tabBar()->setMinimumWidth(80);
     color_scheme.resize(8);
     color_scheme[0] = Qt::green;
     color_scheme[1] = Qt::yellow;
@@ -65,8 +67,14 @@ void mytab::showEvent(QShowEvent *) {
     int tabcnt = this->count();
 
     int e_width = width/tabcnt;
-    this->setStyleSheet("QTabBar::scroller {width:0}");
-    this->setStyleSheet(QString("QTabBar::tab{min-width:%1px;}").arg(e_width));
+    //this->setStyleSheet("QTabBar::scroller{width:50}");
+    //this->setStyleSheet(QString("QTabBar::tab {height: 50px;width: 80px;}"));
+   // QTabBar* mtabbar =  findChildren<QTabBar*>().at(0);
+//    ( (QWidget * )(mtabbar->children().first()))->setFixedWidth(40);
+//    ( (QWidget *) (mtabbar->children().last()))->setFixedWidth(40);
+    //this->setTabBar(mtabbar);
+    this->tabBar()->setStyleSheet("QTabBar::scroller{width:50}");
+    this->setStyleSheet(QString("QTabBar::tab{height: 50px;min-width:%1px;}").arg(e_width));
 }
 
 bool mytab::eventFilter(QObject *o, QEvent *e) {
@@ -78,6 +86,11 @@ bool mytab::eventFilter(QObject *o, QEvent *e) {
     }
     return false;
 }
+void mytab::resizeEvent(QResizeEvent *e) {
+    //this->tabBar()->resize(QSize(30,30));
+   // e->ignore();
+}
+
 void mytab::flash_table(int start) {
 
     int numcolumn = info.disp_element_cnt.toInt();//总共
@@ -205,8 +218,13 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
         t->verticalHeaderItem(0)->setBackground(QBrush(color_scheme[2]));
         qDebug()<<"color head end";
         t->verticalHeaderItem(t->rowCount()-1)->setBackground(QBrush(color_scheme[2]));
+        t->warn_thr = info.warn_thr.toInt();
+        while (t->rowCount() - 2 <= t->warn_thr*2) {
+            t->warn_thr--;
+        }
+        qDebug()<<info.warn_thr<<"warn_thr";
         for (int i = 1;i <= t->rowCount() - 2;i++) {//设置垂直表头颜色
-            if (i <= info.warn_thr.toInt() || t->rowCount() -1 - i <= info.warn_thr.toInt()) {
+            if (i <= t->warn_thr || t->rowCount() -1 - i <= t->warn_thr) {
                 t->verticalHeaderItem(i)->setBackground(QBrush(color_scheme[1]));//黄色
             }
             else {

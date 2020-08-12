@@ -123,6 +123,7 @@ private slots:
     void insert_plansteptab(plansteptab*);
     void insert_producttab(producttab*);
     void act_mode(int act);
+    void send_printString();
 };
 
 #endif // MAINWINDOW_H

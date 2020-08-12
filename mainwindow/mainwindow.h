@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#define _TEXT
+//#define _TEXT
 #include<QVector>
 #include <QMainWindow>
 #include"my_port.h"
@@ -42,7 +42,7 @@ private:
     QWidget *widget;
     QVBoxLayout *V_button;
     my_port my_port1;
-    work_info workInfo = {"YG,02294","SB,001073","ZL,20016101180122000101,17121618739,1,1800"};
+    work_info workInfo;//{"YG,02294","SB,001073","ZL,20016101180122000101,17121618739,1,1800"};
     QLabel *label2 ;
     QSqlQuery query;
     QQueue<double> *x;

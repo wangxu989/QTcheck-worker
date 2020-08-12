@@ -73,10 +73,10 @@ public:
     int flag = -1;//0员工信息不合法,1您无权访问此机器,2无对应工作信息
     work_info *workInfo;
     mytab *tab;
+    static int last_insert_id;
 
 protected:
     virtual bool connect_database()=0;
-     int last_insert_id;
      database_plugin plugin = {"127.0.0.1","0","MYDB","root","arm","0"};
      QSqlDatabase db,db_data;
      QSqlQuery query;

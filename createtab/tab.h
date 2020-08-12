@@ -108,6 +108,7 @@ public:
     double temp_val = -1;//暂存本次操作值
     //int
     QVector<tflag>flag;//标记该列是否被赋值过
+    int warn_thr;
 //    ~my_tablewidget() override{//无指针可以不用虚析构
 
 //    }
@@ -224,6 +225,7 @@ private:
     bool eventFilter(QObject *watched, QEvent *event);
     void trend_warn();//趋势预警处理函数
     void showEvent(QShowEvent *);
+    void resizeEvent(QResizeEvent *e);
 
 private slots:
 

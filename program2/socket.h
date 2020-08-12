@@ -53,6 +53,16 @@ class socket:public QTcpSocket
     Q_OBJECT
 public:
     socket();
+    template<typename T>
+    void send_message(int flag,T t1) {
+        QByteArray data;
+        QDataStream out(&data, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_6);
+        out<<quint32(sizeof(flag) + sizeof(t1))<<flag<<t1;
+        write(data);
+        waitForBytesWritten();
+    }
+
 private:
     QDataStream in;
     quint32 blockSize = 0;
@@ -64,6 +74,7 @@ signals:
     void insert_plansteptab(plansteptab *);
     void insert_producttab(producttab*);
     void act_mode(int);
+    void send_printString();
 };
 
 #endif // SOCKET_H

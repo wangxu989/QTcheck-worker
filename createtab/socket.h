@@ -23,10 +23,12 @@ public:
     QTcpSocket *clientConnection = NULL;
     work_info workInfo = {"YG,2294","SB,001073","ZL,20016101180122000101,171216",""};
     bool bind();
+
 signals:
     void start_work();
     void check_identity();
     void check_info(int);
+    void print_String(QString&);
 public slots:
     void my_connection();
     void delete_connect();
@@ -38,6 +40,7 @@ private:
     int blocksize = 0;
     //QMap<QString,QTcpSocket*>client_C;
     QString ip;
+    QString print;
 private slots:
     void read_message();
 };

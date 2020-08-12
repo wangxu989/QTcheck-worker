@@ -115,7 +115,11 @@ void Dialog::login() {
     connect(my_socket,SIGNAL(check_info(int)),this,SLOT(check_info(int)));
     //开启图表进程
     //QStringList argument;
+#ifndef MY_P
     my_process.start("./plugin/1.sh");
+#else
+    my_process.start("./plugin/mainwindow");
+#endif
 //    {
 //        qDebug() << "success";
 
@@ -154,8 +158,8 @@ void Dialog::draw_init() {
     enlarge = new QPushButton();
     gauge = new QPushButton("检具");
     gauge->setFixedSize(50,50);
-    enlarge->setIcon(QIcon(":/new/prefix1/img/-.png"));
-    narrow->setIcon(QIcon(":/new/prefix1/img/+.png"));
+    enlarge->setIcon(QIcon(":/new/prefix1/img/+.png"));
+    narrow->setIcon(QIcon(":/new/prefix1/img/-.png"));
     narrow->setIconSize(QSize(50,50));
     narrow->setFixedSize(50,50);
     enlarge->setIconSize(QSize(50,50));
@@ -464,6 +468,7 @@ void Dialog::first_tablogic(int &row,int &column) {//一级表格的逻辑部分
 }
 void Dialog::tabchanged(int i){//tab标签页切换
     tabnum = i;
+    //if (i == tab1.scroll();)
     //QTime current_time = QTime::currentTime();
     //flash(current_time);
     if (my_socket->clientConnection){//已建立链接
@@ -594,7 +599,7 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
             }
             flag_rlt = 2;
         }
-        else if (row - 0 <= tab1.info.warn_thr.toInt() || tab1.table[i]->rowCount() - 1 - row <= tab1.info.warn_thr.toInt()){
+        else if (row - 0 <= tab1.table[tab1.currentIndex()]->warn_thr || tab1.table[i]->rowCount() - 1 - row <= tab1.table[tab1.currentIndex()]->warn_thr){
             tab1.table[i]->item(row,column)->setBackground(QBrush(tab1.color_scheme[1]));
             if (mode&&data_server) {
                 data_server->spc_event("1001");//预警

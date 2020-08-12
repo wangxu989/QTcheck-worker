@@ -102,6 +102,9 @@ void socket::read_msg(){
         in>>p;
         emit insert_producttab(&p);
     }
+    else if (flag == 47) {
+        emit send_printString();
+    }
     if (this->bytesAvailable() > 0) {
         emit this->readyRead();
     }

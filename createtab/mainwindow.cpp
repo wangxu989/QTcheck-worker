@@ -99,6 +99,11 @@ void MainWindow::draw_init() {
             }
             break;
         case 1:
+            if (mode != 1) {
+                QMessageBox box(QMessageBox::NoIcon,"network","非网络模式无法使用",NULL,NULL);
+                box.exec();
+                break;
+            }
             P2 = QSharedPointer<Program2>(new Program2(app_name[i].second.split(" ")[0]));
             connect(P2.data(),&Program2::change_widget,this,&MainWindow::change_widget);
             if((*mainP.allP)[app_name[i].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）

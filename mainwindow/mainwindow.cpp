@@ -4,6 +4,7 @@
 #include<QThread>
 #include<unistd.h>
 socketclient *my_client;
+extern const int N = 5;//每个任务的线条数
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -193,7 +194,7 @@ void MainWindow::enlarge_plot(){
     my_client->x_range[my_client->tabnum].narrow--;
     QVector<uint> &temp_large = plot_narrow.top();
     foreach (uint x, temp_large) {
-        pCustomPlot->graph((my_client->tabnum)*2)->data()->remove(x);
+        pCustomPlot->graph((my_client->tabnum)*N)->data()->remove(x);
     }
     plot_narrow.pop();
     //double dCenter = pCustomPlot->xAxis->range().center();
@@ -242,8 +243,11 @@ void MainWindow::narrow_plot(){
     // 扩大区间 （缩小 plottables 鼠标向内滚动）
     QString temp_s = set_range();
     //QSharedPointer<QCPAxisTicker>timer = pCustomPlot->xAxis->ticker();
-    query.prepare("select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where local_work_record.user_id = ? "
-                  "and local_work_record.produce_id = ? and local_measure_data.char_id = ? " + temp_s);
+    QString q_t = "select * from local_measure_data join local_work_record on local_work_record.id  = local_measure_data.work_id where local_work_record.user_id = ? "
+                  "and local_work_record.produce_id = ? and local_measure_data.char_id = ? " + temp_s;
+    qDebug()<<q_t;
+    qDebug()<<workInfo.worker_id.split(",")[1]<<workInfo.instruction_id.split(",")[1]<<my_client->createinfo[my_client->tabnum].featureid;
+    query.prepare(q_t);
     query.bindValue(0,workInfo.worker_id.split(",")[1]);
     query.bindValue(1,workInfo.instruction_id.split(",")[1]);
     query.bindValue(2,my_client->createinfo[my_client->tabnum].featureid);
@@ -253,10 +257,10 @@ void MainWindow::narrow_plot(){
     qDebug()<<"查询结果："<<query.size();
     QVector<uint>temp_narrow;
     while (query.next()) {
-        qDebug()<<query.value(3).toString();
         uint time = query.value(3).toUInt();
         double value = query.value(4).toDouble();
-        pCustomPlot->graph(my_client->tabnum*2)->addData(time,value);
+        qDebug()<<time<<" "<<value;
+        pCustomPlot->graph(my_client->tabnum*N)->addData(time,value);
         temp_narrow.push_back(time);
     }
     plot_narrow.push(temp_narrow);
@@ -266,18 +270,21 @@ void MainWindow::narrow_plot(){
 
 void MainWindow::my_send1() {
     QString temp = "YG,02294";
+    workInfo.worker_id = temp;
     my_client->send_message(2,temp);
     my_client->check_flag[0] = 1;
 }
 
 void MainWindow::my_send2() {
     QString temp = "SB,001073";
+    workInfo.product_id = temp;
     my_client->send_message(4,temp);
     my_client->check_flag[2] = 1;
 }
 
 void MainWindow::my_send3() {
     QString temp = "ZL,20820203200708000103,E12001682XA,0,1800";//"ZL,20016101180122000101,17121618739,1,1800";
+    workInfo.instruction_id = temp;
     my_client->send_message(3,temp);
     my_client->check_flag[1] = 1;
 }

@@ -49,20 +49,14 @@ bool socket::bind() {
 socket::socket()
 {
     server = new QTcpServer(this);
-    QFile file("./data/ip");
-    file.open(QIODevice::ReadOnly);
-    ip = file.read(15);
+//    QFile file("./data/ip");
+//    file.open(QIODevice::ReadOnly);
+    //ip = file.read(15);
+    ip = "127.0.0.1";
     qDebug()<<ip;
-    if (!server->listen(QHostAddress(ip),6666)) {
-        QMessageBox box;
-        box.setText("server listen failed!" + server->errorString());
-        box.exec();
+    if (!bind()) {
         return;
     }
-    else {
-        qDebug()<<"listen successed!";
-    }
-    connect(server,&QTcpServer::newConnection,this,&socket::my_connection);//通过信号链接
     //server = new QLocalServer(this);
     //QLocalServer::removeServer("f3");
 //    if (!server->listen("f3")) {
@@ -123,6 +117,13 @@ void socket::read_message() {
         in>>workInfo.product_id;
         emit check_info(3);
         break;
+
+        //P2
+    case 20:
+        in>>print;
+        qDebug()<<print;
+        emit print_String(print);
+        break;
     }
     if (clientConnection->bytesAvailable() > 0) {
         emit clientConnection->readyRead();
@@ -158,7 +159,7 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
         out<<y;
         out<<x;
         out<<user_ide;
-        qDebug()<<QDateTime::currentDateTime().toTime_t();
+        qDebug()<<QDateTime::currentDateTime().toTime_t()<<" "<<num;
         break;
     case 3://删除点坐标信息（修改中的删除操作）
         out<<quint32(sizeof(flag) + sizeof(num) + sizeof(column) + sizeof(user_ide));
@@ -216,6 +217,10 @@ void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,
 
 
         //P2:
+     case 47://打印
+        out<<quint32(sizeof(flag));
+        out<<flag;
+        break;
      case 48:
         out<<quint32(sizeof(flag) + sizeof(producttab));
         out<<flag<<*(producttab *)content;
