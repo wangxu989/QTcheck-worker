@@ -4,6 +4,8 @@
 #include <QWidget>
 #include<QString>
 #include<qrencode.h>
+#include<QLabel>
+#include<QProcess>
 //子功能2
 namespace Ui {
 class Program2;
@@ -16,6 +18,8 @@ class Program2 : public QWidget,baseP
 public:
     explicit Program2(const QString& name,QWidget *parent = 0);
     ~Program2();
+    bool start_P()override;
+    void finish_P()override;
 signals:
     void change_widget(int);
 private slots:
@@ -36,13 +40,15 @@ private slots:
     void on_pushButton_3_clicked();
 
 private:
-    bool start_P()override{return true;};
-    void finish_P()override{};
     Ui::Program2 *ui;
     QSharedPointer<QHBoxLayout>key_lay;
     QSharedPointer<keyboard_widget>key;//只有static const primitive(内置)变量才能在声明时初始化
     void read_data();
     bool status = false;
+    QSharedPointer<QLabel>label_2;
+    QString thisname;
+    QProcess my_progress;
+    int now_click;//已执行，完成，终止
 
 };
 

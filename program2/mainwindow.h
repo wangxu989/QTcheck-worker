@@ -55,13 +55,14 @@ public:
            this->item(this->now_row,i)->setText(tab[i]);
        }
        this->now_row++;
-       qDebug()<<this->now_row;
+       //qDebug()<<this->now_row;
        return true;
     }
     void head_init(){}
     template<typename T,typename... Types>
-    void head_init(T t1,Types... types) {
+    void head_init(const T& t1,const Types&... types) {
         list_head<<t1;
+        qDebug()<<t1;
         head_init(types...);
     }
     bool eventFilter(QObject *o, QEvent *e) {

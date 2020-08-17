@@ -1,7 +1,7 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-//#define MY_P
+#define MY_P
 #include<QDebug>
 #include<QThread>
 #include <database.h>
@@ -147,7 +147,7 @@ private:
      QPushButton *enlarge;
      //数字键盘交互
      QPushButton *gauge;//检具
-
+     QString thisname;
      //QString spc_e;//上报字符串
 };
 

@@ -50,6 +50,7 @@ public:
 private slots:
 
 private:
+
     Ui::MainWindow *ui;
     int read_generalxml();
     int application_nums;
@@ -61,7 +62,7 @@ private:
     baseP mainP;
     QWidget *main_widget;
     Dialog* P1;
-    QSharedPointer<Program2>P2;
+    Program2*P2;
     void change_widget(int);
 };
 #endif // MAINWINDOW_H

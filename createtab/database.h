@@ -125,9 +125,9 @@ public:
     ~database_server();
     void createdatabase();
     void read_data();
-    void read_plantab(const QString& s,const QString& flag);
-    void read_producttab(const QString &s);
-    void update_step();
+    bool read_plantab(const QString& s,const QString& flag);
+    bool read_producttab(const QString &s);
+    bool update_step();
     void add_steptab();
     void add_tab();
     void reducetab();

@@ -66,6 +66,7 @@ public:
 private:
     QDataStream in;
     quint32 blockSize = 0;
+    QString ip;
 private slots:
     void read_msg();
 signals:

@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
     data_local = new database_local();//保留本地工作信息
-    P1 = nullptr;
     baseP::p_init();//初始化主程序（父类）
     V_layout1 = new QVBoxLayout();
     V_layout2 = new QVBoxLayout();
@@ -61,9 +60,6 @@ MainWindow::~MainWindow()
             delete a;
         }
     }
-    if (P1 != nullptr) {
-        delete P1;
-    }
     delete ui;
 }
 void MainWindow::draw_init() {
@@ -75,7 +71,7 @@ void MainWindow::draw_init() {
         app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
                                      QPushButton{background-color:rgb(170,200,50)}\
                                      QPushButton:hover{background-color:rgb(50, 170, 200)}");
-                                     connect(app_button[i],&my_button::clicked,this,[=]()mutable{emit ctl(i);});
+                                     connect(app_button[i],&my_button::clicked,this,[&,i]()->bool{emit ctl(i);});
     }
     for (;i < app_button.size();i++) {
         app_button[i]->setText(app_name[i].second.split(" ")[0]);
@@ -83,16 +79,25 @@ void MainWindow::draw_init() {
         V_layout2->addWidget(app_button[i]);
         app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
                                      QPushButton{background-color:rgb(170,200,50)}\ QPushButton:hover{background-color:rgb(50, 170, 200)}");
-                                     connect(app_button[i],&my_button::clicked,this,[=]()mutable{emit ctl(i);});
+                                     connect(app_button[i],&my_button::clicked,this,[&,i]()->bool{emit ctl(i);});
     }
     H_layout->addLayout(V_layout1);
     H_layout->addLayout(V_layout2);
+//    auto start_child =  template<typename T>
+//            []()->bool(int flag,T t1) {
+//                connect(t1,&Dialog::change_widget,this,&MainWindow::change_widget);
+//                if((*mainP.allP)[app_name[flag].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）
+//                    this->takeCentralWidget();
+//                    this->setCentralWidget(t1);
+//                }
+//            }
     connect(this,&MainWindow::ctl,this,[&](int i)->void{
         qDebug()<<i;
         switch(i) {
         case 0:
-            P1 = new Dialog(app_name[i].second.split(" ")[0]);
+            P1 =new Dialog(app_name[i].second.split(" ")[0]);
             connect(P1,&Dialog::change_widget,this,&MainWindow::change_widget);
+            qDebug()<<"start P1";
             if((*mainP.allP)[app_name[i].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）
                 this->takeCentralWidget();
                 this->setCentralWidget(P1);
@@ -104,11 +109,11 @@ void MainWindow::draw_init() {
                 box.exec();
                 break;
             }
-            P2 = QSharedPointer<Program2>(new Program2(app_name[i].second.split(" ")[0]));
-            connect(P2.data(),&Program2::change_widget,this,&MainWindow::change_widget);
+            P2 = new Program2(app_name[i].second.split(" ")[0]);
+            connect(P2,&Program2::change_widget,this,&MainWindow::change_widget);
             if((*mainP.allP)[app_name[i].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）
                 this->takeCentralWidget();
-                this->setCentralWidget(P2.data());
+                this->setCentralWidget(P2);
             }
             break;
         case 2:
@@ -125,11 +130,9 @@ void MainWindow::change_widget(int n) {
     switch(n) {
     //程序1
     case 0://回到主页面
-        //main_widget->show();
         setCentralWidget(main_widget);
         disconnect(P1,&Dialog::change_widget,this,&MainWindow::change_widget);
-        delete P1;
-        P1 = nullptr;
+        P1->finish_P();
         break;
     case 1://P1主界面
         setCentralWidget(P1->widget);
@@ -141,6 +144,10 @@ void MainWindow::change_widget(int n) {
         setCentralWidget(P1->keyboard);
         break;
         //程序2
+    case 10:
+        setCentralWidget(main_widget);
+        disconnect(P2,&Program2::change_widget,this,&MainWindow::change_widget);
+        P2->finish_P();
     }
 }
 

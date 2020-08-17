@@ -50,46 +50,20 @@ Dialog::~Dialog()
 }
 Dialog::Dialog(const QString& name,QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::Dialog)
+    , ui(new Ui::Dialog),thisname(name)
 {
-    ui->setupUi(this);
-    add_p(name,this);
-    //qRegisterMetaType<my_tablewidget>("my_tablewidget");
-    //登录界面
-    messageBox = new QMessageBox(QMessageBox::NoIcon,"title","重新录入请【返回】,巡检员需扫【员工码】",QMessageBox::No,NULL);
-    messageBox->button(QMessageBox::No)->setText("返回");
-    messageBox->setStyleSheet("QLabel{min-width:400 px; font-size: 18px;} QPushButton{ width:80px; font-size: 24px; }");
-    //超差键盘,有待改进，键盘封装为一个类
-    keyboard = new keyboard_widget("Enter");
-
-    connect(keyboard->figure,&QTableWidget::cellClicked,this,&Dialog::in_keyboard);
+     ui->setupUi(this);
+     add_p(thisname,this);
+     //qRegisterMetaType<my_tablewidget>("my_tablewidget");
+     //登录界面
 }
 bool Dialog::start_P() {
     qDebug()<<"start P1";
     return listen();
 }
 void Dialog::finish_P() {
-    //    my_process.close();
-    //    delete pro_bar;
-    //    delete progress_bar;
-    //    delete button_quit;
-    //    delete button_ret;
-    //    delete narrow;
-    //    delete enlarge;
-    //    delete gauge;
-    //    delete messageBox;
-    //    delete temp;
-    //    delete templayout;
-    //    delete tempw;
-    //    delete v_layout;
-    //    delete v_button_layout;
-    //    delete layout;
-    //    delete widget;//由于线程不会立马被结束，需要赞留界面。用智能指针
-    //    delete my_socket;
-    //    start_flag = 0;
-    //    ret_checkout[0] = 0;
-    //    ret_checkout[1] = 0;
-    //    ret_checkout[2] = 0;
+    remove_P(thisname);
+    delete this;
 }
 
 void Dialog::check_identity() {//接收核验成功的信号
@@ -110,6 +84,13 @@ bool Dialog::listen() {
     }
 }
 void Dialog::login() {
+    messageBox = new QMessageBox(QMessageBox::NoIcon,"title","重新录入请【返回】,巡检员需扫【员工码】",QMessageBox::No,NULL);
+    messageBox->button(QMessageBox::No)->setText("返回");
+    messageBox->setStyleSheet("QLabel{min-width:400 px; font-size: 18px;} QPushButton{ width:80px; font-size: 24px; }");
+    //超差键盘,有待改进，键盘封装为一个类
+    keyboard = new keyboard_widget("Enter");
+
+    connect(keyboard->figure,&QTableWidget::cellClicked,this,&Dialog::in_keyboard);
     connect(my_socket,&socket::start_work,this,&Dialog::start_work);
     connect(my_socket,&socket::check_identity,this,&Dialog::check_identity);
     connect(my_socket,SIGNAL(check_info(int)),this,SLOT(check_info(int)));

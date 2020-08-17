@@ -7,18 +7,34 @@ extern database_local *data_local;
 extern socket *my_socket;
 Program2::Program2(const QString& name,QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Program2)
+    ui(new Ui::Program2),thisname(name)
 {
-    add_p(name,this);
-    key_lay = QSharedPointer<QHBoxLayout>(new QHBoxLayout());
-    key = QSharedPointer<keyboard_widget>(new keyboard_widget("打印"));
-    key_lay->addWidget(key.data());
-    connect(key->figure,&QTableWidget::cellClicked,this,&Program2::in_keyboard);
     ui->setupUi(this);
-    ui->widget->setLayout(key_lay.data());
-    connect(ui->pushButton,&QPushButton::clicked,this,&Program2::exec_button);
-    connect(my_socket,&socket::print_String,this,&Program2::show_print_code);
+    add_p(thisname,this);
+}
+bool Program2::start_P() {
+    if (my_socket->status()) {
+        key_lay = QSharedPointer<QHBoxLayout>(new QHBoxLayout());
+        key = QSharedPointer<keyboard_widget>(new keyboard_widget("打印"));
+        key_lay->addWidget(key.data());
+        connect(key->figure,&QTableWidget::cellClicked,this,&Program2::in_keyboard);
 
+        ui->widget->setLayout(key_lay.data());
+        connect(ui->pushButton,&QPushButton::clicked,this,&Program2::exec_button);
+        connect(my_socket,&socket::print_String,this,&Program2::show_print_code);
+        label_2 =  QSharedPointer<QLabel>(new QLabel());
+        my_progress.start("./plugin/program2");
+        return true;
+    }
+    return false;
+}
+void Program2::finish_P() {
+    my_progress.close();
+    remove_P(thisname);
+    disconnect(key->figure,&QTableWidget::cellClicked,this,&Program2::in_keyboard);
+    disconnect(ui->pushButton,&QPushButton::clicked,this,&Program2::exec_button);
+    disconnect(my_socket,&socket::print_String,this,&Program2::show_print_code);
+    delete this;
 }
 
 Program2::~Program2()
@@ -28,22 +44,44 @@ Program2::~Program2()
 
 void Program2::on_pushButton_5_clicked()
 {
-    emit change_widget(0);
+    emit change_widget(10);
 }
 void Program2::read_data() {
 
 }
 void Program2::exec_button() {
     qDebug()<<"执行中"<<key.data()->getVal();
-    data_server->read_plantab(key.data()->getVal(),"执行中");
+    if (!key.data()->getVal().isEmpty()) {
+        if (data_server->read_plantab(key.data()->getVal(),"执行中")) {
+            now_click = 1;
+        }
+        else {
+            now_click = 0;
+        }
+
+    }
 }
 void Program2::on_pushButton_2_clicked()//已完成
 {
-     data_server->read_plantab(key.data()->getVal(),"已完成");
+    if (!key.data()->getVal().isEmpty()) {
+        if (data_server->read_plantab(key.data()->getVal(),"已完成")) {
+            now_click = 2;
+        }
+        else {
+            now_click = 0;
+        }
+    }
 }
 void Program2::on_pushButton_3_clicked()
 {
-    data_server->read_plantab(key.data()->getVal(),"已终止");
+    if (!key.data()->getVal().isEmpty()) {
+        if (data_server->read_plantab(key.data()->getVal(),"已终止")) {
+            now_click = 3;
+        }
+        else {
+            now_click = 0;
+        }
+    }
 }
 
 void Program2::in_keyboard(const int &row,const int &column) {
@@ -69,6 +107,7 @@ void Program2::on_pushButton_4_clicked()//change
 
 void Program2::on_pushButton_6_clicked()//reduce
 {
+    if (now_click == 0) {return;}
     if (status) {//plansteptab
         data_server->reducesteptab();
     }
@@ -79,6 +118,7 @@ void Program2::on_pushButton_6_clicked()//reduce
 
 void Program2::on_pushButton_7_clicked()//add
 {
+    if (now_click == 0) {return;}
     if (status) {//2
         data_server->add_steptab();
     }
@@ -90,8 +130,8 @@ void Program2::show_print_code(QString &s) {
     qDebug()<<"printString "<<s;
     QRcode *qrcode;
     qrcode = QRcode_encodeString(s.toStdString().c_str(), 2, QR_ECLEVEL_Q, QR_MODE_8, 1);
-    qint32 temp_width=ui->label_2->width(); //二维码图片的大小
-    qint32 temp_height=ui->label_2->height();
+    qint32 temp_width=label_2->width(); //二维码图片的大小
+    qint32 temp_height=label_2->height();
     qint32 qrcode_width = qrcode->width > 0 ? qrcode->width : 1;
     double scale_x = (double)temp_width / (double)qrcode_width; //二维码图片的缩放比例
     double scale_y =(double) temp_height /(double) qrcode_width;
@@ -116,6 +156,6 @@ void Program2::show_print_code(QString &s) {
         }
     }
     QPixmap mainmap=QPixmap::fromImage(mainimg);
-    ui->label_2->setPixmap(mainmap);
-    ui->label_2->setVisible(true);
+    label_2->setPixmap(mainmap);
+    label_2->setVisible(true);
 }

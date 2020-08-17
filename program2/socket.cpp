@@ -42,9 +42,10 @@ socket::socket()
 {
     in.setDevice(this);
     in.setVersion(QDataStream::Qt_5_6);
-    QFile file("./data/ip");
-    file.open(QIODevice::ReadOnly);
-    QString ip = file.read(15);
+//    QFile file("./data/ip");
+//    file.open(QIODevice::ReadOnly);
+    //QString ip = file.read(15);
+    ip = "127.0.0.1";
     this->connectToHost(QHostAddress(ip),6666);
     if (this->waitForConnected()) {
         qDebug()<<"connected";

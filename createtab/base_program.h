@@ -4,6 +4,7 @@
 #include<QDebug>
 #include<QMap>
 #include<QMessageBox>
+#include<socket.h>
 //定义主程序类，统一管理可能出现的子程序类prototype设计模式
 //提示消息总类
 class message_remind{
@@ -60,8 +61,17 @@ protected:
         (*allP)[name] = P;
         qDebug()<<"add!!!!";
     }
-    static void remove_P() {
-
+    static void remove_P(QString& name) {
+        auto iter = allP.data()->find(name);
+        if (iter != allP.data()->end()) {
+            allP->erase(iter);
+        }
+    }
+    bool listen(socket* s) {
+        if (!s->status()) {
+            return s->bind();
+        }
+        return true;
     }
 };
 

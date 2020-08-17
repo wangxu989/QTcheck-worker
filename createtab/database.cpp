@@ -300,7 +300,7 @@ void database_server::remove_t() {
         box.exec();
     }
 }
-void database_server::read_plantab(const QString& s,const QString& flag) {
+bool database_server::read_plantab(const QString& s,const QString& flag) {
     //read_producttab
     QString prod = "select * from producttab where productID = " + s;
     if (!query.exec(prod)) {
@@ -309,6 +309,7 @@ void database_server::read_plantab(const QString& s,const QString& flag) {
         box.exec();
     }
     producttab prod_t;
+    if (query.size() == 0) {return false;}
     while (query.next()) {
         prod_t.productID = query.value(1).toString();
         prod_t.productName = query.value(2).toString();
@@ -324,11 +325,14 @@ void database_server::read_plantab(const QString& s,const QString& flag) {
 
 
     QString q = "select * from plantab where left(PlanID,6)=" + s + " and PlanState = " +"'" + flag + "'";
+
     if (!query.exec(q)) {
         QSqlError error = query.lastError();
         QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
         box.exec();
     }
+     if (query.size() == 0) {return false;}
+
     plantab planTab;
     plantab_size = query.size();
     my_socket->sendmessage(51,(void *)&plantab_size);
@@ -356,8 +360,9 @@ void database_server::read_plantab(const QString& s,const QString& flag) {
     if (plantab_size > 0) {
         update_step();
     }
+    return true;
 }
-void database_server::read_producttab(const QString &s) {
+bool database_server::read_producttab(const QString &s) {
     QString q =  "select * from producttab where productID = " + s;
     if (!query.exec()) {
         QSqlError error = query.lastError();
@@ -368,7 +373,7 @@ void database_server::read_producttab(const QString &s) {
 
     }
 }
-void database_server::update_step() {
+bool database_server::update_step() {
     planstep_now = 0;
     QString temp_S = "select * from plansteptab where left(PlanStepID,18) = '" + rec_plantab[plantab_now].PlanID + "'" ;
     if (!query.exec(temp_S)) {
@@ -376,6 +381,7 @@ void database_server::update_step() {
         QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
         box.exec();
     }
+     if (query.size() == 0) {return false;}
     qDebug()<<temp_S<<" "<<query.size();
     planstep_size = query.size();
     plansteptab plan_step_tab;
