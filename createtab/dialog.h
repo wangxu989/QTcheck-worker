@@ -1,7 +1,7 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-#define MY_P
+//#define MY_P
 #include<QDebug>
 #include<QThread>
 #include <database.h>
@@ -62,12 +62,14 @@ public:
     }
     inline void setText(const QString& s) {display->setText(s);}
     inline void removeText() {display->setText(display->text().mid(0,display->text().size() - 1));}
-    inline QString getVal() {return display->text();}
+    inline QString getVal()const {return display->text();}
     inline void addText(int row,int column,const QString&& s = ""){display->setText( display->text() + figure->item(row,column)->text() + s);}
-
+    inline void flash(){last_query = display->text();}
+    inline QString lastquery()const{return last_query;}
 private:
     QLabel *display;
     QVBoxLayout *fig_key;
+    QString last_query;
 
 };
 
@@ -79,7 +81,7 @@ signals:
 public:
     //friend class socket;改用信号
     Dialog(const QString& name,QWidget *parent = nullptr);
-    ~Dialog();
+    ~Dialog()override;
     int tabnum = 0;
    process_bar *pro_bar;
    mytab tab1;
@@ -125,7 +127,8 @@ private:
     QTableWidget *temp;
     QVBoxLayout *v_layout;
     QVBoxLayout *v_button_layout;
-    QProgressBar *progress_bar;
+    //QProgressBar *progress_bar;
+    QSharedPointer<progressbar1> progress_bar;
     //QPushButton *pre_page;
     //QPushButton *next_page;
    // QHBoxLayout *page_layout;

@@ -2,7 +2,7 @@
 #include<QAbstractSocket>
 #include<QFile>
 #include<QMessageBox>
-QDataStream& operator<<(QDataStream &os,infomation &a) {
+QDataStream& operator<<(QDataStream &os,const infomation &a) {
     os<<a.product_no;
     os<<a.warn_thr;
     os<<a.chk_warn_thr;
@@ -15,7 +15,7 @@ QDataStream& operator<<(QDataStream &os,infomation &a) {
     os<<a.lock_time;
     return os;
 }
-QDataStream& operator<<(QDataStream &os,tabinfo &a) {
+QDataStream& operator<<(QDataStream &os,const tabinfo &a) {
     os<<a.featureid;
     os<<a.normvalue;
     os<<a.zgc;
@@ -129,135 +129,136 @@ void socket::read_message() {
         emit clientConnection->readyRead();
     }
 }
-void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,QString y,QString x)const {
-    QByteArray data;
-    QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_6);
-    qDebug()<<"发送";
-    switch(flag) {
-    case 0://产品信息和工作信息
-        qDebug()<<quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof(*createinfo) + sizeof(flag));
-        out << quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof((*createinfo).size()*sizeof(tabinfo)) + sizeof(flag));
-        out<<flag;
-        out<<*info;
-        out<<(*createinfo).size();
-        for (int i= 0;i < (*createinfo).size();i++) {
-            out<<(*createinfo)[i];
-        }
-        break;
-    case 1://TAB切换
-        qDebug()<<num;
-        out<<quint32(sizeof(num) + sizeof(flag));
-        out<<flag;
-        out<<num;
-        break;
-    case 2://增加点坐标信息
-        out<<quint32(sizeof(y)+sizeof(x)+sizeof(flag) + sizeof(num) + sizeof(column) + sizeof(user_ide));
-        out<<flag;
-        out<<num;
-        out<<column;
-        out<<y;
-        out<<x;
-        out<<user_ide;
-        qDebug()<<QDateTime::currentDateTime().toTime_t()<<" "<<num;
-        break;
-    case 3://删除点坐标信息（修改中的删除操作）
-        out<<quint32(sizeof(flag) + sizeof(num) + sizeof(column) + sizeof(user_ide));
-        out<<flag;
-        out<<num;
-        out<<column;
-        out<<user_ide;
-        break;
-    case 4://请求进程2使用扫码枪验证登录信息
-        //out<<quint32(sizeof(flag));
-        break;
-    case 5://发送员工信息和设备信息
-        out<<quint32(sizeof(flag) + sizeof(worker_info));
-        out<<flag;
-        out<<*(worker_info *)content;
-        break;
-     case 6:
-        out<<quint32(sizeof(flag) + sizeof(local_env));
-        out<<flag;
-        out<<*(local_env *)content;
-        break;
-     case 7:
-        out<<quint32(sizeof(flag) + sizeof(Equip));
-        out<<flag;
-        out<<*(Equip *)content;
-        break;
-     case 8://无用户信息
-        out<<quint32(sizeof(flag));
-        out<<flag;
-        break;
-     case 9://无工作信息
-       out<<quint32(sizeof(flag));
-       out<<flag;
-        break;
-     case 10://无指令信息
-        out<<quint32(sizeof(flag));
-        out<<flag;
-        break;
-     case 11://放大
-        out<<quint32(sizeof(flag));
-        out<<flag;
-        break;
-     case 12://缩小
-        out<<quint32(sizeof(flag));
-        out<<flag;
-        break;
-     case 13://增加gauge_no
-        out<<quint32(sizeof(flag) + sizeof(int) + sizeof(QString));
-        out<<flag<<num;
-        out<<(*createinfo)[num].gauge;
-        qDebug()<<(*createinfo)[num].gauge;
-        break;
-        //预留
+//void socket::sendmessage(int flag,void *content,int num,int column,int user_ide,QString y,QString x)const {
+//    QByteArray data;
+//    QDataStream out(&data, QIODevice::WriteOnly);
+//    out.setVersion(QDataStream::Qt_5_6);
+//    qDebug()<<"发送";
+//    switch(flag) {
+//    case 0://产品信息和工作信息
+//        qDebug()<<quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof(*createinfo) + sizeof(flag));
+//        out << quint32(sizeof(*info) + sizeof((*createinfo).size()) + sizeof((*createinfo).size()*sizeof(tabinfo)) + sizeof(flag));
+//        out<<flag;
+//        out<<*info;
+//        out<<(*createinfo).size();
+//        for (int i= 0;i < (*createinfo).size();i++) {
+//            out<<(*createinfo)[i];
+//        }
+//        break;
+//    case 1://TAB切换
+//        qDebug()<<num;
+//        out<<quint32(sizeof(num) + sizeof(flag));
+//        out<<flag;
+//        out<<num;
+//        break;
+//    case 2://增加点坐标信息
+//        out<<quint32(sizeof(y)+sizeof(x)+sizeof(flag) + sizeof(num) + sizeof(column) + sizeof(user_ide));
+//        out<<flag;
+//        out<<num;
+//        out<<column;
+//        out<<y;
+//        out<<x;
+//        out<<user_ide;
+//        qDebug()<<QDateTime::currentDateTime().toTime_t()<<" "<<num;
+//        break;
+//    case 3://删除点坐标信息（修改中的删除操作）
+//        out<<quint32(sizeof(flag) + sizeof(num) + sizeof(column) + sizeof(user_ide));
+//        out<<flag;
+//        out<<num;
+//        out<<column;
+//        out<<user_ide;
+//        break;
+//    case 4://请求进程2使用扫码枪验证登录信息
+//        //out<<quint32(sizeof(flag));
+//        break;
+//    case 5://发送员工信息和设备信息
+//        out<<quint32(sizeof(flag) + sizeof(worker_info));
+//        out<<flag;
+//        out<<*(worker_info *)content;
+//        break;
+//     case 6:
+//        out<<quint32(sizeof(flag) + sizeof(local_env));
+//        out<<flag;
+//        out<<*(local_env *)content;
+//        break;
+//     case 7:
+//        out<<quint32(sizeof(flag) + sizeof(Equip));
+//        out<<flag;
+//        out<<*(Equip *)content;
+//        break;
+//     case 8://无用户信息
+//        out<<quint32(sizeof(flag));
+//        out<<flag;
+//        break;
+//     case 9://无工作信息
+//       out<<quint32(sizeof(flag));
+//       out<<flag;
+//        break;
+//     case 10://无指令信息
+//        out<<quint32(sizeof(flag));
+//        out<<flag;
+//        break;
+//     case 11://放大
+//        out<<quint32(sizeof(flag));
+//        out<<flag;
+//        break;
+//     case 12://缩小
+//        out<<quint32(sizeof(flag));
+//        out<<flag;
+//        break;
+//     case 13://增加gauge_no
+//        out<<quint32(sizeof(flag) + sizeof(int) + sizeof(QString));
+//        out<<flag<<num;
+//        out<<(*createinfo)[num].gauge;
+//        qDebug()<<(*createinfo)[num].gauge;
+//        break;
+//        //预留
 
 
 
-        //P2:
-     case 47://打印
-        out<<quint32(sizeof(flag));
-        out<<flag;
-        break;
-     case 48:
-        out<<quint32(sizeof(flag) + sizeof(producttab));
-        out<<flag<<*(producttab *)content;
-        break;
-     case 49://切换两个表格current_item
-        out<<quint32(sizeof(flag) + sizeof(int));
-        qDebug()<<flag<<"flag";
-        out<<flag<<*(int*)content;
-        break;
-     case 50://生产计划
-        out<<quint32(sizeof(flag) + sizeof(plantab));
-        out<<flag<<*(plantab *)content;
-        break;
-     case 51:
-        out<<quint32(sizeof(flag) + sizeof(int));
-        qDebug()<<flag<<"flag";
-        out<<flag<<*(int*)content;
-        break;
-    case 52://生产令号
-        out<<quint32(sizeof(flag) + sizeof(plansteptab));
-        out<<flag<<*(plansteptab *)content;
-        break;
-    case 53:
-        out<<quint32(sizeof(flag) + sizeof(int));
-        out<<flag<<*(int*)content;
-        break;
+//        //P2:
+//     case 47://打印
+//        out<<quint32(sizeof(flag));
+//        out<<flag;
+//        break;
+//     case 48:
+//        out<<quint32(sizeof(flag) + sizeof(producttab));
+//        out<<flag<<*(producttab *)content;
+//        break;
+//     case 49://切换两个表格current_item
+//        out<<quint32(sizeof(flag) + sizeof(int));
+//        qDebug()<<flag<<"flag";
+//        out<<flag<<*(int*)content;
+//        break;
+//     case 50://生产计划
+//        out<<quint32(sizeof(flag) + sizeof(plantab));
+//        out<<flag<<*(plantab *)content;
+//        break;
+//     case 51:
+//        out<<quint32(sizeof(flag) + sizeof(int));
+//        qDebug()<<flag<<"flag";
+//        out<<flag<<*(int*)content;
+//        break;
+//    case 52://生产令号
+//        out<<quint32(sizeof(flag) + sizeof(plansteptab));
+//        out<<flag<<*(plansteptab *)content;
+//        break;
+//    case 53:
+//        out<<quint32(sizeof(flag) + sizeof(int));
+//        out<<flag<<*(int*)content;
+//      case 54:delete ui
+//        break;
 
-    }
-    //    data.resize(sizeof(*info));
-    //    memcpy(data.data(),info,sizeof(*info));
+//    }
+//    //    data.resize(sizeof(*info));
+//    //    memcpy(data.data(),info,sizeof(*info));
 //    out.device()->seek(0);
 //    out<<(quint32)(data.size() - sizeof(quint32));
-    clientConnection->write(data);
-    clientConnection->waitForBytesWritten();
-    //clientConnection->flush();
-    //clientConnection->disconnectFromServer();
-}
+//    clientConnection->write(data);
+//    clientConnection->waitForBytesWritten();
+//    //clientConnection->flush();
+//    //clientConnection->disconnectFromServer();
+//}
 void socket::delete_connect() {
 
 }

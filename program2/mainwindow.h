@@ -20,8 +20,8 @@ public:
     int now_row = 0;
     template<typename... Types>
     my_table(Types... T) {
-        horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-        verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);    //x先自适应宽度
+        //verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         setStyleSheet("selection-background-color: blue");//选中行颜色
         setSelectionBehavior ( QAbstractItemView::SelectRows); //设置选择行为，以行为单位
         setSelectionMode ( QAbstractItemView::SingleSelection); //设置选择模式，选择单行

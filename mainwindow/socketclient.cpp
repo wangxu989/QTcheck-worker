@@ -8,7 +8,6 @@ bool cmp_eq(const double& a,const double& b) {
     }
     return false;
 }
-
 const int N = 5;//每个任务的线条数
 QDataStream& operator >> (QDataStream &os,Equip &equip){
     os>>equip.test_place;
@@ -143,6 +142,7 @@ void socketclient::readmessage(){
     blockSize = 0;
     int flag;
     in>>flag;
+    qDebug()<<flag;
     int size;
     int i,j,column;
     QString x1,y1;
@@ -151,7 +151,7 @@ void socketclient::readmessage(){
     case 0:
         in>>info;
         in>>size;
-        //qDebug()<<size;
+        qDebug()<<size<<"createinfo_size";
         createinfo.resize(size);
         x.resize(size*2);
         y.resize(size*2);
@@ -266,6 +266,7 @@ void socketclient::readmessage(){
     case 4://code scan
 
         break;
+
     case 5:
         in>>messageWorkerEnv.workerInfo;
         qDebug()<<messageWorkerEnv.workerInfo.name;

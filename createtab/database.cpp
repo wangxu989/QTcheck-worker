@@ -318,7 +318,7 @@ bool database_server::read_plantab(const QString& s,const QString& flag) {
         prod_t.productState = query.value(6).toString();
         prod_t.clientVersion = query.value(16).toString();
         prod_t.ourDrawingID = query.value(17).toString();
-        my_socket->sendmessage(48,(void *)&prod_t);
+        my_socket->sendmessage(48,prod_t);
     }
 
 
@@ -335,7 +335,7 @@ bool database_server::read_plantab(const QString& s,const QString& flag) {
 
     plantab planTab;
     plantab_size = query.size();
-    my_socket->sendmessage(51,(void *)&plantab_size);
+    my_socket->sendmessage(51,plantab_size);
     qDebug()<<q<<query.size();
 
     rec_plantab.resize(plantab_size);
@@ -351,9 +351,9 @@ bool database_server::read_plantab(const QString& s,const QString& flag) {
         planTab.PlanState = query.value(8).toString();
         planTab.IsRework = query.value(22).toString();
         planTab.cCappName = query.value(9).toString();
-        qDebug()<< planTab.PlanID ;
+        //qDebug()<< planTab.PlanID ;
         rec_plantab[cnt++] = planTab;
-        my_socket->sendmessage(50,(void *)&planTab);
+        my_socket->sendmessage(50,planTab);
     }
     plantab_now = 0;
     planstep_now = 0;
@@ -386,7 +386,7 @@ bool database_server::update_step() {
     planstep_size = query.size();
     plansteptab plan_step_tab;
     int size_t = query.size();
-    my_socket->sendmessage(53,(void *)&size_t);
+    my_socket->sendmessage(53,size_t);
     while (query.next()) {
         plan_step_tab.PlanStepID = query.value(0).toString();
         plan_step_tab.cProcessIndex = query.value(2).toString();
@@ -400,14 +400,14 @@ bool database_server::update_step() {
         plan_step_tab.cMustQC = query.value(12).toString();
         plan_step_tab.cStdCount = query.value(13).toString();
         plan_step_tab.cCountRatio = query.value(15).toString();
-        my_socket->sendmessage(52,(void *)&plan_step_tab);
+        my_socket->sendmessage(52,plan_step_tab);
     }
 }
 void database_server::add_tab() {//plantab下add
     if (plantab_now < plantab_size - 1) {
         plantab_now++;
         int act = 0;
-        my_socket->sendmessage(49,(void *)&act);
+        my_socket->sendmessage(49,act);
         update_step();
     }
     qDebug()<<plantab_now;
@@ -416,7 +416,7 @@ void database_server::reducetab() {
     if (plantab_now > 0) {
         plantab_now--;
         int act = 1;
-        my_socket->sendmessage(49,(void *)&act);
+        my_socket->sendmessage(49,act);
         update_step();
     }
     qDebug()<<plantab_now;
@@ -425,14 +425,14 @@ void database_server::add_steptab() {
     if (planstep_now < planstep_size - 1) {
         planstep_now++;
         int act = 2;
-        my_socket->sendmessage(49,(void *)&act);
+        my_socket->sendmessage(49,act);
     }
 }
 void database_server::reducesteptab() {
     if (planstep_now > 0) {
         planstep_now--;
         int act = 3;
-        my_socket->sendmessage(49,(void *)&act);
+        my_socket->sendmessage(49,act);
 
     }
 }

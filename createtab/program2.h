@@ -6,10 +6,68 @@
 #include<qrencode.h>
 #include<QLabel>
 #include<QProcess>
+#include<QPushButton>
 //子功能2
 namespace Ui {
 class Program2;
 }
+class button_ctl{
+public:
+    static QMap<int,button_ctl*>rec;
+    static int size;//观察者计数
+    virtual bool set_status() = 0;
+    virtual bool onclicked() = 0;
+    static int now_num;
+    int num;
+    static void notify(int now = -1){
+        if (now_num >= 0) {
+            rec[now_num]->set_status();
+        }
+        if (now >= 0) {
+            rec[now]->onclicked();
+            now_num = now;
+        }
+    }
+    static void recover() {
+        if (now_num >= 0) {
+            rec[now_num]->onclicked();
+        }
+    }
+    virtual ~button_ctl(){
+        remove_self();
+    }
+    button_ctl() {
+        add_self();
+    }
+
+protected:
+    void add_self() {
+        rec[size] = this;
+        num = size;
+        size++;
+    }
+    void remove_self() {
+        auto iter = rec.find(num);
+        rec.erase(iter);
+    }
+};
+class noti_button:public button_ctl{
+public:
+    bool set_status()override {
+        if (!data->isEnabled()) {
+            data->setEnabled(true);
+        }
+        return true;
+    }
+    bool attach(QPushButton *p) {
+        data = p;
+    }
+    bool onclicked()override{
+        data->setEnabled(false);
+    }
+private:
+    QPushButton* data;
+};
 
 class Program2 : public QWidget,baseP
 {
@@ -17,7 +75,7 @@ class Program2 : public QWidget,baseP
 
 public:
     explicit Program2(const QString& name,QWidget *parent = 0);
-    ~Program2();
+    ~Program2()override;
     bool start_P()override;
     void finish_P()override;
 signals:
@@ -49,7 +107,9 @@ private:
     QString thisname;
     QProcess my_progress;
     int now_click;//已执行，完成，终止
-
+    noti_button exe;
+    noti_button finished;
+    noti_button terminated;
 };
 
 #endif // PROGRAM2_H

@@ -52,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    for (auto&a :(*mainP.allP)) {
+        a->finish_P();
+    }
     delete V_layout1;
     delete V_layout2;
     delete H_layout;

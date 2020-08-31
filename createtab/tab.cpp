@@ -7,30 +7,28 @@
 #include<QMessageBox>
 #include<QScrollBar>
 #include<QResizeEvent>
-extern const double eps = 1e-10;//double 比较精度
+extern const double eps;//double 比较精度
 extern bool cmp_eq(const double& a,const double& b);
 
 extern bool cmp_eg (const double& a,const double& b);
-QDataStream& operator << (QDataStream &os,worker_info &workInfo) {
+QDataStream& operator << (QDataStream &os,const worker_info &workInfo) {
     os<<workInfo.name;
     os<<workInfo.role;
     return os;
 }
-QDataStream& operator << (QDataStream &os,local_env &localEnv){
+QDataStream& operator << (QDataStream &os,const local_env &localEnv){
     os<<localEnv.process;
     os<<localEnv.process_id;
-    //    os<<localEnv.test_place;
-    //    os<<localEnv.equip;
     os<<localEnv.workstation;
     os<<localEnv.gauge_no;
     return os;
 }
-QDataStream& operator << (QDataStream &os,Equip &equip){
+QDataStream& operator << (QDataStream &os,const Equip &equip){
     os<<equip.test_place;
     os<<equip.equip;
     return os;
 }
-QDataStream& operator << (QDataStream &os,message_worker_evn &messageWorkerEnv) {
+QDataStream& operator << (QDataStream &os,const message_worker_evn &messageWorkerEnv) {
     os<<messageWorkerEnv.workerInfo;
     os<<messageWorkerEnv.localEnv;
     return os;
@@ -44,6 +42,31 @@ QDataStream& operator>>(QDataStream &os,struct work_info &info) {
 }
 mytab::mytab() {
     //this->tabBar()->setMinimumWidth(80);
+    this->setStyleSheet( "QTabWidget{"
+                         "background-color:transparent;"
+                         "}"
+                         "QTabWidget::pane{"
+                         "    border:2px;"
+                         "}"
+                         "QTabWidget::tab-bar{"
+                         "        alignment:left;"
+                         "}"
+                         "QTabBar::tab{"
+                         "    background:rgb(14, 106, 175);"
+                         "    color:white;"
+                         "    min-width:35ex;"
+                         "    min-height:10ex;"
+                         "}"
+                         "QTabBar::tab:hover{"
+                         "    background:rgb(255, 255, 255, 100);"
+                         "color:black;"
+                         "}"
+                         "QTabBar::tab:selected{"
+                         "    border-color: black;"
+                         "    background:red;"
+                         "    color:white;"
+                         "}"
+                       );
     color_scheme.resize(8);
     color_scheme[0] = Qt::green;
     color_scheme[1] = Qt::yellow;

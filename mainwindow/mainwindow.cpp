@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     pCustomPlot = my_client->pCustomPlot;
     connect(my_port1.port1,SIGNAL(readyRead()),this,SLOT(my_read()));//扫码枪串口
     connect(my_client,SIGNAL(insert_data(int)),this,SLOT(insert_data_to_table(int)));
-     connect(my_client,SIGNAL(plot_enlarge()),this,SLOT(enlarge_plot()));
+    connect(my_client,SIGNAL(plot_enlarge()),this,SLOT(enlarge_plot()));
     connect(my_client,SIGNAL(plot_narrow()),this,SLOT(narrow_plot()));
     connect(my_client,SIGNAL(gauge_no(const QString* const)),this,SLOT(gauge_no_flash(const QString* const)));
     my_init();

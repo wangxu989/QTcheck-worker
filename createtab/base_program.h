@@ -55,6 +55,7 @@ public:
     static QSharedPointer<QMap<QString,baseP*>> allP;
     virtual bool start_P(){};
     virtual void finish_P(){};
+    virtual ~baseP(){};
 private:
 protected:
     static void add_p(const QString& name,baseP* P) {

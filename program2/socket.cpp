@@ -69,7 +69,7 @@ void socket::read_msg(){
     }
     blockSize = 0;
     in>>flag;
-    if (flag == 50) {
+    if (flag == 50) {//按概率从高到低
         plantab tab;
         in>>tab;
         //qDebug()<<tab.IsRework;

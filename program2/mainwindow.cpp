@@ -22,11 +22,14 @@ MainWindow::~MainWindow()
 void MainWindow::draw_init() {
     //tablewidget1
     table1 = QSharedPointer<my_table>(new my_table("计划编号","计划数量","完成数量","计划结束日期","计划状态","生产工艺","物料信息","返工信息","创建人","创建时间"));
+    table1->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);     //然后设置要根据内容使用宽度的列
+    table1->horizontalHeader()->setSectionResizeMode(table1->columnCount() - 1,QHeaderView::ResizeToContents);
     ui->verticalLayout_7->addWidget(table1.data());
 
 
     //tablewidget2
     table2 = QSharedPointer<my_table>(new my_table("生产令号","工序号","工序名称","工序内容","车间","工程","设备","二序装备（编号）","工时","强制质检","标准数","数量比"));
+    table2->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
     ui->verticalLayout_8->addWidget(table2.data());
 
 }

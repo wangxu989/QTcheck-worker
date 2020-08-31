@@ -5,6 +5,9 @@
 extern database_server *data_server;
 extern database_local *data_local;
 extern socket *my_socket;
+QMap<int,button_ctl*> button_ctl::rec;
+int button_ctl::size = 0;
+int button_ctl::now_num = -1;
 Program2::Program2(const QString& name,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Program2),thisname(name)
@@ -23,6 +26,10 @@ bool Program2::start_P() {
         connect(ui->pushButton,&QPushButton::clicked,this,&Program2::exec_button);
         connect(my_socket,&socket::print_String,this,&Program2::show_print_code);
         label_2 =  QSharedPointer<QLabel>(new QLabel());
+
+        exe.attach(ui->pushButton);
+        finished.attach(ui->pushButton_2);
+        terminated.attach(ui->pushButton_3);
         my_progress.start("./plugin/program2");
         return true;
     }
@@ -51,8 +58,10 @@ void Program2::read_data() {
 }
 void Program2::exec_button() {
     qDebug()<<"执行中"<<key.data()->getVal();
-    if (!key.data()->getVal().isEmpty()) {
+    if (!key.data()->getVal().isEmpty() ) {
         if (data_server->read_plantab(key.data()->getVal(),"执行中")) {
+            button_ctl::notify(exe.num);
+            key->flash();
             now_click = 1;
         }
         else {
@@ -65,6 +74,8 @@ void Program2::on_pushButton_2_clicked()//已完成
 {
     if (!key.data()->getVal().isEmpty()) {
         if (data_server->read_plantab(key.data()->getVal(),"已完成")) {
+            button_ctl::notify(finished.num);
+            key->flash();
             now_click = 2;
         }
         else {
@@ -76,6 +87,8 @@ void Program2::on_pushButton_3_clicked()
 {
     if (!key.data()->getVal().isEmpty()) {
         if (data_server->read_plantab(key.data()->getVal(),"已终止")) {
+            button_ctl::notify(terminated.num);
+            key->flash();
             now_click = 3;
         }
         else {
@@ -96,6 +109,12 @@ void Program2::in_keyboard(const int &row,const int &column) {
     }
     else {
         key->addText(row,column);
+    }
+    if (key->getVal() != key->lastquery()) {//软件盘发生改变了
+        button_ctl::notify();
+    }
+    else {
+        button_ctl::recover();
     }
 
 }

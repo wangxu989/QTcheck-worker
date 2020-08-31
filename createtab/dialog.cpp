@@ -26,11 +26,11 @@ static int people_flag = 1;
 static int modify = 0;
 //static int mode;
 static int keyboard_flag = 0;
+QMap<QString,event_progressbar*> event_progressbar::progressbars;
 Dialog::~Dialog()
 {
     my_process.close();
     delete pro_bar;
-    delete progress_bar;
     delete button_ret;
     delete narrow;
     delete enlarge;
@@ -52,6 +52,7 @@ Dialog::Dialog(const QString& name,QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog),thisname(name)
 {
+    progress_bar = QSharedPointer<progressbar1>(new progressbar1(QString("first")));
      ui->setupUi(this);
      add_p(thisname,this);
      //qRegisterMetaType<my_tablewidget>("my_tablewidget");
@@ -101,20 +102,6 @@ void Dialog::login() {
 #else
     my_process.start("./plugin/mainwindow");
 #endif
-//    {
-//        qDebug() << "success";
-
-//    }
-//    else
-//    {
-
-//        qDebug() << "fail";
-
-//    }
-
-    //argument<<dialog->app_name[0].second.split(" ")[1];
-    //my_process.start("./plugin/mainwindow",argument);
-    //qDebug()<<"start plot progress"<<" "<<dialog->app_name[0].second.split(" ")[1];
 }
 void Dialog::draw_init() {
     //buttonej = new QPushButton("返回");
@@ -154,10 +141,10 @@ void Dialog::draw_init() {
     ///connect(button_quit,&QAbstractButton::clicked,this,&Dialog::pushButton_exit);
     widget = new QWidget();
 
-    progress_bar = new QProgressBar();//进度条
+
     v_layout = new QVBoxLayout();//布局进度条和tab
     v_button_layout = new QVBoxLayout();//布局按钮
-    v_layout->addWidget(progress_bar);
+    v_layout->addWidget(progress_bar->get_bar());
     v_layout->addWidget(&tab1);
     //v_button_layout->addWidget(button_quit);
     v_button_layout->addWidget(button_ret);
@@ -255,8 +242,6 @@ void Dialog::start_work(){
     //表格配置已配置
     pro_bar = new process_bar(this);
     connect(pro_bar,&process_bar::flash_progressBar,this,&Dialog::flash);
-
-    progress_bar->setRange(0,100);
     pro_bar->start();
     tab1.my.x.resize(tab1.table.size());
     tab1.my.y.resize(tab1.table.size());
@@ -304,15 +289,15 @@ void Dialog::in_keyboard(const int &row,const int &column) {
         else if (keyboard_flag == 2){
             qDebug()<<"检具录入";
             tab1.createinfo[tab1.currentIndex()].gauge = keyboard->getVal();
-            my_socket->sendmessage(13,NULL,tab1.currentIndex());
+            my_socket->sendmessage(13,tab1.currentIndex(),(*my_socket->createinfo)[tab1.currentIndex()].gauge);
             tab1.modify_gauge(my_socket->workInfo,tab1.currentIndex());
         }
-        else if (keyboard_flag == 2){
-            qDebug()<<"检具录入";
-            tab1.createinfo[tab1.currentIndex()].gauge = keyboard->getVal();
-            my_socket->sendmessage(13,NULL,tab1.currentIndex());
-            tab1.modify_gauge(my_socket->workInfo,tab1.currentIndex());
-        }
+//        else if (keyboard_flag == 2){
+//            qDebug()<<"检具录入";
+//            tab1.createinfo[tab1.currentIndex()].gauge = keyboard->getVal();
+//            my_socket->sendmessage(13,tab1.currentIndex(),(*my_socket->createinfo)[tab1.currentIndex()].gauge);
+//            tab1.modify_gauge(my_socket->workInfo,tab1.currentIndex());
+//        }
         emit change_widget(1);
     }
     else {
@@ -453,7 +438,7 @@ void Dialog::tabchanged(int i){//tab标签页切换
     //QTime current_time = QTime::currentTime();
     //flash(current_time);
     if (my_socket->clientConnection){//已建立链接
-        my_socket->sendmessage(1,nullptr,i);
+        my_socket->sendmessage(1,i);
     }
 }
 void Dialog::ejClicked(int row,int column) {//二级表格点击信号槽函数
@@ -499,7 +484,7 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
     }
     if (modify == 1) {//修改操作中的删除操作
         if (my_socket->clientConnection) {
-            my_socket->sendmessage(3,nullptr,tabnum,mycolumn,people_flag);
+            my_socket->sendmessage(3,tabnum,mycolumn,people_flag);
         }
     }
     //获取当前点击行对应的一级值
@@ -544,7 +529,7 @@ int Dialog::insertvalue(int row,int i,double valuel2,int column) {//向队列写
 
     if (my_socket->clientConnection){//增加点
         //qDebug()<<insy<<" "<<time1.toTime_t();
-        my_socket->sendmessage(2,nullptr,tabnum,mycolumn,people_flag,QString::number(insy),QString::number(QDateTime::currentDateTime().toTime_t()));//坐标值发给图表进程
+        my_socket->sendmessage(2,tabnum,mycolumn,QString::number(insy),QString::number(QDateTime::currentDateTime().toTime_t()),people_flag);//坐标值发给图表进程
     }
     else {
         qDebug()<<"send failed!";
@@ -757,15 +742,6 @@ void Dialog::flash() {//刷新进度条+工作表
     progress_bar->setValue((double)(now - table_time)/(double)tab1.table[i]->gap*100);
     //qDebug()<<progress_bar->value()<<" "<<(double)(now - table_time)/(double)tab1.table[i]->gap;
     //pro_bar.setStyleSheet("{ border:2px solid grey;border-radius:5px;text-align:center;}");
-    if (progress_bar->value() >= 80) {
-        progress_bar->setStyleSheet("QProgressBar {   border: 2px solid grey;   border-radius: 5px;   background-color: #FFFFFF;}QProgressBar::chunk {   background-color: #FF0000;   width: 20px;}QProgressBar {   border: 2px solid grey;   border-radius: 5px;   text-align: center;}");//red
-    }
-    else if (progress_bar->value() >= 50) {
-        progress_bar->setStyleSheet("QProgressBar {   border: 2px solid grey;   border-radius: 5px;   background-color: #FFFFFF;}QProgressBar::chunk {   background-color: #FFFF00;   width: 20px;}QProgressBar {   border: 2px solid grey;   border-radius: 5px;   text-align: center;}");//yellow
-    }
-    else {
-        progress_bar->setStyleSheet("QProgressBar {   border: 2px solid grey;   border-radius: 5px;   background-color: #FFFFFF;}QProgressBar::chunk {   background-color: #05B8CC;   width: 20px;}QProgressBar {   border: 2px solid grey;   border-radius: 5px;   text-align: center;}");//blue
-    }
     if (tab1.table[i]->item(0,j)->background() == QBrush(QColor(Qt::gray))) {
         for (int k = 0;k < tab1.table[i]->rowCount();k++) {
             tab1.table[i]->item(k,j)->setBackground(QBrush(QColor(Qt::white)));
@@ -775,7 +751,7 @@ void Dialog::flash() {//刷新进度条+工作表
     //        if (i >= tab1.table[i]->horizontalScrollBar()->value() + pagevalue) {//每一个新的工作时间到来需要判断是否翻页
     //            nextPage();
     //        }
-    progress_bar->update();
+    //progress_bar->update();
     //}
     //else {
     //}
@@ -794,7 +770,7 @@ void Dialog::check_info(int flag) {
         if (tab1.read_local_authuser(my_socket->workInfo) == 0) {
             ret_checkout[0] = 1;
             if(my_socket->clientConnection) {
-                my_socket->sendmessage(5,(void *)&tab1.messageWorkerEvn.workerInfo);
+                my_socket->sendmessage(5,tab1.messageWorkerEvn.workerInfo);
                 qDebug()<<"send workerinfo!";
             }
             else {
@@ -818,8 +794,9 @@ void Dialog::check_info(int flag) {
             if (tab1.read_local_env(my_socket->workInfo,0)==0) {
 
                 if(my_socket->clientConnection) {
-                    my_socket->sendmessage(6,(void *)&tab1.messageWorkerEvn.localEnv);//图表信息
+                    my_socket->sendmessage(6,tab1.messageWorkerEvn.localEnv);//图表信息
                     qDebug()<<"send workinfo!";
+                    qDebug()<<tab1.messageWorkerEvn.localEnv.workstation;
                 }
                 else {
                     qDebug()<<"send failed!";
@@ -839,7 +816,7 @@ void Dialog::check_info(int flag) {
         //if (mode == 0) {
         if (tab1.read_local_env(my_socket->workInfo,1)==0) {
             if(my_socket->clientConnection) {
-                my_socket->sendmessage(7,(void *)&tab1.messageWorkerEvn.equip);
+                my_socket->sendmessage(7,tab1.messageWorkerEvn.equip);
                 qDebug()<<"send equipinfo!";
             }
             else {

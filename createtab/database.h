@@ -106,6 +106,10 @@ public:
 
 };
 class database_server:public database {//网络数据库
+
+    //写一个控制器，读数据和传数据
+
+
 public:
     void spc_event(QString type);
 
@@ -127,6 +131,7 @@ public:
     void read_data();
     bool read_plantab(const QString& s,const QString& flag);
     bool read_producttab(const QString &s);
+    bool read__planstart2tab();
     bool update_step();
     void add_steptab();
     void add_tab();

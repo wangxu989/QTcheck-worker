@@ -25,45 +25,43 @@
 #pragma pack(1)
 
 //发送给进程2的信息（人员，设备信息）
-typedef struct worker_info{
+struct worker_info{
     QString name;
     int role;
-    friend QDataStream& operator << (QDataStream &os,worker_info &workInfo);
-}worker_info;
-typedef struct local_env{
+    friend QDataStream& operator << (QDataStream &os,const worker_info &workInfo);
+};
+struct local_env{
     QString process;
     QString process_id;
-    //QString test_place;
-    //QString equip;
     QString workstation;
     QString gauge_no;
-    friend QDataStream& operator << (QDataStream &os,local_env &localEnv);
-}local_env;
-typedef struct Equip{
+    friend QDataStream& operator << (QDataStream &os,const local_env &localEnv);
+};
+struct Equip{
     QString test_place;
     QString equip;
-    friend QDataStream& operator << (QDataStream &os,Equip & equip);
-}Equip;
-typedef struct message_worker_evn{
+    friend QDataStream& operator << (QDataStream &os,const Equip& equip);
+};
+struct message_worker_evn{
     worker_info workerInfo;
     local_env localEnv;
     Equip equip;
-    friend QDataStream& operator << (QDataStream &os,message_worker_evn &messageWorkerEnv);
-}message_worker_evn;
+    friend QDataStream& operator << (QDataStream &os,const message_worker_evn &messageWorkerEnv);
+};
 
 
 
 //接受扫码枪信息
-typedef struct work_info{
+struct work_info{
     QString worker_id;
     QString product_id;
     QString instruction_id;
     QString checker_id;
     friend QDataStream& operator>>(QDataStream &os,struct work_info &info);
-}work_info;
+};
 class infomation{
 public:
-    friend QDataStream& operator<<(QDataStream &os,infomation &a);
+    friend QDataStream& operator<<(QDataStream &os,const infomation &a);
     QString product_no;//产品号
     QString warn_thr;//预警阈值
     QString chk_warn_thr;//复核报警阈值
@@ -75,7 +73,7 @@ public:
     QString  trend_warn_win;//趋势预警
     QString lock_time;//锁定时间
 };
-typedef struct {
+struct tflag{
     int flag;//该列状态：初始值为0,1代表工人赋值,2代表审核员赋值
     int worker_row_flag;//操作员列标识
     int checker_row_flag;//审核员列标识
@@ -83,9 +81,9 @@ typedef struct {
     int recover_flag;//是否被恢复为当前工作时间
     QColor temp_worker_color;//操作员颜色暂存（用于操作员和核验员点击同一单元格）
     int t_time;//修改锁定时间
-}tflag;
+};
 struct tabinfo{
-    friend QDataStream& operator<<(QDataStream &os,tabinfo&a);
+    friend QDataStream& operator<<(QDataStream &os,const tabinfo&a);
     QString gauge;
     QString featureid;//零件特性号
     QString char_desc;//特征描述(长宽，内径...)
