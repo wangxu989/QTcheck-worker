@@ -2,6 +2,7 @@ QT       += core gui network
 QT += sql
 QT +=xml
 QT +=printsupport
+QT += serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -28,7 +29,6 @@ DEFINES += HAVE_CONFIG_H
 
 SOURCES += \
     database.cpp \
-    dialog.cpp \
     main.cpp \
     mainwindow.cpp \
     process_bar.cpp \
@@ -43,11 +43,14 @@ SOURCES += \
     qrencodecpp/qrspec.c \
     qrencodecpp/rsecc.c \
     qrencodecpp/qrencode.c \
-    qrencodecpp/split.c
+    qrencodecpp/split.c \
+    start_finish_work.cpp \
+    base_program.cpp \
+    my_port.cpp \
+    programwork.cpp
 
 HEADERS += \
     database.h \
-    dialog.h \
     mainwindow.h \
     process_bar.h \
     tab.h \
@@ -65,13 +68,19 @@ HEADERS += \
     qrencodeh/qrinput.h \
     qrencodeh/qrspec.h \
     qrencodeh/rsecc.h \
-    qrencodeh/split.h
+    qrencodeh/split.h \
+    start_finish_work.h \
+    my_port.h \
+    base_factory.h \
+    programwork.h \
+    qmessage_remind.h
 
 FORMS += \
-    dialog.ui \
     form.ui \
     mainwindow.ui \
-    program2.ui
+    program2.ui \
+    start_finish_work.ui \
+    programwork.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

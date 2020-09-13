@@ -88,7 +88,7 @@ void my_port::lookup() {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
 
-        if (info.portName() == "ttymxc3") {//info.serialNumber() == "A7434VMK"
+        if (info.portName() == scanner.name) {//info.serialNumber() == "A7434VMK"
             qDebug() << "Name : " << info.portName();
             qDebug() << "Description : " << info.description();
             qDebug() << "Manufacturer: " << info.manufacturer();

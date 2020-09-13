@@ -5,25 +5,12 @@
 #include<QMap>
 #include<QMessageBox>
 #include<socket.h>
-//定义主程序类，统一管理可能出现的子程序类prototype设计模式
+//后续可以将所有全局变量重构为单例模式
+//定义主程序类，统一管理可能出现的子程序类策略加工厂
 //提示消息总类
-class message_remind{
-public:
-    inline message_remind(const QString& title){box = new QMessageBox(QMessageBox::NoIcon,title,"",nullptr,nullptr);}
-    inline ~message_remind(){delete box;}
-    message_remind(const message_remind& m) =delete;//禁止拷贝构造
-    message_remind& operator=(const message_remind& m)=delete;//禁止拷贝赋值
-    void show(const QString& s,const QString& title = "")const {
-        box->setText(s);
-        box->show();
-    }
-    void close()const {
-        box->close();
-    }
-
-private:
-    QMessageBox *box;
-};
+namespace Ui {
+class Program2;
+}
 class my_messagebox:public QMessageBox{
 protected:
     void showEvent(QShowEvent *event) {
@@ -31,31 +18,27 @@ protected:
         setFixedSize(300,300);
     }
 };
-
-class baseP {
-//private:
-//    baseP(){
-//        qDebug()<<"create signal";
-//    };
-//protected:
-//    baseP(const baseP& P){};
-//public:
-//    baseP& operator=(baseP &p)=delete;
-//    QVector<baseP*> allP;
-//    static baseP& p_init() {
-//        static baseP mainP;
-//        return mainP;
-//    }
+//当时没理清楚，baseP应该直接继承qwidget
+//因为qt信号元编程必须继承QObject
+class MyWidget:public QWidget {
+    Q_OBJECT
+signals:
+    void  change_widget(QWidget*);
+};
+class baseP{//策略定义接口
 public:
     static void p_init() {
             if (allP == nullptr) {
                 allP = QSharedPointer<QMap<QString,baseP*>>(new QMap<QString,baseP*>());
             }
     }
-    static QSharedPointer<QMap<QString,baseP*>> allP;
-    virtual bool start_P(){};
-    virtual void finish_P(){};
+    static QSharedPointer<QMap<QString,baseP*>> allP;//保存所有正在执行子功能指针up_cast
+    virtual bool start_P() = 0;
+    virtual void finish_P() = 0;
     virtual ~baseP(){};
+    virtual MyWidget* get_widget() = 0;
+//signals:
+//     void change_widget(QWidget*);
 private:
 protected:
     static void add_p(const QString& name,baseP* P) {
@@ -74,6 +57,27 @@ protected:
         }
         return true;
     }
+};
+
+class xml{//单例模式
+public:
+    ~xml(){}
+    static xml& get_xml() {
+        if (x == nullptr) {
+            x = new xml();
+        }
+        return *x;
+    }
+    xml& operator=(const xml& x)=delete;
+    int readxml(const work_info &work_info,int flag = 0);
+    int read_local_authuser(const work_info &work_info);
+    int read_local_env(const work_info &work_info,int flag);
+    int read_start_finish_config();
+    message_worker_evn messageWorkerEvn;
+protected:
+    static xml* x;
+private:
+    xml() {};
 };
 
 

@@ -4,18 +4,20 @@
 #include<database.h>
 extern database_server *data_server;
 extern database_local *data_local;
-extern socket *my_socket;
 QMap<int,button_ctl*> button_ctl::rec;
 int button_ctl::size = 0;
 int button_ctl::now_num = -1;
 Program2::Program2(const QString& name,QWidget *parent) :
-    QWidget(parent),
+    //QWidget(parent),
     ui(new Ui::Program2),thisname(name)
 {
     ui->setupUi(this);
     add_p(thisname,this);
 }
 bool Program2::start_P() {
+    if (!listen(my_socket)) {
+        return false;
+    }
     if (my_socket->status()) {
         key_lay = QSharedPointer<QHBoxLayout>(new QHBoxLayout());
         key = QSharedPointer<keyboard_widget>(new keyboard_widget("打印"));
@@ -51,7 +53,8 @@ Program2::~Program2()
 
 void Program2::on_pushButton_5_clicked()
 {
-    emit change_widget(10);
+    emit MyWidget::change_widget(nullptr);
+    this->finish_P();
 }
 void Program2::read_data() {
 
@@ -98,6 +101,7 @@ void Program2::on_pushButton_3_clicked()
 }
 
 void Program2::in_keyboard(const int &row,const int &column) {
+    qDebug()<<row<<" "<<column;
     if (row == 0 && column == 3) {//delete
         key->removeText();
     }
@@ -149,8 +153,8 @@ void Program2::show_print_code(QString &s) {
     qDebug()<<"printString "<<s;
     QRcode *qrcode;
     qrcode = QRcode_encodeString(s.toStdString().c_str(), 2, QR_ECLEVEL_Q, QR_MODE_8, 1);
-    qint32 temp_width=label_2->width(); //二维码图片的大小
-    qint32 temp_height=label_2->height();
+    qint32 temp_width=80; //二维码图片的大小
+    qint32 temp_height=80;
     qint32 qrcode_width = qrcode->width > 0 ? qrcode->width : 1;
     double scale_x = (double)temp_width / (double)qrcode_width; //二维码图片的缩放比例
     double scale_y =(double) temp_height /(double) qrcode_width;
@@ -175,6 +179,10 @@ void Program2::show_print_code(QString &s) {
         }
     }
     QPixmap mainmap=QPixmap::fromImage(mainimg);
-    label_2->setPixmap(mainmap);
-    label_2->setVisible(true);
+    mainmap.save("./buffer/buf_img.png");
+    my_socket->sendmessage(54);
+    //发数据给串口
+    port_print.write(s);
+//    label_2->setPixmap(mainmap);
+//    label_2->setVisible(true);
 }

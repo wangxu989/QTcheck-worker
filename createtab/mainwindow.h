@@ -2,16 +2,17 @@
 #define MAINWINDOW_H
 #include <QMainWindow>
 #include<QPair>
-#include <QDialog>
+#include <programwork.h>
 #include<QPushButton>
 #include<QHBoxLayout>
 #include<QMap>
 #include<QVBoxLayout>
 #include<base_program.h>
-#include<dialog.h>
 #include<program2.h>
 #include<database.h>
-//#include<qpa
+#include<start_finish_work.h>
+#include<base_factory.h>
+#include<qmessage_remind.h>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -59,10 +60,12 @@ private:
     QVBoxLayout *V_layout2;
     QHBoxLayout *H_layout;
     QVector<my_button*>app_button;
-    baseP mainP;
+    //baseP mainP;
     QWidget *main_widget;
-    Dialog* P1;
+    ProgramWork* P1;
     Program2*P2;
-    void change_widget(int);
+    start_finish_work*P3;
+    void change_widget(QWidget*);
+    baseP* BaseP;
 };
 #endif // MAINWINDOW_H

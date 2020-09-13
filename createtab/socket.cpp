@@ -2,6 +2,32 @@
 #include<QAbstractSocket>
 #include<QFile>
 #include<QMessageBox>
+QDataStream& operator<<(QDataStream& os,const start_rec& s){
+    os<<s.ID<<s.EndTime<<s.MaterialInf<<s.StartUser<<s.EndCount<<s.ModeList<<s.StartTime<<s.DevID<<s.remaind_count;
+        return os;
+}
+QDataStream& operator>>(QDataStream& os,start_rec& s){
+    os>>s.ID>>s.EndTime>>s.MaterialInf>>s.StartUser>>s.EndCount>>s.ModeList>>s.StartTime>>s.DevID>>s.remaind_count;
+        return os;
+}
+
+QDataStream& operator<<(QDataStream& in,start_rec& s){
+    in>>s.ID>>s.EndTime>>s.MaterialInf>>s.StartUser>>s.EndCount>>s.ModeList>>s.StartTime>>s.DevID>>s.remaind_count;
+        return in;
+}
+
+QDataStream& operator<<(QDataStream& os,const finish_work& s){
+    os<<s.ID<<s.EndTime<<s.MaterialInf<<s.EndCount<<s.onhand<<s.probatch<<s.isPrint<<s.residueNum;
+    return os;
+}
+QDataStream& operator<<(QDataStream& os,const ProcessInf& Processinf) {//获取plansteptab中的开工相关信息
+    os<<Processinf.cMustQC<<Processinf.cStdCount<<Processinf.ElseInf;
+    return os;
+}
+QDataStream& operator<<(QDataStream& os,const ElseInf& inf) {//获取plansteptab中的开工相关信息
+    os<<inf.ID<<inf.EndTime<<inf.MaterialInf<<inf.UserID<<inf.EndCount<<inf.probatch<<inf.residueNum;
+    return os;
+}
 QDataStream& operator<<(QDataStream &os,const infomation &a) {
     os<<a.product_no;
     os<<a.warn_thr;
@@ -28,6 +54,7 @@ QDataStream& operator<<(QDataStream &os,const tabinfo &a) {
     os<<a.char_desc;
     return os;
 }
+
 socket::~socket(){
     server->close();
     delete server;
@@ -123,6 +150,24 @@ void socket::read_message() {
         in>>print;
         qDebug()<<print;
         emit print_String(print);
+        break;
+        //P3
+    case 50:
+        in>>workInfo.instruction_id;
+        emit transf_processID(workInfo.instruction_id);
+        break;
+    case 51://生产记录码
+        in>>pro_rec;
+        qDebug()<<pro_rec;
+        emit deal_rec(pro_rec);
+        break;
+    case 52://删除记录
+        in>>start2tabID;
+        emit delete_start2tab(start2tabID);
+        break;
+    case 53://增加记录
+        in>>startrec;
+        emit add_start2tab(startrec);
         break;
     }
     if (clientConnection->bytesAvailable() > 0) {
@@ -246,8 +291,18 @@ void socket::read_message() {
 //    case 53:
 //        out<<quint32(sizeof(flag) + sizeof(int));
 //        out<<flag<<*(int*)content;
-//      case 54:delete ui
+//      case 54://展示二维码
 //        break;
+//      program3
+      //case 80: 传开工记录
+        //case 81传完工记录
+        //case 82:开工数
+        //case 83:完工数
+        //case 84:生产指令plansteptab数据
+        //case 86:生产记录码
+        //case 87:确认
+        //case 88:切换
+        //case 89:删除
 
 //    }
 //    //    data.resize(sizeof(*info));

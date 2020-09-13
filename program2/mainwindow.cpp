@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(my_socket.data(),&socket::act_mode,this,&MainWindow::act_mode);
     connect(my_socket.data(),&socket::insert_producttab,this,&MainWindow::insert_producttab);
     connect(my_socket.data(),&socket::send_printString,this,&MainWindow::send_printString);
+    connect(my_socket.data(),&socket::qrecode_show,this,&MainWindow::qrecode_show);
 }
 
 MainWindow::~MainWindow()
@@ -99,4 +100,11 @@ void MainWindow::send_printString() {
     temp += table2.data()->item(row,0)->text() + "," + table2.data()->item(row,1)->text() + "," + table2.data()->item(row,2)->text();
     qDebug()<<"send_PrintString  "<<temp;
     my_socket->send_message(20,temp);
+}
+void MainWindow::qrecode_show() {
+    QPixmap p;
+    qDebug()<<"Pixmap";
+    p.load("./buffer/buf_img.png");
+    ui->label_5->setFixedSize(80,80);
+    ui->label_5->setPixmap(p);
 }

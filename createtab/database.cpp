@@ -2,7 +2,8 @@
 #include<QFile>
 #include<QSqlError>
 #include<QMessageBox>
-extern socket *my_socket;
+#include<stdlib.h>
+#include<string>
 int database::last_insert_id = -1;
 QDataStream& operator<<(QDataStream& os,const producttab& p) {
     os<<p.productID;
@@ -43,6 +44,7 @@ QDataStream& operator<<(QDataStream& os,const plantab& p1) {
     os<<p1.CreateTime;
     return os;
 }
+
 void database_server::createdatabase() {
     db.setHostName(plugin.hostname);
     db.setUserName(plugin.userName);
@@ -74,7 +76,7 @@ void database_server::read_data() {//读取远程数据库中工作信息
     }
     QString temp = "select * from client_cfg where client_mach_id = \"" + mac_address + "\"";
     qDebug()<<temp;
-    query.exec(temp);
+    this->query_ctl(temp);
     QString client_mach_id;
     QString mode;
     if (query.size() == 0) {
@@ -92,7 +94,7 @@ void database_server::read_data() {//读取远程数据库中工作信息
     if (mode.toInt() == 1) {
         //正常工作模式
         //首先判断工作人员信息是否合法
-        query.exec("select * from auth_user where user_id = " + workInfo->worker_id.split(",")[workInfo->worker_id.split(",").size() - 1]);
+        this->query_ctl("select * from auth_user where user_id = " + workInfo->worker_id.split(",")[workInfo->worker_id.split(",").size() - 1]);
         if (query.size() == 0) {
             QMessageBox box(QMessageBox::NoIcon,"title","员工信息不合法",NULL,NULL);
             box.exec();
@@ -112,11 +114,8 @@ void database_server::read_data() {//读取远程数据库中工作信息
 
         //检索数据库寻找对应的工作信息
         QString find_work = workInfo->instruction_id.split(",")[1].mid(0,6);//暂定
-        query.prepare("select * from spc_schemes where product_no = ?");
-        query.bindValue(0,find_work);
-        if (!query.exec()) {
-            qDebug()<<"read net_sche_info failed!";
-        }
+        find_work = "select * from spc_schemes where product_no = " + find_work;
+        this->query_ctl(find_work);
         int row_count = query.size();
         qDebug()<<row_count;
         if (row_count == 0) {
@@ -276,25 +275,17 @@ void database_local::insert_data(const double &data,const  int &flag,const int &
         box.exec();
     }
 }
-void database_server::spc_event(QString type) {
+void database_server::spc_event(QString type) {//上报
     QDateTime now = QDateTime::currentDateTime();
-    query.prepare("insert into spc_event (client_id,event_time,event_type,user_id,equip_id,work_id)"
-                  "values(?,?,?,?,?,?)");
-    query.bindValue(0,mac_address);
-    query.bindValue(1,now.toString("yyyyMMddhhmmss"));
-    query.bindValue(2,type);
-    query.bindValue(3,workInfo->worker_id.split(",")[1]);
-    query.bindValue(4,workInfo->product_id.split(",")[1]);
-    query.bindValue(5,workInfo->instruction_id.split(",")[1]);
-    if (!query.exec()) {
-        QSqlError error = query.lastError();
-        QMessageBox box(QMessageBox::NoIcon,"mysql","上报失败 " + error.databaseText(),NULL,NULL);
-        box.exec();
-    }
+    QString s = QString("insert into spc_event (client_id,event_time,event_type,user_id,equip_id,work_id)"
+                  "values('%1','%2','%3','%4','%5','%6')").arg(mac_address,now.toString("yyyyMMddhhmmss"),type,workInfo->worker_id.split(",")[1],
+    workInfo->product_id.split(",")[1],
+    workInfo->instruction_id.split(",")[1]);
+    this->query_ctl(s,"上报失败 ");
 }
 void database_server::remove_t() {
     int id = query.lastInsertId().toInt();
-    if (!query.exec("delete from spc_event where id = " + QString::number(id))) {
+    if (!this->query_ctl("delete from spc_event where id = " + QString::number(id)).isActive()) {
         QSqlError error = query.lastError();
         QMessageBox box(QMessageBox::NoIcon,"mysql","删除上条上报信息失败" + error.databaseText(),NULL,NULL);
         box.exec();
@@ -303,13 +294,10 @@ void database_server::remove_t() {
 bool database_server::read_plantab(const QString& s,const QString& flag) {
     //read_producttab
     QString prod = "select * from producttab where productID = " + s;
-    if (!query.exec(prod)) {
-        QSqlError error = query.lastError();
-        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
-        box.exec();
-    }
+    qDebug()<<prod;
+    this->query_ctl(prod,"Plantab");
     producttab prod_t;
-    if (query.size() == 0) {return false;}
+    if (query.size() == 0 || last_error == false) {return false;}
     while (query.next()) {
         prod_t.productID = query.value(1).toString();
         prod_t.productName = query.value(2).toString();
@@ -326,12 +314,8 @@ bool database_server::read_plantab(const QString& s,const QString& flag) {
 
     QString q = "select * from plantab where left(PlanID,6)=" + s + " and PlanState = " +"'" + flag + "'";
 
-    if (!query.exec(q)) {
-        QSqlError error = query.lastError();
-        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
-        box.exec();
-    }
-     if (query.size() == 0) {return false;}
+    this->query_ctl(q,"Plantab");
+     if (query.size() == 0 || last_error == false) {return false;}
 
     plantab planTab;
     plantab_size = query.size();
@@ -376,12 +360,8 @@ bool database_server::read_producttab(const QString &s) {
 bool database_server::update_step() {
     planstep_now = 0;
     QString temp_S = "select * from plansteptab where left(PlanStepID,18) = '" + rec_plantab[plantab_now].PlanID + "'" ;
-    if (!query.exec(temp_S)) {
-        QSqlError error = query.lastError();
-        QMessageBox box(QMessageBox::NoIcon,"mysql","Plantab" + error.databaseText(),NULL,NULL);
-        box.exec();
-    }
-     if (query.size() == 0) {return false;}
+    this->query_ctl(temp_S,"Plantab");
+     if (query.size() == 0 || last_error == false) {return false;}
     qDebug()<<temp_S<<" "<<query.size();
     planstep_size = query.size();
     plansteptab plan_step_tab;
@@ -403,36 +383,78 @@ bool database_server::update_step() {
         my_socket->sendmessage(52,plan_step_tab);
     }
 }
-void database_server::add_tab() {//plantab下add
-    if (plantab_now < plantab_size - 1) {
+void database_server::add_tab(int flag) {//plantab下add
+    if (flag == 0 && plantab_now < plantab_size - 1) {
         plantab_now++;
         int act = 0;
         my_socket->sendmessage(49,act);
         update_step();
     }
+    else {
+         my_socket->sendmessage(49,0);
+    }
     qDebug()<<plantab_now;
 }
-void database_server::reducetab() {
-    if (plantab_now > 0) {
+void database_server::reducetab(int flag) {
+    if (flag == 0 && plantab_now > 0) {
         plantab_now--;
         int act = 1;
         my_socket->sendmessage(49,act);
         update_step();
     }
+    else {
+        my_socket->sendmessage(49,1);
+    }
     qDebug()<<plantab_now;
 }
-void database_server::add_steptab() {
-    if (planstep_now < planstep_size - 1) {
+void database_server::add_steptab(int flag) {
+    if (flag == 0 && planstep_now < planstep_size - 1) {
         planstep_now++;
         int act = 2;
         my_socket->sendmessage(49,act);
     }
+    else {
+        my_socket->sendmessage(49,2);
+    }
 }
-void database_server::reducesteptab() {
-    if (planstep_now > 0) {
+void database_server::reducesteptab(int flag) {
+    if (flag == 0 && planstep_now > 0) {
         planstep_now--;
         int act = 3;
         my_socket->sendmessage(49,act);
 
     }
+    else {
+        my_socket->sendmessage(49,3);
+    }
+}
+QSqlQuery& database_server::query_ctl(const QString &s,const QString& error_s){
+    if(!this->isActive()) {
+        last_error = false;
+        return query;
+    }
+    if (!query.exec(s)) {
+        QSqlError error = query.lastError();
+        QMessageBox box(QMessageBox::NoIcon,"mysql",error_s + error.databaseText(),NULL,NULL);
+        box.exec();
+    }
+    else {
+        last_error = true;
+    }
+    return query;
+}
+bool database_server::isActive() {
+    std::string ping_cmd = "ping -c 1 " + plugin.hostname.toLatin1().toStdString() ;
+    qDebug()<<QString(ping_cmd.c_str());
+    int ret = system(ping_cmd.c_str());
+    if (ret != 0) {
+        qDebug()<<"当前网络不稳定";
+        Mremind->show("当前网络不稳定");
+    }
+    else {
+        if (!db.isOpen()) {//网络稳定，此时保证数据库已打开
+            db.open();
+        }
+    }
+    return ret == 0;
 }

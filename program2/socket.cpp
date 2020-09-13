@@ -106,6 +106,9 @@ void socket::read_msg(){
     else if (flag == 47) {
         emit send_printString();
     }
+    else if (flag == 54) {
+        emit qrecode_show();
+    }
     if (this->bytesAvailable() > 0) {
         emit this->readyRead();
     }

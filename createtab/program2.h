@@ -1,18 +1,20 @@
 #ifndef PROGRAM2_H
 #define PROGRAM2_H
-#include<dialog.h>
+#include<programwork.h>
 #include <QWidget>
 #include<QString>
 #include<qrencode.h>
 #include<QLabel>
 #include<QProcess>
 #include<QPushButton>
+#include<my_port.h>
 //子功能2
 namespace Ui {
 class Program2;
 }
 class button_ctl{
 public:
+    //注意定义过的static变量存在整个程序执行期间
     static QMap<int,button_ctl*>rec;
     static int size;//观察者计数
     virtual bool set_status() = 0;
@@ -33,13 +35,10 @@ public:
             rec[now_num]->onclicked();
         }
     }
-    virtual ~button_ctl(){
-        remove_self();
-    }
+    virtual ~button_ctl(){};
     button_ctl() {
         add_self();
     }
-
 protected:
     void add_self() {
         rec[size] = this;
@@ -49,6 +48,10 @@ protected:
     void remove_self() {
         auto iter = rec.find(num);
         rec.erase(iter);
+        size--;
+        if (size = 0) {
+            now_num = -1;
+        }
     }
 };
 class noti_button:public button_ctl{
@@ -65,21 +68,26 @@ public:
     bool onclicked()override{
         data->setEnabled(false);
     }
+    noti_button() {}
+    ~noti_button(){
+        remove_self();
+    }
 private:
     QPushButton* data;
 };
 
-class Program2 : public QWidget,baseP
+class Program2 :public MyWidget,public baseP
 {
     Q_OBJECT
-
 public:
     explicit Program2(const QString& name,QWidget *parent = 0);
     ~Program2()override;
     bool start_P()override;
     void finish_P()override;
+    MyWidget* get_widget(){return this;};
 signals:
-    void change_widget(int);
+    //void change_widget(int);
+    //void change_widget(QWidget*);
 private slots:
     void on_pushButton_5_clicked();
     void exec_button();
@@ -110,6 +118,9 @@ private:
     noti_button exe;
     noti_button finished;
     noti_button terminated;
+    //print
+    my_port port_print;
+    socket *my_socket = socket::get_socket();
 };
 
 #endif // PROGRAM2_H

@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network xml
+QT += serialport
+QT +=printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,9 +15,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    socket.cpp \
+    my_port.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    socket.h \
+    my_port.h
 
 FORMS    += mainwindow.ui
 

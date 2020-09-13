@@ -29,7 +29,7 @@
 		<!--parity 奇偶校验-->
 		<!--writeBufferSize 写缓冲区大小-->
 		<!--readBufferSize 读缓冲区大小-->
-        <SerialPort device="Scanner" portName="ttymxc0" baudRate="9600"  dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
+        <SerialPort device="Scanner" portName="ttymxc3" baudRate="9600"  dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
 		<SerialPort device="Printer" portName="ttymxc0" baudRate="19200" dataBits="8" stopBits="1" parity="N" writeBufferSize="512" readBufferSize="512"/>
     </SerialPorts>
 	

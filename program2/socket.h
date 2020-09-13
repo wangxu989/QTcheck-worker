@@ -76,6 +76,7 @@ signals:
     void insert_producttab(producttab*);
     void act_mode(int);
     void send_printString();
+    void qrecode_show();
 };
 
 #endif // SOCKET_H

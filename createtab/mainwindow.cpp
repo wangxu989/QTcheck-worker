@@ -9,6 +9,7 @@
 #include<QPushButton>
 //登录界面
 int mode;//网络版还是单机版
+message_remind* message_remind::General_Box = nullptr;
 QMap<QString,serialport_info>Serial_port;//串口信息
 database_plugin net_plugin;//网络配置
 using app_info =  QPair<QString,QString>;
@@ -16,7 +17,7 @@ QVector<app_info>app_name;
 QSharedPointer<QMap<QString,baseP*>> baseP::allP = QSharedPointer<QMap<QString,baseP*>>(nullptr);
 database_server *data_server = NULL;//数据库类
 database_local *data_local = NULL;
-socket *my_socket;
+socket* socket::my_socket = nullptr;
 int my_button::num = 0;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     //this->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint); // 去掉标题栏,去掉任务栏显示，窗口置顶
     ui->setupUi(this);
-    my_socket = new socket();
     mode = read_generalxml();
     if (mode == 1) {
         qDebug()<<"网络版";
@@ -52,8 +52,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    for (auto&a :(*mainP.allP)) {
-        a->finish_P();
+    QMap<QString,baseP*>::iterator iter = baseP::allP.data()->begin();
+    for (;iter != baseP::allP.data()->end();iter++) {
+        iter.value()->finish_P();
     }
     delete V_layout1;
     delete V_layout2;
@@ -67,90 +68,70 @@ MainWindow::~MainWindow()
 }
 void MainWindow::draw_init() {
     int i = 0;
-    for (;i < app_button.size()/2;i++) {
+    //为按钮动态绑定点击槽函数
+    for (;i < app_button.size();i++) {//暂时将按钮分为2列
         app_button[i]->setText(app_name[i].second.split(" ")[0]);
         app_button[i]->setFixedSize(160,160);
-        V_layout1->addWidget(app_button[i]);
+        if (i < app_button.size()/2) {
+            V_layout1->addWidget(app_button[i]);
+        }
+        else {
+             V_layout2->addWidget(app_button[i]);
+        }
         app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
                                      QPushButton{background-color:rgb(170,200,50)}\
                                      QPushButton:hover{background-color:rgb(50, 170, 200)}");
                                      connect(app_button[i],&my_button::clicked,this,[&,i]()->bool{emit ctl(i);});
     }
-    for (;i < app_button.size();i++) {
-        app_button[i]->setText(app_name[i].second.split(" ")[0]);
-        app_button[i]->setFixedSize(160,160);
-        V_layout2->addWidget(app_button[i]);
-        app_button[i]->setStyleSheet("QPushButton{font-family:'宋体';font-size:32px;color:rgb(0,0,0,255);}\
-                                     QPushButton{background-color:rgb(170,200,50)}\ QPushButton:hover{background-color:rgb(50, 170, 200)}");
-                                     connect(app_button[i],&my_button::clicked,this,[&,i]()->bool{emit ctl(i);});
-    }
     H_layout->addLayout(V_layout1);
     H_layout->addLayout(V_layout2);
-//    auto start_child =  template<typename T>
-//            []()->bool(int flag,T t1) {
-//                connect(t1,&Dialog::change_widget,this,&MainWindow::change_widget);
-//                if((*mainP.allP)[app_name[flag].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）
-//                    this->takeCentralWidget();
-//                    this->setCentralWidget(t1);
-//                }
-//            }
     connect(this,&MainWindow::ctl,this,[&](int i)->void{
+        abstract_factory* factory;
         qDebug()<<i;
         switch(i) {
         case 0:
-            P1 =new Dialog(app_name[i].second.split(" ")[0]);
-            connect(P1,&Dialog::change_widget,this,&MainWindow::change_widget);
-            qDebug()<<"start P1";
-            if((*mainP.allP)[app_name[i].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）
-                this->takeCentralWidget();
-                this->setCentralWidget(P1);
+            if (mode == 1 && !data_server->isActive()) {
+                return ;
             }
+            factory = new factory_ProgramWork();//第一个子功能，工作记录
             break;
         case 1:
-            if (mode != 1) {
-                QMessageBox box(QMessageBox::NoIcon,"network","非网络模式无法使用",NULL,NULL);
-                box.exec();
-                break;
+            if (mode != 1 || !data_server->isActive()) {
+                //QMessageBox box(QMessageBox::NoIcon,"network","非网络模式无法使用",NULL,NULL);
+                //box.exec();
+                return;
             }
-            P2 = new Program2(app_name[i].second.split(" ")[0]);
-            connect(P2,&Program2::change_widget,this,&MainWindow::change_widget);
-            if((*mainP.allP)[app_name[i].second.split(" ")[0]]->start_P()) {//开启成功才继续（套接字监听成功）
-                this->takeCentralWidget();
-                this->setCentralWidget(P2);
-            }
+            factory = new factory_program2();
             break;
         case 2:
+            if (mode != 1 || !data_server->isActive()) {
+                //Mremind->show("非网络模式无法使用");
+                return;
+            }
+            factory = new factory_start_finish_work();
             break;
         case 3:
+            return;
             break;
         }
+        BaseP = factory->Concrete(app_name[i].second.split(" ")[0]);
+        connect(BaseP->get_widget(),&MyWidget::change_widget,this,&MainWindow::change_widget);
+        if (BaseP->start_P()) {
+            this->takeCentralWidget();
+            this->setCentralWidget(BaseP->get_widget());
+        }
+
     });
 
 }
-void MainWindow::change_widget(int n) {
-    qDebug()<<"change_widget"<<n;
+void MainWindow::change_widget(QWidget* w) {
+    //qDebug()<<"change_widget"<<n;
     takeCentralWidget();
-    switch(n) {
-    //程序1
-    case 0://回到主页面
+    if (w == nullptr) {
         setCentralWidget(main_widget);
-        disconnect(P1,&Dialog::change_widget,this,&MainWindow::change_widget);
-        P1->finish_P();
-        break;
-    case 1://P1主界面
-        setCentralWidget(P1->widget);
-        break;
-    case 2://P1二级表格
-        setCentralWidget(P1->tempw);
-        break;
-    case 3://P1键盘
-        setCentralWidget(P1->keyboard);
-        break;
-        //程序2
-    case 10:
-        setCentralWidget(main_widget);
-        disconnect(P2,&Program2::change_widget,this,&MainWindow::change_widget);
-        P2->finish_P();
+    }
+    else {
+        setCentralWidget(w);
     }
 }
 

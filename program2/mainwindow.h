@@ -125,6 +125,7 @@ private slots:
     void insert_producttab(producttab*);
     void act_mode(int act);
     void send_printString();
+    void qrecode_show();
 };
 
 #endif // MAINWINDOW_H

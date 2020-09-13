@@ -12,6 +12,7 @@
 #include<QMessageBox>
 //#include<initializer_list>
 #include<socket.h>
+#include<qmessage_remind.h>
 //重构数据库，单利模式
 #pragma pack(1)
 struct producttab{
@@ -67,6 +68,8 @@ typedef struct{
 class database//数据库父类
 {
 public:
+    message_remind *Mremind = message_remind::get_Mremind();
+    socket* my_socket = socket::get_socket();
     database(database_plugin& p):plugin(p){};
     database()=default;
     ~database()=default;
@@ -76,6 +79,7 @@ public:
     static int last_insert_id;
 
 protected:
+    virtual bool isActive(){};
     virtual bool connect_database()=0;
      database_plugin plugin = {"127.0.0.1","0","MYDB","root","arm","0"};
      QSqlDatabase db,db_data;
@@ -84,7 +88,7 @@ protected:
 class database_local:public database {//本地数据库
 public:
     void insert_data(const double &data,const int &flag,const int &operaton_flag);
-    bool connect_database() {
+    bool connect_database()override {
         db = QSqlDatabase::addDatabase("QSQLITE","local");
         db.setDatabaseName("./data/work_record");
         if (!db.open()) {
@@ -114,9 +118,9 @@ public:
     void spc_event(QString type);
 
     void update_finish_time();
-
+    bool isActive()override;
     void remove_t();
-    bool connect_database() {
+    bool connect_database()override {
         db = QSqlDatabase::addDatabase("QMYSQL","network");
         createdatabase();
         //read_data();//首先读取client_cfg配置文件
@@ -126,6 +130,7 @@ public:
     database_server( database_plugin& p):database(p){
         connect_database();
     }
+    //database_server( database_plugin& p);
     ~database_server();
     void createdatabase();
     void read_data();
@@ -133,10 +138,12 @@ public:
     bool read_producttab(const QString &s);
     bool read__planstart2tab();
     bool update_step();
-    void add_steptab();
-    void add_tab();
-    void reducetab();
-    void reducesteptab();
+    void add_steptab(int flag = 0);
+    void add_tab(int flag = 0);
+    void reducetab(int flag = 0);
+    void reducesteptab(int flag = 0);
+    QSqlQuery& query_ctl(const QString& s,const QString& error = "");
+
 private:
     int plantab_size;
     int plantab_now = 0;
@@ -144,7 +151,7 @@ private:
     int planstep_now = 0;
     QVector<plantab>rec_plantab;
     QString mac_address;
+    bool last_error = true;
 };
-
 
 #endif // DATABASE_H
