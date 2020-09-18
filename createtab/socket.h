@@ -6,6 +6,7 @@
 #include<QSemaphore>
 //#include<database.h>
 #include<qmessage_remind.h>
+//已做成单例模式
 struct ProcessInf {
     QString cMustQC;
     QString cStdCount;

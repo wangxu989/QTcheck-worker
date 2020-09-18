@@ -22,7 +22,8 @@ bool start_finish_work::start_P() {
         return false;
     }
     //业务逻辑，此功能为开工/完工
-    key = QSharedPointer<keyboard_widget>(new keyboard_widget("Enter"));
+    key = QSharedPointer<keyboard_widget>(new keyboard_widget("Enter",new composite_label_factory()));
+    connect(key->figure,&QTableWidget::cellClicked,this,&start_finish_work::in_keyboard);
     ui->widget->setLayout(key->layout());
     my_progress.start("./plugin/start_work");
     //emit MyWidget::change_widget(this);
@@ -255,6 +256,15 @@ void start_finish_work::on_pushButton_clicked()//开工
         ui->pushButton_2->setEnabled(false);//关切换
         my_socket->sendmessage(85);
     }
+    else if (ui->pushButton->text() == "完工") {
+
+
+
+
+        //ui->widget->layout()->removeWidget(key->get_widget());
+        //ui->widget->layout()->addWidget(finish_widget.data());
+        my_socket->sendmessage(85);
+    }
 }
 void start_finish_work::deal_rec(QString &s) {//生产记录
     QString key1 = s.split(",")[0];
@@ -288,5 +298,27 @@ void start_finish_work::add_start2tab(const start_rec &s) {
                     "values"
                     "('%1','%2','%3','%4','%5','%6','%7','%8')").arg(s.ID,s.EndTime,s.MaterialInf,s.EndCount,s.StartUser,s.StartTime,s.DevID,s.ModeList);
      data_server->query_ctl(temp);
+
+}
+void start_finish_work::in_keyboard(const int &row,const int &column) {//键盘
+    qDebug()<<row<<" "<<column;
+    if (row == 0 && column == 3) {//delete
+        key->removeText();
+    }
+    else if (row == 2 && column == 3) {//enter
+        //打印
+        qDebug()<<"打印";
+        //my_socket->sendmessage(47);
+
+    }
+    else {
+        key->addText(row,column);
+    }
+//    if (key->getVal() != key->lastquery()) {//软件盘发生改变了
+//        button_ctl::notify();
+//    }
+//    else {
+//        button_ctl::recover();
+//    }
 
 }

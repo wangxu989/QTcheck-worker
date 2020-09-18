@@ -7,7 +7,6 @@
 #include<QThread>
 #include <database.h>
 #include<QProcess>
-#include"tab.h"
 #include"socket.h"
 #include<process_bar.h>
 #include<QProgressBar>
@@ -18,63 +17,12 @@
 #include<QMap>
 #include<QScrollBar>
 #include<base_program.h>
+#include<keyboard.h>
 //子功能1
+
 namespace Ui {
 class ProgramWork;
 }
-
-class keyboard_widget:public QWidget {
-public:
-    my_tablewidget *figure;
-    ~keyboard_widget(){
-        delete figure;
-        delete fig_key;
-        delete display;
-    }
-
-    keyboard_widget(const QString& s) {
-        display = new QLabel();
-        display->setStyleSheet("border:2px solid black;");
-        QFont ft;//字体大小
-        ft.setPointSize(30);
-        display->setFont(ft);
-        figure = new my_tablewidget(4,4);
-        fig_key = new QVBoxLayout();
-        fig_key->addWidget(display);
-        fig_key->addWidget(figure);
-        fig_key->setStretchFactor(display,1);
-        fig_key->setStretchFactor(figure,4);
-        this->setLayout(fig_key);
-        figure->setSpan(0,3,2,1);
-        figure->setSpan(2,3,2,1);
-        figure->setSpan(3,0,1,2);
-        figure->item(3,2)->setText(".");
-        figure->item(2,3)->setText(s);
-        for (int i = 0;i < 3;i++) {
-            for (int j = 0;j < 3;j++) {
-                figure->item(i,j)->setText(QString::number(7 - i*3 + j));
-            }
-        }
-        QLabel *t_label = new QLabel();
-        t_label->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-        t_label->setPixmap(QPixmap(":/new/prefix1/img/cancel.png"));
-        figure->setCellWidget(0,3,t_label);
-        figure->item(3,0)->setText("0");
-        figure->setFont(ft);
-    }
-    inline void setText(const QString& s) {display->setText(s);}
-    inline void removeText() {display->setText(display->text().mid(0,display->text().size() - 1));}
-    inline QString getVal()const {return display->text();}
-    inline void addText(int row,int column,const QString&& s = ""){display->setText( display->text() + figure->item(row,column)->text() + s);}
-    inline void flash(){last_query = display->text();}
-    inline QString lastquery()const{return last_query;}
-    inline QVBoxLayout* layout() const{return fig_key;}
-private:
-    QLabel *display;
-    QVBoxLayout *fig_key;
-    QString last_query;
-
-};
 
 class ProgramWork :public MyWidget,public baseP
 {

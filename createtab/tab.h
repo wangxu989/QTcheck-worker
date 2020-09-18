@@ -21,7 +21,6 @@
 #include<QScrollArea>
 #include<QAbstractScrollArea>
 #include<QScrollBar>
-#include<global_fun.h>
 #pragma pack(1)
 
 //发送给进程2的信息（人员，设备信息）

@@ -10,6 +10,7 @@
 #include<QtXml/QDomDocument>
 #include<QFile>
 #include<QMessageBox>
+#include<qmessage_remind.h>
 struct P_scanner{
     QString name;
     QString baudRate;
@@ -45,6 +46,7 @@ private:
     P_scanner scanner;
     bool exception(const Except& e);
     bool find_port();
+    message_remind* Mremind = message_remind::get_Mremind();
 };
 
 #endif // MY_PORT_H

@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-//#define _TEXT
+#define _TEXT
 #include<QVector>
 #include <QMainWindow>
 #include"my_port.h"

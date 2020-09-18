@@ -15,9 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,0">
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <zorder></zorder>
-    </widget>
+    <widget class="QWidget" name="widget" native="true"/>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,2,2,2,2,2,0">
@@ -94,10 +92,14 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QWidget{border-image: url(:/new/prefix1/img/change2.png);}</string>
+        <string notr="true">/*QWidget{border-image: url(:/new/prefix1/img/change2.png);}</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="img.qrc">
+         <normaloff>:/new/prefix1/img/change2.png</normaloff>:/new/prefix1/img/change2.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -116,10 +118,20 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QWidget{border-image: url(:/new/prefix1/img/change1.png);}</string>
+        <string notr="true">/*QWidget{border-image: url(:/new/prefix1/img/change1.png);}</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="img.qrc">
+         <normaloff>:/new/prefix1/img/change1.png</normaloff>:/new/prefix1/img/change1.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>80</width>
+         <height>80</height>
+        </size>
        </property>
        <property name="autoDefault">
         <bool>false</bool>

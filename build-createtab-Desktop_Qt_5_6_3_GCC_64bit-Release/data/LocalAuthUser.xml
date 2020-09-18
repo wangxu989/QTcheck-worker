@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--LocalAuthUser授权登陆当前客户端的人员列表-->
+<!--user_id:工号-->
+<!--user_name:姓名-->
+<!--role:角色，0代表操作员  1代表核验员-->
+
+<LocalAuthUser>
+	<user user_id="02294" user_name="张三"  role="0"/>
+	<user user_id="1234" user_name="李四"  role="1"/>
+	<user user_id="55043" user_name="王二"  role="1"/>
+	<user user_id="55045" user_name="王二"  role="1"/>
+</LocalAuthUser>
+

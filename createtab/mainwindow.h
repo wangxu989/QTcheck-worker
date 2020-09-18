@@ -8,9 +8,9 @@
 #include<QMap>
 #include<QVBoxLayout>
 #include<base_program.h>
-#include<program2.h>
+//#include<program2.h>
 #include<database.h>
-#include<start_finish_work.h>
+//#include<start_finish_work.h>
 #include<base_factory.h>
 #include<qmessage_remind.h>
 QT_BEGIN_NAMESPACE

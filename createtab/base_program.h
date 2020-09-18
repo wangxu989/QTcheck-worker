@@ -23,7 +23,7 @@ protected:
 class MyWidget:public QWidget {
     Q_OBJECT
 signals:
-    void  change_widget(QWidget*);
+    void  change_widget(QWidget*);//统一程序启动信号
 };
 class baseP{//策略定义接口
 public:

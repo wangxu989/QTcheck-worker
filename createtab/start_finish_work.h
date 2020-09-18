@@ -4,10 +4,14 @@
 #include <QWidget>
 #include<socket.h>
 #include<QProcess>
-#include<programwork.h>
 #include<base_program.h>
 #include<QSqlQuery>
 #include<QDateTime>
+//#include<finish_work.h>
+//#include<mylabel.h>
+#include<database.h>
+#include<programwork.h>
+#include<keyboard.h>
 namespace Ui {
 class start_finish_work;
 }
@@ -37,6 +41,9 @@ private:
     ProcessInf ProInf;
     ElseInf elseinf;
     socket* my_socket = socket::get_socket();
+    QSharedPointer<Program3::finish_work>finish_widget;
+    MyLEdit* now;
+
 private slots:
     void check_info(int flag);
     void on_pushButton_4_clicked();
@@ -49,6 +56,7 @@ private slots:
     void deal_rec(QString&);
     void delete_start2tab(QString&);
     void add_start2tab(const start_rec&s);
+    void in_keyboard(const int &row,const int &column);
 };
 
 #endif // START_FINISH_WORK_H

@@ -16,9 +16,14 @@ my_port::~my_port() {
 bool my_port::exception(const Except &e) {
     switch(e) {
         case WRITE:
-//        if (!port1->isOpen()) {
-//            port1->setPort(my_info);
-//        }
+        if (!this->find_port()) {
+            //
+            Mremind->show("查找不到串口" + name);
+            //port1->setPort(my_info);
+        }
+        else if (!port1->isOpen()) {
+            port1->setPort(my_info);
+        }
         return true;
         break;
     }

@@ -42,31 +42,6 @@ QDataStream& operator>>(QDataStream &os,struct work_info &info) {
 }
 mytab::mytab() {
     //this->tabBar()->setMinimumWidth(80);
-    this->setStyleSheet( "QTabWidget{"
-                         "background-color:transparent;"
-                         "}"
-                         "QTabWidget::pane{"
-                         "    border:2px;"
-                         "}"
-                         "QTabWidget::tab-bar{"
-                         "        alignment:left;"
-                         "}"
-                         "QTabBar::tab{"
-                         "    background:rgb(14, 106, 175);"
-                         "    color:white;"
-                         "    min-width:35ex;"
-                         "    min-height:10ex;"
-                         "}"
-                         "QTabBar::tab:hover{"
-                         "    background:rgb(255, 255, 255, 100);"
-                         "color:black;"
-                         "}"
-                         "QTabBar::tab:selected{"
-                         "    border-color: black;"
-                         "    background:red;"
-                         "    color:white;"
-                         "}"
-                       );
     color_scheme.resize(8);
     color_scheme[0] = Qt::green;
     color_scheme[1] = Qt::yellow;
@@ -90,14 +65,35 @@ void mytab::showEvent(QShowEvent *) {
     int tabcnt = this->count();
 
     int e_width = width/tabcnt;
-    //this->setStyleSheet("QTabBar::scroller{width:50}");
-    //this->setStyleSheet(QString("QTabBar::tab {height: 50px;width: 80px;}"));
-   // QTabBar* mtabbar =  findChildren<QTabBar*>().at(0);
-//    ( (QWidget * )(mtabbar->children().first()))->setFixedWidth(40);
-//    ( (QWidget *) (mtabbar->children().last()))->setFixedWidth(40);
-    //this->setTabBar(mtabbar);
-    this->tabBar()->setStyleSheet("QTabBar::scroller{width:50}");
-    this->setStyleSheet(QString("QTabBar::tab{height: 50px;min-width:%1px;}").arg(e_width));
+    this->setStyleSheet( QString("QTabWidget{"
+                         "background-color:transparent;"
+                         "}"
+                         "QTabWidget::pane{"
+                         "    border:2px;"
+                         "}"
+                         "QTabWidget::tab-bar{"
+                         "        alignment:left;"
+                         "}"
+                         "QTabBar::tab{"
+                         "    background:rgb(14, 106, 175);"
+                         "    color:white;"
+                         "    min-width:%1px;"
+                         "    min-height:50px;"
+                         "}"
+                         "QTabBar::tab:hover{"
+                         "    background:rgb(255, 255, 255, 100);"
+                         "color:black;"
+                         "}"
+                         "QTabBar::tab:selected{"
+                         "    border-color: black;"
+                         "    background:red;"
+                         "    color:white;"
+                         "}"
+                         "QTabBar::scroller{width:50}"
+
+                       ).arg(e_width));
+    //this->tabBar()->setStyleSheet("QTabBar::scroller{width:50}");
+//    this->setStyleSheet(QString("QTabBar::tab{height: 50px;min-width:%1px;}").arg(e_width));
 }
 
 bool mytab::eventFilter(QObject *o, QEvent *e) {
@@ -159,7 +155,7 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     if (createinfo.zgc - createinfo.fgc < createinfo.jddw) {
         QMessageBox box(QMessageBox::NoIcon,"输入错误","正负公差差值小于一级精度",NULL,NULL);
         box.exec();
-        exit(-1);
+        //exit(-1);
     }
     int numrow = cmp_eq(createinfo.normvalue,0)?2: (int)((createinfo.zgc - createinfo.fgc)/createinfo.jddw) + 1 + 1;//行数
     //OK,NG和普通版本
@@ -183,18 +179,23 @@ void mytab::tabadd(tabinfo& createinfo,infomation& info) {//在mainwindow类中�
     int start = hour*3600 + minute*60 + second;
 
     QWidget *widget = new QWidget();//泄漏了!!!!!
-
+    QHBoxLayout *table_layout = new QHBoxLayout();
     my_tablewidget *t = new my_tablewidget();
     t->gap = gap;//   间隔
-    //t->info.gap = gap;//该表格的时间间隔
-    QHBoxLayout *lay_out = new QHBoxLayout();
-    lay_out->addWidget(t);
-    widget->setLayout(lay_out);
+    qDebug()<<numrow<<" "<<numcolumn;
+
+    table_layout->addWidget(t);
+    qDebug()<<"debug";
+    widget->setLayout(table_layout);
     t->setRowCount(numrow);
     t->setColumnCount(numcolumn);
+    qDebug()<<"debug";
     QVector<tflag> columnc(numcolumn,{0,-1,-1,0,0,color_scheme[6],0});//flag初始化
     t->flag = columnc;
     table.push_back(t);//
+
+
+
     QStringList verticalhead;
     for (int i = 0;i < numcolumn;i++) {
         QString m;
@@ -334,6 +335,7 @@ int mytab::readxml(const work_info &workInfo,int flag) {
                             //temp.warn_thr = info.warn_thr.toInt();
                             if (flag == 0) {
                                 createinfo.push_back(temp);//
+                                qDebug()<<"tabadd";
                                 tabadd(temp,info);
                             }
                         }

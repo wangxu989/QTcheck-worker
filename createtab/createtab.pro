@@ -47,7 +47,9 @@ SOURCES += \
     start_finish_work.cpp \
     base_program.cpp \
     my_port.cpp \
-    programwork.cpp
+    programwork.cpp \
+    finish_work.cpp \
+    my_tablewidget.cpp
 
 HEADERS += \
     database.h \
@@ -57,7 +59,6 @@ HEADERS += \
     socket.h \
     base_program.h \
     program2.h \
-    global_fun.h \
     qrencodeh/bitstream.h \
     qrencodeh/config.h \
     qrencodeh/mask.h \
@@ -73,14 +74,19 @@ HEADERS += \
     my_port.h \
     base_factory.h \
     programwork.h \
-    qmessage_remind.h
+    qmessage_remind.h \
+    keyboard.h \
+    finish_work.h \
+    my_tablewidget.h \
+    myledit.h
 
 FORMS += \
     form.ui \
     mainwindow.ui \
     program2.ui \
     start_finish_work.ui \
-    programwork.ui
+    programwork.ui \
+    finish_work.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

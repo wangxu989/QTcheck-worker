@@ -14,7 +14,7 @@
 namespace Ui {
 class MainWindow;
 }
-class my_tablewidget:public QTableWidget {
+class my_tablewidget:public QTableWidget {//显示扫码信息
 public:
     int row,column;
     my_tablewidget(const int &row,const int &column,const QString &info = ""):row(row),column(column){
@@ -111,10 +111,9 @@ public:
 
         this->setColumnCount(sizeof...(T));
         head_init(T...);
-        this->setHorizontalHeaderLabels(list_head);
     }
     template<typename T>
-    bool insert(T& tab) {
+    bool insert(T& tab) {//向表格插入数据
        this->setRowCount(now_row + 1);
        for (int i = 0;i < this->columnCount();i++) {
            if (!this->item(this->now_row,i)) {
@@ -127,7 +126,9 @@ public:
        //qDebug()<<this->now_row;
        return true;
     }
-    void head_init(){}
+    void head_init(){
+        this->setHorizontalHeaderLabels(list_head);
+    }
     template<typename T,typename... Types>
     void head_init(const T& t1,const Types&... types) {
         list_head<<t1;
@@ -188,7 +189,7 @@ private:
     Ui::MainWindow *ui;
     my_tablewidget *table_work,*table_worker,*table_product ,*table_process;
     QVBoxLayout *table_layout;
-    QSharedPointer<my_table> tablestart,tablefinish,table2;
+    QSharedPointer<my_table> tablestart,tablefinish,table2;//table2:二级逻辑表格，复用
     my_port my_port1;
     bool status;
     QSet<QString> rec_set;

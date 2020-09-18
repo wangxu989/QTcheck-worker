@@ -90,7 +90,7 @@ void ProgramWork::login() {
     //超差键盘,有待改进，键盘封装为一个类
     keyboard = new keyboard_widget("Enter");
 
-    connect(keyboard->figure,&QTableWidget::cellClicked,this,&ProgramWork::in_keyboard);
+    connect(keyboard->figure,&my_tablewidget::cellClicked,this,&ProgramWork::in_keyboard);
     connect(my_socket,&socket::start_work,this,&ProgramWork::start_work);
     connect(my_socket,&socket::check_identity,this,&ProgramWork::check_identity);
     connect(my_socket,SIGNAL(check_info(int)),this,SLOT(check_info(int)));
