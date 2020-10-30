@@ -10,5 +10,7 @@
         <file>img/cancel.png</file>
         <file>img/change1.png</file>
         <file>img/change2.png</file>
+        <file>img/ret2.png</file>
+        <file>img/return3.png</file>
     </qresource>
 </RCC>

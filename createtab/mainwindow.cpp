@@ -120,6 +120,9 @@ void MainWindow::draw_init() {
             this->takeCentralWidget();
             this->setCentralWidget(BaseP->get_widget());
         }
+        else {
+            qDebug()<<"start failed";
+        }
 
     });
 

@@ -3,6 +3,7 @@
 #include<QWidget>
 #include<QLineEdit>
 #include<QMouseEvent>
+//将program3完工界面中的QLineEdit提升为自己的类重载mouseReleaseEvent事件实现点击事件
 class MyLEdit:public QLineEdit{
     Q_OBJECT
 public:

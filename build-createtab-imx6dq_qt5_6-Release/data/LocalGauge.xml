@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--LocalSchemes说明:-->
+<LocalGauge>
+    <User user_id="02294">
+        <Item char_desc="长" gauge_no="222" product_no="200161" char_no="1"/>
+        <Item char_desc="内径" gauge_no="666" product_no="200161" char_no="2"/>
+        <Item char_desc="宽" gauge_no="333" product_no="200161" char_no="3"/>
+        <Item char_desc="距离" gauge_no="666" product_no="208202" char_no="7"/>
+        <Item char_desc="角度" gauge_no="5555" product_no="208202" char_no="6"/>
+        <Item char_desc="角度" gauge_no="77777" product_no="208202" char_no="5"/>
+        <Item char_desc="同轴度" gauge_no="333" product_no="208202" char_no="10"/>
+        <Item char_desc="密合度" gauge_no="333" product_no="208202" char_no="4"/>
+    </User>
+    <User user_id="345345">
+        <Item char_desc="长" gauge_no="12345" product_no="207803" char_no="1"/>
+        <Item char_desc="内径" gauge_no="12346" product_no="207803" char_no="2"/>
+        <Item char_desc="宽" gauge_no="12335" product_no="207803" char_no="3"/>
+    </User>
+</LocalGauge>

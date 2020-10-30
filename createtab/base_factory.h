@@ -4,6 +4,7 @@
 #include<programwork.h>
 #include<program2.h>
 #include<start_finish_work.h>
+//创建所有子功能的工厂类
 class abstract_factory{
 public:
     virtual baseP* Concrete(const QString& name) = 0;

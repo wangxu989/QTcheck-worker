@@ -13,6 +13,10 @@
 //#include<start_finish_work.h>
 #include<base_factory.h>
 #include<qmessage_remind.h>
+//QT主界面类，这里使用基类功能指针来打开/销毁各个功能
+
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

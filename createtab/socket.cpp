@@ -157,9 +157,9 @@ void socket::read_message() {
         emit transf_processID(workInfo.instruction_id);
         break;
     case 51://生产记录码
-        in>>pro_rec;
-        qDebug()<<pro_rec;
-        emit deal_rec(pro_rec);
+        in>>workInfo.instruction_id;
+        qDebug()<<workInfo.instruction_id;
+        emit deal_rec(workInfo.instruction_id);
         break;
     case 52://删除记录
         in>>start2tabID;
@@ -168,6 +168,10 @@ void socket::read_message() {
     case 53://增加记录
         in>>startrec;
         emit add_start2tab(startrec);
+        break;
+    case 54://完工获取物料设备信息
+        in>>workInfo.instruction_id;
+        emit finish_work_processID(workInfo.instruction_id);
         break;
     }
     if (clientConnection->bytesAvailable() > 0) {
@@ -300,9 +304,14 @@ void socket::read_message() {
         //case 83:完工数
         //case 84:生产指令plansteptab数据
         //case 86:生产记录码
-        //case 87:确认
+        //case 87:开工确认
         //case 88:切换
         //case 89:删除
+        //case 90:完工标志
+        //case 91:开工标志
+        //case 92:完工信息
+        //case 93:完工确认
+        //case 94:完工保存
 
 //    }
 //    //    data.resize(sizeof(*info));

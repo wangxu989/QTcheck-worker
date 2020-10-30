@@ -2,6 +2,7 @@
 #define SOCKET_H
 #include<QtNetwork>
 #include<QDataStream>
+#include<my_tables.h>
 typedef struct worker_info{
     QString name;
     int role;
@@ -105,6 +106,7 @@ public:
      int check_flag[4] = {0};
      volatile int tabnum = 0;
      ProcessInf Proinf;
+     bool get_status() const {return status;}
 signals:
     void insert_data(int);
     void set_tablesize(int,int);
@@ -114,6 +116,9 @@ signals:
     void confirm();
     void change_table();
     void delete_mes();
+    void clear_tables();
+    void confrim_finish(ElseInf&);
+    void finish_save();
 public slots:
     void read_msg();
 
@@ -127,6 +132,8 @@ private:
     finish_work finishInf;
     int mode;
     ElseInf elseinf;
+    bool status = true;//开工/完工状态
+    QString temp;
 };
 
 #endif // SOCKET_H

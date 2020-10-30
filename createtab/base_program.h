@@ -5,6 +5,9 @@
 #include<QMap>
 #include<QMessageBox>
 #include<socket.h>
+//1.定义抽象基类”功能“，所有子功能继承此类（统一接口）配合工厂类创建对应对象
+//2.单例定义xml类
+
 //后续可以将所有全局变量重构为单例模式
 //定义主程序类，统一管理可能出现的子程序类策略加工厂
 //提示消息总类
@@ -79,8 +82,4 @@ protected:
 private:
     xml() {};
 };
-
-
-
-
 #endif // BASE_PROGRAM_H

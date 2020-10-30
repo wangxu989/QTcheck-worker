@@ -21,7 +21,8 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     socket.h \
-    my_port.h
+    my_port.h \
+    my_tables.h
 
 FORMS    += mainwindow.ui
 

@@ -61,7 +61,7 @@
 
 
 
-    <Scheme product_no="208202"  warn_thr="1" chk_warn_thr="2" detect_mode="0" time_interval="30" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" trend_warn_win="7" lock_time="5" >
+    <Scheme product_no="208202"  warn_thr="1" chk_warn_thr="2" detect_mode="0" time_interval="1" cycle_time="37.2" sample_cnt="10" disp_element_cnt="8" trend_warn_win="7" lock_time="5" >
 
         <!--char_no：产品特性号，特性的唯一标识-->
 

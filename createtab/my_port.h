@@ -11,6 +11,9 @@
 #include<QFile>
 #include<QMessageBox>
 #include<qmessage_remind.h>
+//串口类（远古版本）
+//重构为单例
+
 struct P_scanner{
     QString name;
     QString baudRate;
@@ -28,10 +31,18 @@ class my_port:QObject
 {
     Q_OBJECT
 public:
+//    static my_port* get_port() {
+//        if (port1 == nullptr) {
+//            port1 = new my_port();
+//        }
+//    }
+
     my_port();
     ~my_port();
     QSerialPort *port1;
     void write(const QString& s);
+protected:
+    //static my_port* port1;
 private:
     enum Except{
         WRITE,

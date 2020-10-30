@@ -38,7 +38,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,5,1,5">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,1,10">
         <item>
          <widget class="Line" name="line">
           <property name="orientation">
@@ -48,6 +48,9 @@
         </item>
         <item>
          <widget class="QLabel" name="label_2">
+          <property name="styleSheet">
+           <string notr="true">font: 20pt &quot;Ubuntu&quot;;</string>
+          </property>
           <property name="text">
            <string>开工记录</string>
           </property>
@@ -66,7 +69,7 @@
        <widget class="QWidget" name="widget_2" native="true"/>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="10,1,10">
         <item>
          <widget class="Line" name="line_3">
           <property name="orientation">
@@ -76,6 +79,9 @@
         </item>
         <item>
          <widget class="QLabel" name="label_3">
+          <property name="styleSheet">
+           <string notr="true">font: 20pt &quot;Ubuntu&quot;;</string>
+          </property>
           <property name="text">
            <string>完工记录</string>
           </property>

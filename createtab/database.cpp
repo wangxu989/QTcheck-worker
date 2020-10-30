@@ -446,7 +446,7 @@ QSqlQuery& database_server::query_ctl(const QString &s,const QString& error_s){
 bool database_server::isActive() {
     std::string ping_cmd = "ping -c 1 " + plugin.hostname.toLatin1().toStdString() ;
     qDebug()<<QString(ping_cmd.c_str());
-    int ret = system(ping_cmd.c_str());
+    int ret = 0;//system(ping_cmd.c_str());
     if (ret != 0) {
         qDebug()<<"当前网络不稳定";
         Mremind->show("当前网络不稳定");

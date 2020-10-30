@@ -63,6 +63,7 @@ bool ProgramWork::start_P() {
 }
 void ProgramWork::finish_P() {
     remove_P(thisname);
+    system("killall mainwindow");
     delete this;
 }
 
@@ -96,10 +97,11 @@ void ProgramWork::login() {
     connect(my_socket,SIGNAL(check_info(int)),this,SLOT(check_info(int)));
     //开启图表进程
     //QStringList argument;
-#ifndef MY_P
-    my_process.start("./plugin/1.sh");
-#else
+#ifdef MY_P
     my_process.start("./plugin/mainwindow");
+#else
+    my_process.startDetached("./plugin/1.sh");
+
 #endif
 }
 void ProgramWork::draw_init() {
@@ -114,23 +116,24 @@ void ProgramWork::draw_init() {
     tempw->setLayout(templayout);
 
 
-
+    const int button_height = 100;
+    const int button_width = 70;
 
     button_ret = new QPushButton();
     button_ret->setIcon(QIcon(":/new/prefix1/img/exit.png"));
-    button_ret->setFixedSize(50,50);
+    button_ret->setFixedSize(button_width,button_height);
     button_ret->setIconSize(QSize(50,50));
 
     narrow = new QPushButton();
     enlarge = new QPushButton();
     gauge = new QPushButton("检具");
-    gauge->setFixedSize(50,50);
+    gauge->setFixedSize(button_width,button_height);
     enlarge->setIcon(QIcon(":/new/prefix1/img/+.png"));
     narrow->setIcon(QIcon(":/new/prefix1/img/-.png"));
     narrow->setIconSize(QSize(50,50));
-    narrow->setFixedSize(50,50);
+    narrow->setFixedSize(button_width,button_height);
     enlarge->setIconSize(QSize(50,50));
-    enlarge->setFixedSize(50,50);
+    enlarge->setFixedSize(button_width,button_height);
     //connect(gauge,SIGNAL(clicked(),this,SLOT());
     connect(narrow,SIGNAL(clicked()),this,SLOT(plot_narrow()));
     connect(enlarge,SIGNAL(clicked()),this,SLOT(plot_enlarge()));
@@ -846,4 +849,10 @@ void ProgramWork::plot_enlarge() {
 }
 void ProgramWork::plot_narrow() {
     my_socket->sendmessage(12);
+}
+
+void ProgramWork::on_pushButton_clicked()
+{
+     emit MyWidget::change_widget(nullptr);
+     system("killall mainwindow");
 }

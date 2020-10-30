@@ -147,7 +147,7 @@ void socket::read_msg(){
         in>>elseinf;
         emit send_rec_code(elseinf);
         break;
-    case 87:
+    case 87://开工确认
         emit confirm();
         break;
     case 88:
@@ -155,6 +155,27 @@ void socket::read_msg(){
         break;
     case 89:
         emit delete_mes();
+        break;
+    case 90:
+        status = false;//完工
+        my_tablewidget::clear_all();
+        break;
+    case 91:
+        status = true;//开工
+        my_tablewidget::clear_all();
+        break;
+    case 92:
+        in>>temp;
+        my_tablewidget::insert("物料信息",temp);
+        in>>temp;
+        my_tablewidget::insert("设备",temp);
+        break;
+    case 93://完工确认
+        in>>elseinf;
+        emit confrim_finish(elseinf);
+        break;
+    case 94:
+        emit finish_save();
         break;
     }
 

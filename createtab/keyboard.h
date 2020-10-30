@@ -3,6 +3,7 @@
 #include<tab.h>
 #include<finish_work.h>
 #include<QVBoxLayout>
+//键盘类，由于键盘的显示在需求中有变化，这里抽象显示基类统一接口（setText,text,setFont...）策略+工厂+装饰使用显示。
 class baseLabel{//装饰模式
 public:
     virtual QString text() = 0;
@@ -86,6 +87,9 @@ public:
     }
     QWidget* get_widget() {
         return figure;
+    }
+    baseLabel* get_display() {
+        return display;
     }
 
     keyboard_widget(const QString& s,base_factory_label* factory = new normal_label_factory()) {

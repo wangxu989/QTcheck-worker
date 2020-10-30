@@ -1,7 +1,7 @@
 #ifndef ProgramWork_H
 #define ProgramWork_H
 
-#define MY_P
+//#define MY_P
 #include <QWidget>
 #include<QDebug>
 #include<QThread>
@@ -18,6 +18,7 @@
 #include<QScrollBar>
 #include<base_program.h>
 #include<keyboard.h>
+
 //子功能1
 
 namespace Ui {
@@ -65,6 +66,8 @@ private slots:
     void plot_narrow();
     void in_keyboard(const int& row,const int& column);
     void gauge_add();
+    void on_pushButton_clicked();
+
 private:
     bool listen();
     //QSharedPointer<message_remind> m_remind;

@@ -13,216 +13,138 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_16">
+  <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,2">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_6">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,10">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>完工信息</string>
+          <string>当前时间</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="MyLEdit" name="lineEdit_5">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
          </property>
         </widget>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_18">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>原材料 </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="MyLEdit" name="lineEdit">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,7">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>检验报告</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="MyLEdit" name="lineEdit_4">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>生产令号</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>物料信息</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_2"/>
-           </item>
-          </layout>
-         </item>
-         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>设备编号</string>
+              <string>成品数量</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_3"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>完成时间</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_5"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>检验报告</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_4"/>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>成品数量</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QLineEdit" name="lineEdit_6"/>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_7">
-               <item>
-                <widget class="QPushButton" name="pushButton">
-                 <property name="text">
-                  <string>标箱数</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_2">
-                 <property name="text">
-                  <string>剩余数</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_9">
-           <item>
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>待处理数量</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_7"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="text">
-              <string>编辑</string>
+            <widget class="MyLEdit" name="lineEdit_6">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
              </property>
             </widget>
            </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QLabel" name="label_10">
+            <widget class="QPushButton" name="pushButton">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
              <property name="text">
-              <string>装模清单    </string>
+              <string>剩余数</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_9"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_4">
-             <property name="text">
-              <string>清除</string>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_11">
-           <item>
-            <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>产品批次    </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_8"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_5">
-             <property name="text">
-              <string>录入</string>
+              <string>标箱数</string>
              </property>
             </widget>
            </item>
@@ -230,109 +152,188 @@
          </item>
         </layout>
        </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_5">
+        <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,5,1">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_12">
-           <item>
-            <widget class="QLabel" name="label_11">
-             <property name="text">
-              <string>工作时长</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="MyLEdit" name="lineEdit_10"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_15">
-             <property name="text">
-              <string>分钟</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>待处理数量</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_13">
-           <item>
-            <widget class="QLabel" name="label_12">
-             <property name="text">
-              <string>热处理号</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="MyLEdit" name="lineEdit_11"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="MyLEdit" name="lineEdit_7">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_14">
-           <item>
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>表面处理</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="MyLEdit" name="lineEdit_13"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_5">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="minimumSize">
+            <size>
+             <width>70</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>编辑</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,5,1">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>装模清单    </string>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_15">
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="text">
-              <string>备注信息</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="MyLEdit" name="lineEdit_12"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="MyLEdit" name="lineEdit_9">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_4">
+           <property name="minimumSize">
+            <size>
+             <width>70</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>清除</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,5,1">
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>产品批次    </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="MyLEdit" name="lineEdit_8">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_5">
+           <property name="minimumSize">
+            <size>
+             <width>70</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>录入</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,5">
+         <item>
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>工作时长</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="MyLEdit" name="lineEdit_10">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="placeholderText">
+            <string>分钟</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,5">
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>热处理号</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="MyLEdit" name="lineEdit_11">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,5">
+         <item>
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>表面处理</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="MyLEdit" name="lineEdit_13">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

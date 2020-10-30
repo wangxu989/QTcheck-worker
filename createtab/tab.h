@@ -22,7 +22,7 @@
 #include<QAbstractScrollArea>
 #include<QScrollBar>
 #pragma pack(1)
-
+//子功能1的tab类
 //发送给进程2的信息（人员，设备信息）
 struct worker_info{
     QString name;

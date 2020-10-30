@@ -2,6 +2,7 @@
 #define QMESSAGE_REMIND_H
 #include<QMessageBox>
 //改为单例模式
+//单例提醒窗口
 class message_remind{
 public:
     inline ~message_remind(){delete box;}

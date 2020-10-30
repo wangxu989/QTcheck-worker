@@ -6,7 +6,7 @@
 #include<QSemaphore>
 //#include<database.h>
 #include<qmessage_remind.h>
-//已做成单例模式
+//已做成单例模式,socket类
 struct ProcessInf {
     QString cMustQC;
     QString cStdCount;
@@ -136,6 +136,7 @@ signals:
     void deal_rec(QString&s);
     void delete_start2tab(QString&s);
     void add_start2tab(start_rec&s);
+    void finish_work_processID(QString&);
 public slots:
     void my_connection();
     void delete_connect();

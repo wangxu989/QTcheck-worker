@@ -3,11 +3,12 @@
 #include<programwork.h>
 #include <QWidget>
 #include<QString>
-#include<qrencode.h>
 #include<QLabel>
 #include<QProcess>
 #include<QPushButton>
 #include<my_port.h>
+#include<qrencodeh/qrencode.h>
+//#define MY_P2
 //子功能2
 namespace Ui {
 class Program2;
@@ -99,7 +100,7 @@ private slots:
 
     void on_pushButton_7_clicked();
 
-    void show_print_code(QString& s);
+    void show_print_code(const QString& s);
 
     void on_pushButton_2_clicked();
 

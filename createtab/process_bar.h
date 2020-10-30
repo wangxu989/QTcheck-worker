@@ -5,6 +5,7 @@
 #include<QProgressBar>
 #include<QSemaphore>
 #include<QMap>
+//进度条
 //观察者模式
 class event_progressbar{
 public:

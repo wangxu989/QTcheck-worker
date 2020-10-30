@@ -1,12 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include<QTimer>
 extern QQueue<start_work>q_startwork;
 
 extern QQueue<finish_work>q_finishwork;
+QMap<QString,int> my_tablewidget::res;
 QVector<base_table*> base_table::rec = QVector<base_table*>();
 QSharedPointer<socket> my_socket;
 int base_table::num = 0;
+my_tablewidget* my_tablewidget::my = NULL;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -23,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(my_socket.data(),&socket::confirm,this,&MainWindow::confirm);
     connect(my_socket.data(),&socket::change_table,this,&MainWindow::change_table);
     connect(my_socket.data(),&socket::delete_mes,this,&MainWindow::delete_msg);
+    connect(my_socket.data(),&socket::confrim_finish,this,&MainWindow::confirm_finish);
+    connect(my_socket.data(),&socket::finish_save,this,&MainWindow::finish_save);
 #ifdef MY_P
     QPushButton *send_work = new QPushButton("设备");
     QPushButton *send_worker = new QPushButton("员工");
@@ -39,36 +43,29 @@ MainWindow::MainWindow(QWidget *parent) :
     V_button->addWidget(sendProcessinf);
     ui->horizontalLayout_3->addLayout(V_button);
 #endif
-    //table_work = new my_tablewidget(4,2,"工作信息");
 
-    table_worker = new my_tablewidget(2,2,"员工信息");
-    table_worker->item(1,0)->setText("工号");
+    table = new my_tablewidget(12,1,"工号","设备","生产令号","物料信息","强制检验","标箱数量");
 
-
-
-    table_product = new my_tablewidget(3,2,"设备信息");
-    table_product->item(1,0)->setText("设备");
-    table_product->item(2,0)->setText("装模清单");
-
-
-    table_process = new my_tablewidget(5,2,"工序");
-    table_process->item(1,0)->setText("生产令号");
-    table_process->item(2,0)->setText("物料信息");
-    table_process->item(3,0)->setText("强制检验");
-    table_process->item(4,0)->setText("标箱数量");
-
-
+    qDebug()<<"create";
+    table2 = QSharedPointer<my_table>(new my_table("开工模式",nullptr,nullptr,"生产令号","完成时间","物料信息","员工号","成品数","产品批次","剩余数"));
+    table3 = QSharedPointer<my_table>(new my_table("完工模式",nullptr,nullptr,"生产令号","完成时间","物料信息","员工号","成品数","产品批次","剩余数"));
     table_layout = new QVBoxLayout(ui->widget);
-    table_layout->addWidget(table_worker);
-    //table_layout->addWidget(table_work);
-    table_layout->addWidget(table_product);
-    table_layout->addWidget(table_process);
+    table_layout->addWidget(table);
     tablestart = QSharedPointer<my_table>(new my_table("开工记录",ui->label_2,ui->widget_2,"生产令号","完成时间","物料信息","员工号","成品数","产品批次","开工时间","设备","剩余数"));
     tablefinish = QSharedPointer<my_table>(new my_table("完工记录",ui->label_3,ui->widget_3,"生产令号","完成时间","物料信息","成品数","待处理","产品批次","打印","剩余数"));
+    tablestart->hideColumn(3);
+    tablestart->hideColumn(5);
+    tablestart->hideColumn(7);
+    tablefinish->hideColumn(5);
+    tablefinish->hideColumn(6);
     tablestart->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);     //然后设置要根据内容使用宽度的列
     tablestart->horizontalHeader()->setSectionResizeMode(6,QHeaderView::ResizeToContents);
     tablefinish->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);     //然后设置要根据内容使用宽度的列
     tablefinish->horizontalHeader()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
+    table2->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
+    table3->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
+    table2->horizontalHeader()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
+    table3->horizontalHeader()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
 }
 
 MainWindow::~MainWindow()
@@ -80,46 +77,94 @@ void MainWindow::my_read() {
     if (my_port1.code_scan.contains("\r")) {
         my_port1.code_scan = my_port1.code_scan.remove(my_port1.code_scan.size() - 1,1);
         my_port1.temp_scan+=my_port1.code_scan;
-        //string_scan.push_back(temp_scan);
+        qDebug()<<my_port1.temp_scan;
+        if (!is_work) {
+            if (my_port1.temp_scan.contains("YG")) {
+                workInfo.worker_id = my_port1.temp_scan;
+                my_socket->send_message(2,my_port1.temp_scan);
+                my_socket->check_flag[0] = 1;
+                table->insert("工号",my_port1.temp_scan.split(",")[1]);
+            }
+            my_port1.temp_scan.resize(0);
+            return;
+        }
         if (my_port1.temp_scan.contains("YG")) {
             workInfo.worker_id = my_port1.temp_scan;
             my_socket->send_message(2,my_port1.temp_scan);
             my_socket->check_flag[0] = 1;
-            table_worker->item(1,1)->setText(my_port1.temp_scan.split(",")[1]);
+            table->insert("工号",my_port1.temp_scan.split(",")[1]);
         }
-        else if (my_port1.temp_scan.contains("ZL")){
-            workInfo.instruction_id = my_port1.temp_scan;
-            table_process->item(1,1)->setText(workInfo.instruction_id.split(",")[1]);
-            my_socket->send_message(50,my_port1.temp_scan);
-            my_socket->check_flag[1] = 1;
+        else if (my_port1.temp_scan.contains("ZL")){//生产令码
+            if (my_socket->get_status()) {//开工
+                qDebug()<<"开工";
+                qDebug()<<my_port1.temp_scan<<"开工";
+                if (my_port1.temp_scan.split(",")[1].right(2) == "01") {
+                    QMessageBox box(QMessageBox::NoIcon,"","首工序不能开工");
+                    QTimer::singleShot(1500,&box,SLOT(close()));
+                    box.exec();
+                    return;
+                }
+                workInfo.instruction_id = my_port1.temp_scan;
+                table->insert("生产令号",workInfo.instruction_id.split(",")[1]);
+                my_socket->send_message(50,my_port1.temp_scan);
+                my_socket->check_flag[1] = 1;
+            }
+            else {//完工
+                qDebug()<<my_port1.temp_scan.split(",")[1].right(2)<<"第一道工序";
+                if (my_port1.temp_scan.split(",")[1].right(2) == QString("01")) {//第一道工序
+                    workInfo.instruction_id = my_port1.temp_scan;
+                    table->insert("生产令号",my_port1.temp_scan.split(",")[1]);
+                    my_socket->send_message(50,my_port1.temp_scan);
+                    my_socket->check_flag[1] = 1;
+                }
+                else {
+                    QMessageBox box(QMessageBox::NoIcon,"","非第一道工序请扫生产记录码");
+                    QTimer::singleShot(1500,&box,SLOT(close()));
+                    box.exec();
+                }
+            }
         }
         else if (my_port1.temp_scan.contains("SB")) {
+            if (workInfo.instruction_id == "" ||(!my_socket->get_status()) && workInfo.instruction_id != "" && workInfo.instruction_id.split(",")[1].right(2) != QString("01")) {//开工
+                QMessageBox box(QMessageBox::NoIcon,"","非第一道工序不可扫码");
+                QTimer::singleShot(1500,&box,SLOT(close()));
+                box.exec();
+                return;
+            }
             workInfo.product_id = my_port1.temp_scan;
             my_socket->send_message(4,my_port1.temp_scan);
             my_socket->check_flag[2] = 1;
-            table_product->item(1,1)->setText(my_port1.temp_scan.split(",")[1]);
+            table->insert("设备",my_port1.temp_scan.split(",")[1]);
         }
 
         else {//生产记录码
-            if (workInfo.instruction_id.size() == 0) {
-                ui->label->setText("请先扫生产令码");
-                return;
-            }
-
-            qDebug()<<my_port1.temp_scan.mid(my_port1.temp_scan.size() - 2,2);
-            qDebug()<<workInfo.instruction_id.split(",")[1].mid(workInfo.instruction_id.split(",")[1].size() - 2);
-            if (workInfo.instruction_id.split(",")[1].mid(workInfo.instruction_id.split(",")[1].size() - 2,2).toInt() != my_port1.temp_scan.split(",")[0].mid(my_port1.temp_scan.split(",")[0].size() - 2,2).toInt() + 1) {
-                ui->label->setText("工序错误");
-                return;
-            }
-            if (rec_set.find(my_port1.temp_scan.split(" ")[0]) != rec_set.end()) {
-                return;
+            if (my_socket->get_status() == false) {//完工
+                table->insert("生产令号",my_port1.temp_scan.split(",")[0]);
+                my_socket->send_message(54,my_port1.temp_scan);
+                qDebug()<<"完工";
             }
             else {
-                rec_set.insert(my_port1.temp_scan.split(" ")[0]);
+                if (workInfo.instruction_id.size() == 0) {
+                    ui->label->setText("请先扫生产令码");
+                    return;
+                }
+
+                qDebug()<<workInfo.instruction_id.split(",")[1].right(2).toInt();
+                qDebug()<<my_port1.temp_scan.split(",")[0].right(2).toInt();
+                qDebug()<<"工序比较";
+                if (workInfo.instruction_id.split(",")[1].right(2).toInt() != my_port1.temp_scan.split(",")[0].right(2).toInt() + 1) {
+                    ui->label->setText("工序错误");
+                    return;
+                }
+                if (rec_set.find(my_port1.temp_scan.split(" ")[0]) != rec_set.end()) {
+                    return;
+                }
+                else {
+                    rec_set.insert(my_port1.temp_scan.split(" ")[0]);
+                }
+                my_socket->send_message(51,my_port1.temp_scan);
+                my_socket->check_flag[3] = 1;
             }
-            my_socket->send_message(51,my_port1.temp_scan);
-            my_socket->check_flag[3] = 1;
         }
         qDebug()<<my_port1.temp_scan;
         my_port1.temp_scan.resize(0);
@@ -135,9 +180,9 @@ void MainWindow::insert_data(int flag) {
     else if (flag == 2) {//填工序信息
         //生产
         qDebug()<<my_socket->Proinf.cMustQC<<" cMustqc";
-        table_process->item(3,1)->setText(my_socket->Proinf.cMustQC);
-        table_process->item(4,1)->setText(my_socket->Proinf.cStdCount);
-        table_process->item(2,1)->setText(my_socket->Proinf.ElseInf);
+        table->insert("强制检验",my_socket->Proinf.cMustQC);
+        table->insert("标箱数量",my_socket->Proinf.cStdCount);
+        table->insert("物料信息",my_socket->Proinf.ElseInf);
 
     }
     else if (flag == 3) {
@@ -203,6 +248,19 @@ void MainWindow::act_mode(int act) {
         }
         return;
     }
+    if (table3.data() != nullptr && table3.data()->isVisible()) {
+        if (act%2) {
+            if (table3.data()->currentRow() - 1 >= 0) {
+                table3.data()->setCurrentItem(table3.data()->item(table3.data()->currentRow() - 1,0));
+            }
+        }
+        else {
+            if (table3.data()->currentRow() + 1 < table3.data()->rowCount()) {
+                table3.data()->setCurrentItem(table3.data()->item(table3.data()->currentRow() + 1,0));
+            }
+        }
+        return;
+    }
     switch (act) {
     case 0:
         if (tablestart.data()->currentRow() + 1 < tablestart.data()->rowCount()) {
@@ -228,46 +286,83 @@ void MainWindow::act_mode(int act) {
         break;
     }
 }
-void MainWindow::change_status() {//进入开工模块
-    table2 = QSharedPointer<my_table>(new my_table("开工模式",nullptr,nullptr,"生产令号","完成时间","物料信息","员工号","成品数","产品批次","剩余数"));
+void MainWindow::change_status() {//进入开工/完工模块
+    is_work = true;
     ui->verticalLayout_2->removeWidget(ui->widget_2);
     ui->verticalLayout_2->removeWidget(ui->widget_3);
     ui->verticalLayout_2->removeItem(ui->horizontalLayout);
     ui->verticalLayout_2->removeItem(ui->horizontalLayout);
     ui->verticalLayout_2->removeItem(ui->horizontalLayout_2);
-    ui->verticalLayout_2->addWidget(table2.data());
+    if (my_socket->get_status()) {//开工
+        qDebug()<<"开工";
+        table->unhidden();
+        ui->verticalLayout_2->addWidget(table2.data());
+    }
+    else {//完工
+
+        qDebug()<<"完工";
+        table->hidden();
+        ui->verticalLayout_2->addWidget(table3.data());
+    }
+    //table2 = QSharedPointer<my_table>(new my_table("开工模式",nullptr,nullptr,"生产令号","完成时间","物料信息","员工号","成品数","产品批次","剩余数"));
 }
 
 void MainWindow::my_send1() {
+    if (!is_work){return;}
     QString temp = "YG,55045";//"YG,02294";
     workInfo.worker_id = temp;
     my_socket->send_message(2,temp);
     my_socket->check_flag[0] = 1;
-    table_worker->item(1,1)->setText(temp.split(",")[1]);
+    table->insert("工号",temp.split(",")[1]);
 }
 
 void MainWindow::my_send2() {
+    if (!is_work){return;}
     QString temp = "SB,001073";
     workInfo.product_id = temp;
     my_socket->send_message(4,temp);
     my_socket->check_flag[2] = 1;
-    table_product->item(1,1)->setText(temp.split(",")[1]);
+    table->insert("设备",temp.split(",")[1]);
 }
 
 void MainWindow::my_send3() {
-    QString temp = "ZL,20140101171120000102,E12001682XA,0,1800";//"ZL,20016101180122000101,17121618739,1,1800";;//"ZL,20016101180122000101,17121618739,1,1800";
-    workInfo.instruction_id = temp;
-    my_socket->send_message(50,temp);
-    table_process->item(1,1)->setText(workInfo.instruction_id.split(",")[1]);
-    my_socket->check_flag[1] = 1;
+    if (!is_work){return;}
+    QString temp = "ZL,20016101180122000102,E12001682XA,0,1800";//"ZL,20016101180122000101,17121618739,1,1800";;//"ZL,20016101180122000101,17121618739,1,1800";
+    if (my_socket->get_status()) {//开工
+        workInfo.instruction_id = temp;
+        my_socket->send_message(50,temp);
+        table->insert("生产令号",workInfo.instruction_id.split(",")[1]);
+        my_socket->check_flag[1] = 1;
+    }
+    else {//完工
+        if (temp.split(",")[1].right(2) == QString("01")) {//第一道工序
+            workInfo.instruction_id = my_port1.temp_scan;
+            //is_first = true;
+            table->insert("生产令号",temp.split(",")[1]);
+            my_socket->send_message(50,temp);//
+            my_socket->check_flag[1] = 1;
+        }
+        else {
+            QMessageBox box(QMessageBox::NoIcon,"","非第一道工序请扫生产记录码");
+            QTimer::singleShot(1500,&box,SLOT(close()));
+            box.exec();
+        }
+    }
 }
-void MainWindow::my_send4() {//生产记录码
+void MainWindow::my_send4() {//生产记录码20010001180321000101,200903115125
+    if (!is_work){return;}
+    QString temp = "20016101180122000101,,201027154713,1,0,YG,55045,SB,001073,2900,0,60,2222,,444,外协机加进料检,17121618739,,016101,";//"20016101180122000102,200819121338,200515163814,7,0,50000,037013,300,0,11,,,,,245973,,,1,0,0,1,50000,001073,100,0,200815164731,0,300";
+
+    if (my_socket->get_status() == false) {//完工
+        table->insert("生产令号",temp.split(",")[0]);
+        my_socket->send_message(54,temp);
+        qDebug()<<"完工";
+        return;
+    }
     if (workInfo.instruction_id.size() == 0) {
         ui->label->setText("请先扫生产令码");
         return;
     }
-
-    QString temp = "20010001180321000101,200819121338,200903115125,7,0,50000,037013,300,0,11,,,,,245973,,,1,0,0,1,50000,001073,100,0,200815164731,0,300";
 
     if (rec_set.find(temp.split(" ")[0]) != rec_set.end()) {
         return;
@@ -275,7 +370,8 @@ void MainWindow::my_send4() {//生产记录码
     else {
         rec_set.insert(temp.split(" ")[0]);
     }
-    if (workInfo.instruction_id.split(",")[1].mid(workInfo.instruction_id.split(",")[1].size() - 2,2).toInt() != temp.split(",")[0].mid(temp.split(",")[0].size() - 2,2).toInt() + 1) {
+    qDebug()<<workInfo.instruction_id.split(",")[1].right(2).toInt()<<" "<<temp.split(",")[0].right(2).toInt()<<"工序";
+    if (workInfo.instruction_id.split(",")[1].right(2).toInt()  != temp.split(",")[0].right(2).toInt() + 1) {
         ui->label->setText("工序错误");
         return;
     }
@@ -285,7 +381,14 @@ void MainWindow::my_send4() {//生产记录码
     my_socket->check_flag[3] = 1;
 }
 void MainWindow::insert_table2(ElseInf &e) {
-    if (table2.data() == nullptr) {
+    QSharedPointer<my_table>temp;
+    if (my_socket->get_status()) {//开工
+        temp = table2;
+    }
+    else {
+        temp = table3;
+    }
+    if (temp.data() == nullptr) {
         ui->label->setText("请先进入开工模式");
         return;
     }
@@ -293,9 +396,10 @@ void MainWindow::insert_table2(ElseInf &e) {
         ui->label->setText("请先扫生产令码");
         return;
     }
-    table2->insert(e);
+    temp->insert(e);
 }
-void MainWindow::confirm() {
+void MainWindow::confirm() {//开工
+    is_work = false;
     qDebug()<<"confirm";
     if (my_socket->check_flag[0] == 1 && my_socket->check_flag[1] == 1 && my_socket->check_flag[2] == 1 && my_socket->check_flag[3] == 1) {//4码全扫过了
         qDebug()<<table2.data()->rowCount();
@@ -315,14 +419,11 @@ void MainWindow::confirm() {
             QString strDateTime = locale.toString(dateTime, strFormat);
             start.StartTime = strDateTime;
             qDebug()<<strDateTime;
-            start.DevID = table_product->item(1,1)->text();
+            start.DevID = table->get_val("设备");
             start.remaind_count = table2.data()->item(i,6)->text();
             tablestart.data()->insert(start);//start插入
-
             //数据库要增加
-
             my_socket->send_message(53,start);
-
         }
         table2.data()->setVisible(false);
         ui->verticalLayout_2->removeWidget(table2.data());
@@ -333,6 +434,7 @@ void MainWindow::confirm() {
         ui->verticalLayout_2->addWidget(ui->widget_3);
         ui->label_2->setText("开工记录[ " + QString::number(tablestart->rowCount()) + " ]");
 
+
     }
 }
 void MainWindow::change_table() {
@@ -340,12 +442,14 @@ void MainWindow::change_table() {
 }
 void my_table::focus() {
     if (this->label != nullptr) {
-        this->label->setStyleSheet("color:red;");
+        this->label->setStyleSheet("color:blue;font: 20pt;");
+        this->setStyleSheet("background:rgb(144,238,144)");
     }
 }
 void my_table::unfocus() {
     if (this->label != nullptr) {
-        this->label->setStyleSheet("color:black;");
+        this->label->setStyleSheet("color:black;font: 20pt;");
+        this->setStyleSheet("background:white;");
     }
 }
 void MainWindow::delete_msg() {
@@ -353,8 +457,11 @@ void MainWindow::delete_msg() {
         table2->remove();
         return;
     }
+    if (table3.data() != nullptr && table3.data()->isVisible()) {
+        table3->remove();
+        return;
+    }
     base_table::remove_ctl();
-
 }
 void my_table::remove() {
     if (this->num == 0) {//只有start才删数据库
@@ -366,5 +473,35 @@ void my_table::remove() {
     }
     //数据库中删除该信息
 
+
+}
+void MainWindow::confirm_finish(ElseInf& elseinf){
+    is_work = false;
+    //elseinf.UserID = table->get_val("工号");
+    elseinf.MaterialInf = table->get_val("物料信息");
+    elseinf.ID = table->get_val("生产令号");
+    table3->insert(elseinf);
+}
+void MainWindow::finish_save() {//完工保存
+    for (int i = 0;i < table3.data()->rowCount();i++) {
+        finish_work inf;
+        inf.ID = table3.data()->item(i,0)->text();
+        inf.EndTime = table3.data()->item(i,1)->text();
+        inf.MaterialInf = table3.data()->item(i,2)->text();
+        //inf.isPrint = "1";
+        inf.onhand = table3.data()->item(i,3)->text();
+        inf.EndCount = table3.data()->item(i,4)->text();
+        inf.probatch = table3.data()->item(i,5)->text();
+        inf.residueNum = table3.data()->item(i,6)->text();
+        tablefinish->insert(inf);//start插入
+        //数据库要增加
+    }
+    table3.data()->setVisible(false);
+    ui->verticalLayout_2->removeWidget(table3.data());
+    table3.clear();
+    ui->verticalLayout_2->addItem(ui->horizontalLayout);
+    ui->verticalLayout_2->addWidget(ui->widget_2);
+    ui->verticalLayout_2->addItem(ui->horizontalLayout_2);
+    ui->verticalLayout_2->addWidget(ui->widget_3);
 
 }

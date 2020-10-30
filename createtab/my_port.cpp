@@ -18,7 +18,7 @@ bool my_port::exception(const Except &e) {
         case WRITE:
         if (!this->find_port()) {
             //
-            Mremind->show("查找不到串口" + name);
+            //Mremind->show("查找不到串口" + name);
             //port1->setPort(my_info);
         }
         else if (!port1->isOpen()) {
@@ -112,6 +112,7 @@ bool my_port::find_port() {
             name = info.portName();
             return true;
         }
+
     }
 
 

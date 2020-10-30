@@ -199,7 +199,8 @@ DIST          = ../start_work/img/scan.png \
 		/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/features/lex.prf \
 		../start_work/start_work.pro ../start_work/mainwindow.h \
 		../start_work/socket.h \
-		../start_work/my_port.h ../start_work/main.cpp \
+		../start_work/my_port.h \
+		../start_work/my_tables.h ../start_work/main.cpp \
 		../start_work/mainwindow.cpp \
 		../start_work/socket.cpp \
 		../start_work/my_port.cpp
@@ -518,7 +519,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../start_work/source.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../start_work/mainwindow.h ../start_work/socket.h ../start_work/my_port.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../start_work/mainwindow.h ../start_work/socket.h ../start_work/my_port.h ../start_work/my_tables.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../start_work/main.cpp ../start_work/mainwindow.cpp ../start_work/socket.cpp ../start_work/my_port.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../start_work/mainwindow.ui $(DISTDIR)/
 
@@ -823,6 +824,7 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qsslkey.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qtnetworkversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream \
+		../start_work/my_tables.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
@@ -858,6 +860,8 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainter.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		../start_work/my_port.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort/QSerialPort \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort/qserialport.h \
@@ -872,8 +876,6 @@ moc_mainwindow.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		../start_work/mainwindow.h
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/start_work -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../start_work/mainwindow.h -o moc_mainwindow.cpp
 
@@ -1116,6 +1118,72 @@ moc_socket.cpp: /opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/QtNetwork \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qsslkey.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qtnetworkversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream \
+		../start_work/my_tables.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QTableWidget \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtablewidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtableview.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qframe.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstyleoption.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qslider.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractslider.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstyle.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtabbar.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtabwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHeaderView \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qheaderview.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QStylePainter \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstylepainter.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainter.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		../start_work/socket.h
 	/opt/Qt5.6.3/5.6.3/gcc_64/bin/moc $(DEFINES) -I/opt/Qt5.6.3/5.6.3/gcc_64/mkspecs/linux-g++ -I/home/arm/project/QTcheck-worker/start_work -I/opt/Qt5.6.3/5.6.3/gcc_64/include -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtPrintSupport -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort -I/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore -I. ../start_work/socket.h -o moc_socket.cpp
 
@@ -1408,6 +1476,7 @@ main.o: ../start_work/main.cpp ../start_work/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qsslkey.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qtnetworkversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream \
+		../start_work/my_tables.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
@@ -1443,6 +1512,8 @@ main.o: ../start_work/main.cpp ../start_work/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainter.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		../start_work/my_port.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort/QSerialPort \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort/qserialport.h \
@@ -1456,9 +1527,7 @@ main.o: ../start_work/main.cpp ../start_work/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../start_work/main.cpp
 
 mainwindow.o: ../start_work/mainwindow.cpp ../start_work/mainwindow.h \
@@ -1732,6 +1801,7 @@ mainwindow.o: ../start_work/mainwindow.cpp ../start_work/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qsslkey.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qtnetworkversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream \
+		../start_work/my_tables.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
@@ -1767,6 +1837,8 @@ mainwindow.o: ../start_work/mainwindow.cpp ../start_work/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainter.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		../start_work/my_port.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort/QSerialPort \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtSerialPort/qserialport.h \
@@ -1781,8 +1853,6 @@ mainwindow.o: ../start_work/mainwindow.cpp ../start_work/mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QMessageBox \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qmessagebox.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdialog.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		ui_mainwindow.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QAction \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qaction.h \
@@ -2035,7 +2105,73 @@ socket.o: ../start_work/socket.cpp ../start_work/socket.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QHash \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qsslkey.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qtnetworkversion.h \
-		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream \
+		../start_work/my_tables.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QTableWidget \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtablewidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtableview.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qframe.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstyleoption.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qslider.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractslider.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstyle.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtabbar.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qtabwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QHeaderView \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qheaderview.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QStylePainter \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstylepainter.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainter.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o socket.o ../start_work/socket.cpp
 
 my_port.o: ../start_work/my_port.cpp ../start_work/my_port.h \
@@ -2331,6 +2467,27 @@ my_port.o: ../start_work/my_port.cpp ../start_work/my_port.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qsslkey.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtNetwork/qtnetworkversion.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtCore/QDataStream \
+		../start_work/my_tables.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QVBoxLayout \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QStylePainter \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qstylepainter.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpainter.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtWidgets/qlabel.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/QDomDocument \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qdom.h \
 		/opt/Qt5.6.3/5.6.3/gcc_64/include/QtXml/qtxmlglobal.h \

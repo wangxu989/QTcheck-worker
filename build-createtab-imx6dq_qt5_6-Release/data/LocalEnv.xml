@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--LocalEnv:-->
+
+<Work>
+<ProProcess>
+<env process_id="01"  process="锻造"/>
+<env process_id="56"  process="锻造2"/>
+<env process_id="03"  process="锻造3"/>
+</ProProcess>
+
+
+
+<LocaleEquip>
+<Equip equip_id="0010" equip="车床1"/>
+<Equip equip_id="73" equip="车床1"/>
+</LocaleEquip>
+
+
+<TestPlace>
+<Place place_id="73"  test_place="轴承套生产线1"/>
+<Place place_id="45"  test_place="轴承套生产线2"/>
+</TestPlace>
+
+
+<LocalEnv>
+<env workstation="1"  gauge_no="23342"/>
+</LocalEnv>
+</Work>

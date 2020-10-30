@@ -32,7 +32,11 @@ bool Program2::start_P() {
         exe.attach(ui->pushButton);
         finished.attach(ui->pushButton_2);
         terminated.attach(ui->pushButton_3);
+#ifdef MY_P2
         my_progress.start("./plugin/program2");
+#else
+        my_progress.startDetached("./plugin/2.sh");
+#endif
         return true;
     }
     return false;
@@ -43,6 +47,7 @@ void Program2::finish_P() {
     disconnect(key->figure,&QTableWidget::cellClicked,this,&Program2::in_keyboard);
     disconnect(ui->pushButton,&QPushButton::clicked,this,&Program2::exec_button);
     disconnect(my_socket,&socket::print_String,this,&Program2::show_print_code);
+    system("killall program2");
     delete this;
 }
 
@@ -149,7 +154,7 @@ void Program2::on_pushButton_7_clicked()//add
         data_server->add_tab();
     }
 }
-void Program2::show_print_code(QString &s) {
+void Program2::show_print_code(const QString &s) {
     qDebug()<<"printString "<<s;
     QRcode *qrcode;
     qrcode = QRcode_encodeString(s.toStdString().c_str(), 2, QR_ECLEVEL_Q, QR_MODE_8, 1);
@@ -182,7 +187,17 @@ void Program2::show_print_code(QString &s) {
     mainmap.save("./buffer/buf_img.png");
     my_socket->sendmessage(54);
     //发数据给串口
-    port_print.write(s);
-//    label_2->setPixmap(mainmap);
-//    label_2->setVisible(true);
+    port_print.write("\r\n");
+    port_print.write("SIZE 60 mm,40 mm\r\n");
+    port_print.write("GAP 0\r\n");
+    port_print.write("DENSITY 8\r\n");
+    port_print.write("SPEED 5\r\n");
+    port_print.write("DIRECTION 0\r\n");
+    port_print.write("REFERENCE 0,0\r\n");
+    port_print.write("CLS\r\n");
+    port_print.write("QRCODE 20,16,L,5,A,0,\""+s+"\"\r\n");
+    port_print.write("PRINT 1,1\r\n");
+    //port_print.write(s);
+    //    label_2->setPixmap(mainmap);
+    //    label_2->setVisible(true);
 }
